@@ -1,0 +1,72 @@
+<main class="w-full h-screen flex relative">
+    <!--side bar-->
+    <section *ngIf="!onShawDrawer" class="w-1/3  md:w-1/6 shadow-lg font-mono h-screen">
+        <div class="flex flex-col h-full justify-between shadow-xl">
+            <div class="flex flex-col gap-2">
+                <div class="flex justify-between p-4">
+                    <p class="text-lg ">
+                        <span class="hidden md:block">ERMP and USMLE Study Guide (NEUS)</span>  
+                        <span class="block md:hidden">NEUS</span>
+                    </p>
+                    <div>
+                        <svg class="cursor-pointer"  
+                        (click)="toggleSideBar()"          
+                        xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"><g fill="currentColor"><path d="M11.707 5.293a1 1 0 0 1 0 1.414L6.414 12l5.293 5.293a1 1 0 0 1-1.414 1.414l-6-6a1 1 0 0 1 0-1.414l6-6a1 1 0 0 1 1.414 0z"/><path d="M19.707 5.293a1 1 0 0 1 0 1.414L14.414 12l5.293 5.293a1 1 0 0 1-1.414 1.414l-6-6a1 1 0 0 1 0-1.414l6-6a1 1 0 0 1 1.414 0z"/></g>
+                    </svg>   
+                    </div> 
+                </div>
+                <!--side Bar Items-->
+                <div class="flex flex-col gap-5 p-2">
+                    <app-side-bar-item component="Dashboard"
+                        [isActiveComponent]="activeComponent === 'Dashboard'"
+                        (click)="setActiveComponent('Dashboard')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path stroke-miterlimit="5.759" d="M3 3v16a2 2 0 0 0 2 2h16"/><path stroke-miterlimit="5.759" d="m7 14l4-4l4 4l6-6"/><path d="M18 8h3v3"/></g></svg>
+                    </app-side-bar-item>
+
+                    <app-side-bar-item component="Exams"
+                        [isActiveComponent]="activeComponent === 'Exams'"
+                        (click)="setActiveComponent('Exams')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 26 26"><g fill="#4CAF50" fill-rule="evenodd" clip-rule="evenodd"><path d="M13 5.682L6.938 9.5h12.124zm.267-1.014a.5.5 0 0 0-.533 0L4.939 9.577c-.424.267-.235.923.267.923h15.588c.502 0 .691-.656.267-.923zM5 20a.5.5 0 0 1 .5-.5h15a.5.5 0 0 1 0 1h-15A.5.5 0 0 1 5 20m1.5-8.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5m3 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5m3 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5m3 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5m3 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5"/><path d="M13 24.5c6.351 0 11.5-5.149 11.5-11.5S19.351 1.5 13 1.5S1.5 6.649 1.5 13S6.649 24.5 13 24.5m0 1c6.904 0 12.5-5.596 12.5-12.5S19.904.5 13 .5S.5 6.096.5 13S6.096 25.5 13 25.5"/></g></svg>
+                    </app-side-bar-item>
+                    <app-side-bar-item component="Resources"
+                        [isActiveComponent]="activeComponent === 'Resources'"
+                        (click)="setActiveComponent('Resources')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><circle cx="9.001" cy="6" r="4" fill="currentColor"/><ellipse cx="9.001" cy="17.001" fill="currentColor" rx="7" ry="4"/><path fill="currentColor" d="M21 17c0 1.657-2.036 3-4.521 3c.732-.8 1.236-1.805 1.236-2.998c0-1.195-.505-2.2-1.239-3.001C18.962 14 21 15.344 21 17M18 6a3 3 0 0 1-4.029 2.82A5.7 5.7 0 0 0 14.714 6c0-1.025-.27-1.987-.742-2.819A3 3 0 0 1 18 6.001"/></svg>
+                    </app-side-bar-item>
+                    <app-side-bar-item component="Users"
+                        [isActiveComponent]="activeComponent === 'Users'"
+                        (click)="setActiveComponent('Users')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><circle cx="9.001" cy="6" r="4" fill="currentColor"/><ellipse cx="9.001" cy="17.001" fill="currentColor" rx="7" ry="4"/><path fill="currentColor" d="M21 17c0 1.657-2.036 3-4.521 3c.732-.8 1.236-1.805 1.236-2.998c0-1.195-.505-2.2-1.239-3.001C18.962 14 21 15.344 21 17M18 6a3 3 0 0 1-4.029 2.82A5.7 5.7 0 0 0 14.714 6c0-1.025-.27-1.987-.742-2.819A3 3 0 0 1 18 6.001"/></svg>
+                    </app-side-bar-item>
+                    <app-side-bar-item component="Payments"
+                        [isActiveComponent]="activeComponent === 'Payments'"
+                        (click)="setActiveComponent('Payments')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M12 16q-.825 0-1.412-.587T10 14t.588-1.412T12 12t1.413.588T14 14t-.587 1.413T12 16M7.375 7h9.25L17.9 4.45q.25-.5-.038-.975T17 3H7q-.575 0-.862.475T6.1 4.45zM8.4 21h7.2q2.25 0 3.825-1.562T21 15.6q0-.95-.325-1.85t-.925-1.625L17.15 9H6.85l-2.6 3.125q-.6.725-.925 1.625T3 15.6q0 2.275 1.563 3.838T8.4 21"/></svg>
+                    </app-side-bar-item>
+                </div>
+            </div>
+            <!--user & logout-->
+            <div class="flex flex-col gap-4 justify-center mx-2 mb-4">
+                <div class="flex  items-center p-2">
+                    <!-- <img src=""
+                        class="w-10 h-10 rounded-full"/> -->
+                    <p class="text-sm">{{profile?.username}}</p>
+                </div>
+                <div class="flex items-center p-2 cursor-pointer">
+                    <svg (click)="logout()" 
+                         xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M28 16H8m12-8l8 8l-8 8m-9 4H3V4h8"/></svg>
+                    <button (click)="logout()">logout</button>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!--main-->
+    <section class="overflow-auto" 
+        [ngClass]="{'w-full': onShawDrawer, 'w-2/3 md:w-5/6': !onShawDrawer}">
+        <!--pages-->
+        <div class="p-2 md:px-12">
+            <router-outlet></router-outlet>
+        </div>
+    </section>
+</main>
+

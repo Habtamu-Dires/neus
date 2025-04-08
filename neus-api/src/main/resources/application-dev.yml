@@ -1,0 +1,57 @@
+server:
+  port: 8088
+  tomcat:
+    max-connections: 10000
+    accept-count: 10000
+    threads:
+      max: 20
+spring:
+  application:
+    name: neus-api
+  threads:
+    virtual:
+      enabled: true
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/neus_db}
+    username: ${SPRING_DATASOURCE_USERNAME:hab}
+    password: ${SPRING_DATASOURCE_PASSWORD:password}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 8 # down form 10, b/c pgBouncer connection pool in digital ocena
+      minimum-idle: 2
+      connection-timeout: 30000   # 30 second
+      leak-detection-threshold: 5000  # enable hikari leak detection
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${OAUTH2_JWT_ISSUER_URI:http://host.docker.internal:9090/realms/neus}
+          jwk-set-uri: ${OAUTH2_JWK_SET_URI:http://host.docker.internal:9090/realms/neus/protocol/openid-connect/certs}
+keycloak:
+  auth-server-url: ${KEYCLOAK_AUTH_SERVER_URL:http://localhost:9090}
+  realm: ${KEYCLOAK_REALM:neus}
+  client-id: ${KEYCLOAK_CLIENT_ID:backend-client}
+  client-secret: ${KEYCLOAK_CLIENT_SECRET:Q1XqwUfnGe8LT0nqwUuDq7A80f28aEbs}
+
+
+application:
+  cors:
+    origins: http://localhost:4200
+  file-storage:
+    path: ./uploadedFiles
+  server:
+    url: http://localhost:8088/api
+
+logging:
+  level:
+    org:
+      springframework.security: DEBUG

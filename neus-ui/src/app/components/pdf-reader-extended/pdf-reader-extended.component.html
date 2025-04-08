@@ -1,0 +1,17 @@
+<main>
+    <ngx-extended-pdf-viewer
+        [src]="pdfSrc"
+        height="100vh"
+        width="100%"
+        [showPrintButton]="false"
+        [showDownloadButton]="false"
+        [showOpenFileButton]="false"
+        [textLayer]="true"
+    ></ngx-extended-pdf-viewer>
+    <div
+      *ngIf="!pdfSrc"
+      class="h-96 flex items-center justify-center text-gray-500"
+    >
+      No PDF file selected.
+    </div>
+</main>

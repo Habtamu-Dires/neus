@@ -1,0 +1,1162 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "OpenApi Specification ",
+        "description": "OpenApi Documentation for Alem Equb",
+        "termsOfService": "term of service",
+        "contact": {
+            "name": "Habtamu",
+            "email": "habtamuadugna.d@gmail.com"
+        },
+        "license": {
+            "name": "Licence name ",
+            "url": "http://url licence"
+        },
+        "version": "1.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8088/api",
+            "description": "Local ENV"
+        }
+    ],
+    "security": [
+        {
+            "keycloak": []
+        }
+    ],
+    "paths": {
+        "/users/{user-id}": {
+            "put": {
+                "tags": [
+                    "users"
+                ],
+                "operationId": "toggleUserStatus",
+                "parameters": [
+                    {
+                        "name": "user-id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "users"
+                ],
+                "operationId": "deleteUser",
+                "parameters": [
+                    {
+                        "name": "user-id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/resources/{resource-id}": {
+            "get": {
+                "tags": [
+                    "resources"
+                ],
+                "operationId": "getResourceById",
+                "parameters": [
+                    {
+                        "name": "resource-id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResourceDto"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "resources"
+                ],
+                "operationId": "updateResource",
+                "parameters": [
+                    {
+                        "name": "resource-id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateResourceDto"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "resources"
+                ],
+                "operationId": "deleteResource",
+                "parameters": [
+                    {
+                        "name": "resource-id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/resources/content/{resource-id}": {
+            "put": {
+                "tags": [
+                    "resources"
+                ],
+                "operationId": "updateResourceContent",
+                "parameters": [
+                    {
+                        "name": "resource-id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "file": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "required": [
+                                    "file"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/resources": {
+            "post": {
+                "tags": [
+                    "resources"
+                ],
+                "operationId": "createResource",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "dto": {
+                                        "$ref": "#/components/schemas/CreateResourceDto"
+                                    },
+                                    "file": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "required": [
+                                    "dto",
+                                    "file"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/register": {
+            "post": {
+                "tags": [
+                    "register"
+                ],
+                "operationId": "register",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/registrationDto"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/questions": {
+            "post": {
+                "tags": [
+                    "questions"
+                ],
+                "operationId": "createQuestions",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateQuestionDto"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/exams": {
+            "post": {
+                "tags": [
+                    "exams"
+                ],
+                "operationId": "createExam",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateExamDto"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users": {
+            "get": {
+                "tags": [
+                    "users"
+                ],
+                "operationId": "getAllUsers",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/UserDto"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/page": {
+            "get": {
+                "tags": [
+                    "users"
+                ],
+                "operationId": "getPageOfUsers",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "default": 0
+                        }
+                    },
+                    {
+                        "name": "size",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "default": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PageResponseUserDto"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/subscription/current/{user-id}": {
+            "get": {
+                "tags": [
+                    "subscription"
+                ],
+                "operationId": "getCurrentSubscription",
+                "parameters": [
+                    {
+                        "name": "user-id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SubscriptionResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/resources/page": {
+            "get": {
+                "tags": [
+                    "resources"
+                ],
+                "operationId": "getPageOfResources",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "default": 0
+                        }
+                    },
+                    {
+                        "name": "size",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "default": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PageResponseResourceDto"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/resources/list": {
+            "get": {
+                "tags": [
+                    "resources"
+                ],
+                "operationId": "getListOfResources",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ListOfResourcesDto"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/resources/detail/{resource-id}": {
+            "get": {
+                "tags": [
+                    "resources"
+                ],
+                "operationId": "getResourceDetail",
+                "parameters": [
+                    {
+                        "name": "resource-id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/resources/collection/{resource-id}": {
+            "get": {
+                "tags": [
+                    "resources"
+                ],
+                "operationId": "getResourceCollection",
+                "parameters": [
+                    {
+                        "name": "resource-id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResourceCollectionDto"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/files/stream-video": {
+            "get": {
+                "tags": [
+                    "files"
+                ],
+                "operationId": "streamVideo",
+                "parameters": [
+                    {
+                        "name": "file-path",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "Range",
+                        "in": "header",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "string",
+                                    "format": "binary"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/files/get-file": {
+            "get": {
+                "tags": [
+                    "files"
+                ],
+                "operationId": "getFile",
+                "parameters": [
+                    {
+                        "name": "file-path",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "string",
+                                    "format": "binary"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/exams/{exam-id}": {
+            "get": {
+                "tags": [
+                    "exams"
+                ],
+                "operationId": "getExamDetail",
+                "parameters": [
+                    {
+                        "name": "exam-id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExamDto"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "CreateResourceDto": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "EXAM",
+                            "NOTE",
+                            "VIDEO",
+                            "BOOK",
+                            "COLLECTION"
+                        ]
+                    },
+                    "title": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "requiredSubLevel": {
+                        "type": "string",
+                        "enum": [
+                            "FREE",
+                            "BASIC",
+                            "ADVANCED",
+                            "PREMIUM"
+                        ]
+                    },
+                    "department": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "description": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "contentPath": {
+                        "type": "string"
+                    },
+                    "previewResourceId": {
+                        "type": "string"
+                    },
+                    "parentResourceId": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "requiredSubLevel",
+                    "type"
+                ]
+            },
+            "registrationDto": {
+                "type": "object",
+                "properties": {
+                    "username": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "email": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "password": {
+                        "type": "string",
+                        "maxLength": 2147483647,
+                        "minLength": 4
+                    }
+                }
+            },
+            "Choice": {
+                "type": "object",
+                "properties": {
+                    "text": {
+                        "type": "string"
+                    },
+                    "isCorrect": {
+                        "type": "boolean"
+                    }
+                }
+            },
+            "CreateQuestionDto": {
+                "type": "object",
+                "properties": {
+                    "examId": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "questionText": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "choices": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Choice"
+                        },
+                        "minItems": 1
+                    },
+                    "explanation": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "imgUrls": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "CreateExamDto": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "title": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "department": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "description": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "requiredSubLevel": {
+                        "type": "string",
+                        "enum": [
+                            "FREE",
+                            "BASIC",
+                            "ADVANCED",
+                            "PREMIUM"
+                        ]
+                    },
+                    "duration": {
+                        "type": "string",
+                        "example": "PT2H30M"
+                    }
+                },
+                "required": [
+                    "requiredSubLevel"
+                ]
+            },
+            "UserDto": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "username": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "subscriptionLevel": {
+                        "type": "string",
+                        "enum": [
+                            "FREE",
+                            "BASIC",
+                            "ADVANCED",
+                            "PREMIUM"
+                        ]
+                    },
+                    "startDate": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "endDate": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "registeredDate": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "enabled": {
+                        "type": "boolean"
+                    }
+                }
+            },
+            "PageResponseUserDto": {
+                "type": "object",
+                "properties": {
+                    "content": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/UserDto"
+                        }
+                    },
+                    "number": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "size": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "totalElements": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "numberOfElements": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "totalPages": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "last": {
+                        "type": "boolean"
+                    },
+                    "first": {
+                        "type": "boolean"
+                    },
+                    "empty": {
+                        "type": "boolean"
+                    }
+                }
+            },
+            "SubscriptionResponse": {
+                "type": "object",
+                "properties": {
+                    "externalId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "level": {
+                        "type": "string",
+                        "enum": [
+                            "FREE",
+                            "BASIC",
+                            "ADVANCED",
+                            "PREMIUM"
+                        ]
+                    },
+                    "startDate": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "endDate": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                }
+            },
+            "ResourceDto": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "EXAM",
+                            "NOTE",
+                            "VIDEO",
+                            "BOOK",
+                            "COLLECTION"
+                        ]
+                    },
+                    "requiredSubLevel": {
+                        "type": "string",
+                        "enum": [
+                            "FREE",
+                            "BASIC",
+                            "ADVANCED",
+                            "PREMIUM"
+                        ]
+                    },
+                    "department": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "parentResourceId": {
+                        "type": "string"
+                    },
+                    "parentResource": {
+                        "type": "string"
+                    },
+                    "contentPath": {
+                        "type": "string"
+                    }
+                }
+            },
+            "PageResponseResourceDto": {
+                "type": "object",
+                "properties": {
+                    "content": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ResourceDto"
+                        }
+                    },
+                    "number": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "size": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "totalElements": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "numberOfElements": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "totalPages": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "last": {
+                        "type": "boolean"
+                    },
+                    "first": {
+                        "type": "boolean"
+                    },
+                    "empty": {
+                        "type": "boolean"
+                    }
+                }
+            },
+            "ListOfResourcesDto": {
+                "type": "object",
+                "properties": {
+                    "resourceId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "EXAM",
+                            "NOTE",
+                            "VIDEO",
+                            "BOOK",
+                            "COLLECTION"
+                        ]
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "department": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "requiredSubLevel": {
+                        "type": "string",
+                        "enum": [
+                            "FREE",
+                            "BASIC",
+                            "ADVANCED",
+                            "PREMIUM"
+                        ]
+                    },
+                    "previewId": {
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                }
+            },
+            "ResourceCollectionDto": {
+                "type": "object",
+                "properties": {
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "EXAM",
+                            "NOTE",
+                            "VIDEO",
+                            "BOOK",
+                            "COLLECTION"
+                        ]
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "requiredSubLevel": {
+                        "type": "string",
+                        "enum": [
+                            "FREE",
+                            "BASIC",
+                            "ADVANCED",
+                            "PREMIUM"
+                        ]
+                    },
+                    "department": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "resources": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ResourceDto"
+                        }
+                    }
+                }
+            },
+            "ExamDto": {
+                "type": "object",
+                "properties": {
+                    "title": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "duration": {
+                        "type": "string",
+                        "example": "PT2H30M"
+                    },
+                    "questions": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/QuestionDto"
+                        }
+                    },
+                    "previewQuestions": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/QuestionDto"
+                        }
+                    }
+                }
+            },
+            "QuestionDto": {
+                "type": "object",
+                "properties": {
+                    "questionText": {
+                        "type": "string"
+                    },
+                    "choices": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Choice"
+                        }
+                    },
+                    "explanation": {
+                        "type": "string"
+                    },
+                    "imgUrls": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "securitySchemes": {
+            "keycloak": {
+                "type": "oauth2",
+                "in": "header",
+                "scheme": "bearer",
+                "bearerFormat": "JWT",
+                "flows": {
+                    "password": {
+                        "authorizationUrl": "http://localhost:9090/realms/neus/protocol/openid-connect/auth",
+                        "tokenUrl": "http://localhost:9090/realms/neus/protocol/openid-connect/token",
+                        "scopes": {}
+                    }
+                }
+            }
+        }
+    }
+}

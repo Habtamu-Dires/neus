@@ -1,0 +1,63 @@
+/* You can add global styles to this file, and also import other style files */
+@import "tailwindcss";
+@import "quill/dist/quill.core.css";
+@import "quill/dist/quill.snow.css";
+@import "../node_modules/@videogular/ngx-videogular/fonts/videogular.css";
+
+@theme {
+    --color-primary: #2979FF;
+    --color-secondary: #4CAF50;
+}
+
+body {
+    @apply bg-gray-200;
+}
+
+
+@layer components {
+  .max-container {
+      max-width: 1440px;
+      margin: 0 auto;
+  }
+    
+  .table-head {
+    @apply p-4 text-left font-semibold bg-primary text-white;
+  }
+    
+  .table-data {
+    @apply p-5 text-black  ;
+  }
+
+  .form-label {
+    @apply col-span-12 md:col-span-2 font-semibold text-gray-700 mb-1 md:mb-0;
+  }
+
+  .form-input {
+    @apply col-span-12 md:col-span-10 p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400;
+  }
+
+  .form-button {
+    @apply flex items-center justify-center text-white px-6 py-2 rounded-md font-semibold transition-all duration-200;
+  }
+
+  .input-style {
+    @apply w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500;
+  }
+}
+
+@layer base {
+  /* Quill size styles */
+  .ql-size-small {
+    font-size: medium !important;     
+  }
+  .ql-size-normal {
+    font-size: larger !important;
+  }
+  .ql-size-large {
+    font-size: x-large !important;
+  }
+  .ql-size-huge {
+    font-size: xx-large !important;
+  }
+}
+

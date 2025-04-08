@@ -1,0 +1,139 @@
+<main>
+    <div class="sticky top-0 w-full z-10 bg-white">
+      <app-header
+        componentName="Resource"
+        (onSearch)="onSearch($event)"
+        (onCreateNewCliked)="onCreateNew()"
+      >
+      </app-header>
+    </div>
+    <!--no user found message-->
+    <ng-container *ngIf="resourcesList.length === 0" class="flex justify-center py-10">
+      No resource found.
+    </ng-container>
+    <section *ngIf="resourcesList.length > 0">
+      <!--on large screen-->
+        <div class="hidden md:block">
+            <table class="min-w-full border border-gray-300 bg-white">
+            <thead class="bg-gray-200 sticky top-16">
+                <tr>
+                    <th class="table-head w-1/12">Type</th>
+                    <th class="table-head w-1/12">Title</th>
+                    <th class="table-head w-1/12">Department</th>
+                    <th class="table-head w-1/12">Subscription Level</th>
+                    <th class="table-head w-1/12">Description</th>
+                    <th class="table-head w-1/12">Content</th>
+                    <th class="table-head w-1/12">Parent</th>
+                    <th class="table-head w-1/12">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let resource of resourcesList" class="border-b border-gray-300 hover:bg-gray-100">                          
+                    <td class="table-data">{{ resource.type }}</td>
+                    <td class="table-data">{{ resource.title }}</td>
+                    <td class="table-data">{{ resource.department}}</td>
+                    <td class="table-data">{{ resource.requiredSubLevel}}</td>
+                    <td class="table-data">
+                        <span (click)="readDescription(resource.description, resource.title)" class="text-primary cursor-pointer">read</span>
+                    </td>
+                    <td class="table-data">
+                        <span (click)="viewContent(resource.contentPath, resource.type, resource.title)" class="text-primary cursor-pointer">view</span>
+                    </td>
+                    <td class="table-data">{{resource.parentResource ? resource.parentResource : '--'}}</td>
+                    <td class="table-data">
+                        <div class="flex gap-5 relative">
+                            <!-- <p class="text-blue-500 cursor-pointer">detail</p>  -->
+                            <div (click)="onShowActions(resource.id)" class="cursor-pointer donthide">
+                                <svg class="donthide"
+                                xmlns="http://www.w3.org/2000/svg" width="32" height="24" viewBox="0 0 16 16"><path fill="#2979FF" d="M9.5 13a1.5 1.5 0 1 1-3 0a1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0a1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0a1.5 1.5 0 0 1 3 0"/></svg>
+                            </div>
+                            <div *ngIf="showActions && resource.id === selectedResourceId" 
+                                class="absolute -bottom-20 z-20 cursor-pointer bg-primary rounded-md donthide">
+                                <div class="flex flex-col gap-2 text-white font-semibold">
+                                    <p class="px-4 py-1 hover:bg-gray-500 rounded-md" 
+                                        (click)="onEdit(resource.id)">
+                                        Edit
+                                    </p>
+                                    <p class="px-4 py-1 hover:bg-gray-500 rounded-md"  
+                                        (click)="onDelete(resource.id)">
+                                        Delete
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+            </table>
+        </div>
+        <!--on mobile view-->
+        <div class="block md:hidden">
+            <div *ngFor="let resource of resourcesList" class="bg-white rounded-lg shadow-md p-4 mb-4 border border-gray-200">
+                <div class="mb-2">
+                    <span class="font-semibold text-gray-600">Type:</span>
+                    <span class="ml-2">{{ resource.type }}</span>
+                </div>
+                <div class="mb-2">
+                    <span class="font-semibold text-gray-600">Title:</span>
+                    <span class="ml-2">{{ resource.title}}</span>
+                </div>
+                <div class="mb-2">
+                    <span class="font-semibold text-gray-600">Department:</span>
+                    <span class="ml-2">{{ resource.department}}</span>
+                </div>
+                <div class="mb-2">
+                    <span class="font-semibold text-gray-600">Subscription Level:</span>
+                    <span class="ml-2">{{ resource.requiredSubLevel }}</span>
+                </div>
+                <div class="mb-2">
+                    <span class="font-semibold text-gray-600">Description</span>
+                    <span (click)="readDescription(resource.description, resource.type)" class="text-primary cursor-pointer">read</span>
+                </div>
+                <div class="mb-2">
+                    <span class="font-semibold text-gray-600">Content</span>
+                    <span (click)="viewContent(resource.contentPath, resource.type, resource.title)" class="text-primary cursor-pointer">view</span>
+                </div>
+                <div class="mb-2">
+                    <span class="font-semibold text-gray-600">Parent:</span>
+                    <span class="ml-2">{{ resource.parentResource ? resource.parentResource : '--' }}</span>
+                </div>
+        
+                <!-- Actions -->
+                <div class="flex items-center justify-end mt-4 gap-4 relative">                        
+                    <div (click)="onShowActions(resource.id)" class="cursor-pointer donthide">
+                    <svg class="donthide" xmlns="http://www.w3.org/2000/svg" width="28" height="24" viewBox="0 0 16 16">
+                        <path fill="#2a7d6e"
+                        d="M9.5 13a1.5 1.5 0 1 1-3 0a1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0a1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0a1.5 1.5 0 0 1 3 0" />
+                    </svg>
+                    </div>
+            
+                    <div *ngIf="showActions && resource.id === selectedResourceId"
+                    class="absolute right-0 top-10 z-20 bg-grn rounded-md donthide">
+                    <div class="flex flex-col gap-2 text-white font-semibold cursor-pointer">
+                        <p class="px-4 py-1 hover:bg-gray-500 rounded-md" 
+                        (click)="onEdit(resource.id)">
+                            Edit
+                        </p>
+                        <p class="px-4 py-1 hover:bg-gray-500 rounded-md" 
+                            (click)="onDelete(resource.id)">
+                            Delete
+                        </p>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <app-pagination *ngIf="!isEmptyPage" class="w-full m-5 z-10 sticky bottom-0 bg-white"
+            [page]="page"
+            [size]="size"
+            [isFirstPage]="isFirstPage"
+            [isLastPage]="isLastPage"
+            [numberOfElements]="numberOfElements"
+            [totalElements]="totalElements"
+            [totalPages]="totalPages"
+            (sizeChanged)="onSizeChanged($event)"
+            (pageChanged)="onPageChanged($event)"
+        >
+        </app-pagination>
+  </section>
+</main>

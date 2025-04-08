@@ -1,0 +1,62 @@
+<main class="w-full min-h-screen flex items-center justify-center bg-gray-900 text-white">
+    <section class="w-full max-w-2xl bg-gray-800 rounded-xl shadow-md p-6 space-y-6">
+      
+      <!-- Title -->
+      <div class="text-center">
+        <h1 class="text-3xl font-bold font-mono text-white">Sign UP</h1>
+      </div>
+  
+      <!-- Error Messages -->
+      <div *ngIf="errMsgs" class="space-y-1">
+        <p *ngFor="let msg of errMsgs" class="text-red-400 text-sm text-center">{{msg}}</p>
+      </div>
+  
+      <!-- Form Fields -->
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium">Username<span class="text-red-400">*</span></label>
+          <input [(ngModel)]="registrationDto.username" type="text" placeholder="name" class="w-full bg-gray-700 text-white placeholder-gray-400 rounded-md p-2 focus:outline-none focus:ring focus:ring-blue-500"/>
+        </div>
+  
+        <div>
+          <label class="block text-sm font-medium">Email<span class="text-red-400">*</span></label>
+          <input [(ngModel)]="registrationDto.email" type="text" placeholder="email" class="w-full bg-gray-700 text-white placeholder-gray-400 rounded-md p-2"/>
+        </div>
+  
+        <!-- Passwords -->
+        <ng-container>
+          <div>
+            <label class="block text-sm font-medium">Password<span class="text-red-400">*</span></label>
+            <input [formControl]="passwordControl" type="password" placeholder="password" class="w-full bg-gray-700 text-white placeholder-gray-400 rounded-md p-2"/>
+          </div>
+  
+          <!-- Password Errors -->
+          <div *ngIf="showPassConfError || showPassMandatoryError || showPassLenghtError" class="space-y-1">
+            <p *ngIf="showPassConfError" class="text-sm text-red-400">password didn't match</p>
+            <p *ngIf="showPassMandatoryError" class="text-sm text-red-400">password is Mandatory</p>
+            <p *ngIf="showPassLenghtError" class="text-sm text-red-400">Password should have 4 characters minimum</p>
+          </div>
+  
+          <div>
+            <label class="block text-sm font-medium">Confirm Password<span class="text-red-400">*</span></label>
+            <input [formControl]="confirmPassword" type="password" placeholder="confirm password" class="w-full bg-gray-700 text-white placeholder-gray-400 rounded-md p-2"/>
+          </div>
+        </ng-container>
+      </div>
+  
+      <!-- Save Button -->
+      <div class="flex justify-center">
+        <button (click)="onSave()"
+           class="cursor-pointer bg-blue-600 hover:bg-blue-800 text-white px-6 py-2 rounded-md text-lg font-semibold">
+          Save
+        </button>
+      </div>
+  
+      <!-- Back to Login -->
+      <div class="flex items-center justify-center gap-2 cursor-pointer text-blue-400 hover:text-blue-300"
+         (click)="onCancel()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" class="fill-current" viewBox="0 0 24 24"><path d="M17.59 18L19 16.59L14.42 12L19 7.41L17.59 6l-6 6z"/><path d="m11 18l1.41-1.41L7.83 12l4.58-4.59L11 6l-6 6z"/></svg>
+        <p class="text-base font-medium">Back to Home</p>
+      </div>
+    </section>
+</main>

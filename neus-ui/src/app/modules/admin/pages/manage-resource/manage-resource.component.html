@@ -1,0 +1,109 @@
+<main class="max-container w-full min-h-screen px-4 py-10 flex flex-col justify-center items-center gap-6">
+    <!-- Cancel -->
+    <div class="fixed top-4 right-4">
+      <svg class="cursor-pointer" (click)="onCancel()"
+        xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24">
+        <path fill="#888888"
+          d="m12 13.4l-4.9 4.9q-.275.275-.7.275t-.7-.275t-.275-.7t.275-.7l4.9-4.9l-4.9-4.9q-.275-.275-.275-.7t.275-.7t.7-.275t.7.275l4.9 4.9l4.9-4.9q.275-.275.7-.275t.7.275t.275.7t-.275.7L13.4 12l4.9 4.9q.275.275.275.7t-.275.7t-.7.275t-.7-.275z" />
+      </svg>
+    </div>
+  
+    <!-- Header -->
+    <header class="text-center">
+      <p class="text-2xl font-mono font-bold">Manage Resource</p>
+    </header>
+  
+    <!-- Form -->
+    <section class="w-full max-w-3xl space-y-4">
+      <!-- Error Messages -->
+      <div *ngIf="errMsgs" class="text-center space-y-1">
+        <p *ngFor="let msg of errMsgs" class="text-red-500 text-sm">
+          {{ msg }}
+        </p>
+      </div>
+  
+      <!-- Type -->
+      <div class="grid grid-cols-12 gap-2 items-start">
+        <label class="form-label">Type<span class="text-red-400">*</span></label>
+        <div class="relative w-full col-span-12 md:col-span-10">
+          <input [(ngModel)]="createResourceDto.type" class="form-input w-full cursor-pointer" type="text" placeholder="Type"
+            (click)="showTypeList = true" (focus)="showTypeList = true" />
+          <div *ngIf="showTypeList" class="absolute z-10 w-full mt-1">
+            <div *ngFor="let type of typeList; let idx=index"
+              class="w-full bg-white shadow hover:bg-gray-200 p-2 cursor-pointer"
+              [ngClass]="{
+                'rounded-t-md': idx == 0,
+                'rounded-b-md': idx == typeList.length - 1
+              }"
+              (click)="onTypeSelected(type)">
+              {{ type }}
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Title -->
+      <div class="grid grid-cols-12 gap-2 items-center">
+        <label class="form-label">Title<span class="text-red-400">*</span></label>
+        <input [(ngModel)]="createResourceDto.title" class="form-input" type="text" placeholder="Title" />
+      </div>
+  
+      <!-- Department -->
+      <div class="grid grid-cols-12 gap-2 items-center">
+        <label class="form-label">Department<span class="text-red-400">*</span></label>
+        <input [(ngModel)]="createResourceDto.department" class="form-input" type="text" placeholder="Department" />
+      </div>
+  
+      <!-- Subscription Level -->
+      <div class="grid grid-cols-12 gap-2 items-start">
+        <label class="form-label">Subscription Level<span class="text-red-400">*</span></label>
+        <div class="relative w-full col-span-12 md:col-span-10">
+          <input [(ngModel)]="createResourceDto.requiredSubLevel" class="form-input w-full cursor-pointer" type="text"
+            placeholder="Subscription Level" (click)="showSubscriptionLevelList = true"
+            (focus)="showSubscriptionLevelList = true" />
+          <div *ngIf="showSubscriptionLevelList" class="absolute z-10 w-full mt-1">
+            <div *ngFor="let level of subscriptionLevelList; let idx=index"
+              class="w-full bg-white shadow hover:bg-gray-200 p-2 cursor-pointer"
+              [ngClass]="{
+                'rounded-t-md': idx == 0,
+                'rounded-b-md': idx == subscriptionLevelList.length - 1
+              }"
+              (click)="onSubscriptionLevelSelected(level)">
+              {{ level }}
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Description -->
+      <div class="grid grid-cols-12 gap-2 items-start">
+        <label class="form-label">Description<span class="text-red-400">*</span></label>
+        <div (click)="openEditDialog()" [innerHTML]="createResourceDto.description"
+          class="form-input cursor-pointer min-h-[3rem]">
+        </div>
+      </div>
+  
+      <!-- File Selector -->
+      <div class="grid grid-cols-12 gap-2 items-center">
+        <label class="form-label">Content</label>
+        <input class="form-input cursor-pointer" type="file" (change)="onFileSelected($event)" />
+      </div>
+      <!--file didn't match error-->
+      <p *ngIf="showFileTypeMatchError" class="text-red-500 text-sm">Selected file type doesn't match</p>
+  
+      <!-- Save Button -->
+      <div class="flex justify-center pt-4">
+        <button class="form-button bg-green-600 hover:bg-green-700 w-40 h-12 relative cursor-pointer"
+          [disabled]="isUploading"
+          (click)="onSave()">
+          <ng-container *ngIf="!isUploading; else loading">
+            <p class="text-lg">Save</p>
+          </ng-container>
+          <ng-template #loading>
+            <div class="w-6 h-6 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+          </ng-template>
+        </button>
+      </div>
+    </section>
+  </main>
+  
