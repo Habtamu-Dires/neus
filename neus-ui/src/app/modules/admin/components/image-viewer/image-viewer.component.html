@@ -1,0 +1,9 @@
+<div class="fixed inset-0 w-full h-full bg-black/40">
+    <div class="flex w-full h-full justify-center items-center"
+     (click)="closeDialog()">
+        <img class="w-[600px] h-[500px] rounded-md" [src]="imageUrl"
+           (click)="$event.stopPropagation()"
+        />
+    </div>
+</div>
+

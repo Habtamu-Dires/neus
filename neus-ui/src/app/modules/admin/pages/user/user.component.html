@@ -1,4 +1,4 @@
-<main>
+<main class="admin-container">
     <div class="sticky top-0 w-full z-10 bg-white">
       <app-header
         componentName="User"
@@ -7,9 +7,10 @@
       </app-header>
     </div>
     <!--no user found message-->
-    <ng-container *ngIf="userList.length === 0" class="flex justify-center py-10">
-      No users found.
-    </ng-container>
+    <div *ngIf="userList.length === 0" 
+        class="w-full h-64 flex items-center justify-center text-gray-600 text-lg">
+             No user found.
+    </div>
     <section *ngIf="userList.length > 0">
       <!--on large screen-->
         <div class="hidden md:block">

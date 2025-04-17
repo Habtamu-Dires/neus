@@ -7,6 +7,8 @@ export interface CreateQuestionDto {
   choices?: Array<Choice>;
   examId?: string;
   explanation?: string;
+  id?: string;
   imgUrls?: Array<string>;
+  questionNumber: number;
   questionText?: string;
 }

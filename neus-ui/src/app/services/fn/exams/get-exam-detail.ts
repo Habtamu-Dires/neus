@@ -8,13 +8,13 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { ExamDto } from '../../models/exam-dto';
+import { ExamDetailDto } from '../../models/exam-detail-dto';
 
 export interface GetExamDetail$Params {
   'exam-id': string;
 }
 
-export function getExamDetail(http: HttpClient, rootUrl: string, params: GetExamDetail$Params, context?: HttpContext): Observable<StrictHttpResponse<ExamDto>> {
+export function getExamDetail(http: HttpClient, rootUrl: string, params: GetExamDetail$Params, context?: HttpContext): Observable<StrictHttpResponse<ExamDetailDto>> {
   const rb = new RequestBuilder(rootUrl, getExamDetail.PATH, 'get');
   if (params) {
     rb.path('exam-id', params['exam-id'], {});
@@ -25,9 +25,9 @@ export function getExamDetail(http: HttpClient, rootUrl: string, params: GetExam
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<ExamDto>;
+      return r as StrictHttpResponse<ExamDetailDto>;
     })
   );
 }
 
-getExamDetail.PATH = '/exams/{exam-id}';
+getExamDetail.PATH = '/exams/detail/{exam-id}';

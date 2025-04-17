@@ -1,0 +1,202 @@
+<main class="max-container flex gap-2 w-full h-screen overflow-hidden">
+    <!--toggle side bar-->
+    <div class="py-1">
+        <svg *ngIf="onShowDrawer" (click)="toggleShowDrawer()" 
+            class="cursor-pointer "
+            xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 14 14"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="M13.5 2H.5m13 5H.5m13 5H.5"/>
+        </svg>
+    </div>
+  
+    <div class="flex flex-col md:flex-row gap-2 w-full h-screen overflow-hidden">
+      <!-- Sidebar (Drawer on Mobile) -->
+      <aside class="md:w-[10%] w-full md:h-full flex flex-row justify-between md:justify-normal md:flex-col bg-gray-100 p-4 rounded-lg">
+        <p class="text-lg font-semibold text-gray-800 mb-4">Questions</p>
+        <div class="space-y-2 hidden md:block">
+          <div
+            *ngFor="let question of questionList; let i = index"
+            (click)="selectQuestion(i)"
+            class="p-2 rounded-md cursor-pointer hover:bg-gray-100"
+            [class.bg-blue-100]="i === currentQuestionIndex"
+            [class.text-blue-700]="i === currentQuestionIndex"
+          >
+            Question {{ question.questionNumber }}
+          </div>
+        </div>
+        <svg  
+            class="cursor-pointer block md:hidden"
+            xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 14 14"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="M13.5 2H.5m13 5H.5m13 5H.5"/>
+        </svg>
+      </aside>
+  
+      <!-- Main Content -->
+      <main class="h-full md:w-[90%] w-full bg-gray-100 p-4 rounded-lg overflow-hidden">
+         
+        <div class="flex justify-between items-center mb-3">
+          <h2 class="text-xl font-semibold text-gray-800">
+            Question {{ questionList.length !==0 ? currentQuestionIndex + 1 : 0}} of {{ questionList.length }}
+          </h2>
+          <button
+            (click)="createNewQuestion()"
+            class="cursor-pointer bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md transition duration-200"
+          >
+            Add New
+          </button>
+        </div>
+  
+        <!-- No Questions Case -->
+        <div
+          *ngIf="questionList.length === 0"
+          class="h-64 flex items-center justify-center text-gray-600 text-lg"
+        >
+          No questions available for this exam.
+        </div>
+  
+        <!-- Question Display -->
+        <div #questionContainer
+          *ngIf="questionList.length > 0"
+          class="h-full bg-white p-4 rounded-md border border-gray-200 overflow-y-scroll overflow-x-hidden"
+        > 
+          <!--err msg-->
+          <div *ngIf="errMsgs" class="text-center space-y-1">
+            <p *ngFor="let msg of errMsgs" class="text-red-500 text-sm">
+              {{ msg }}
+            </p>
+          </div>
+          <!--question number-->
+          <div>
+              <input class="form-input" [(ngModel)]="currentQuestion.questionNumber" type="number"/>
+          </div>
+          <div class="flex justify-between items-start mb-4">
+            <!--question text-->
+            <div class="break-words whitespace-normal overflow-hidden py-2 px-3 w-full max-w-90%" [innerHTML]="currentQuestion.questionText"></div>
+            <div class="flex space-x-2 py-2">
+              <button (click)="editQuestion()" 
+                class="cursor-pointer text-blue-500 hover:text-blue-700" title="Edit">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+              </button>
+              <button (click)="onDeleteQuestion()" 
+                class="cursor-pointer text-red-500 hover:text-red-700" title="Delete">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4m-4 4v12m4-12v12" />
+                </svg>
+              </button>
+            </div>
+          </div>
+  
+          <!-- Choices with Labels and Toggle -->
+          <div class="space-y-2 mb-4">
+            <div
+              *ngFor="let choice of currentQuestion.choices; let i = index;"
+              class="flex items-start  space-x-2"
+            >
+              <div class="flex items-center py-2">
+                <span class="w-6 font-bold">{{ getChoiceLetter(i) }}.</span>
+                <input
+                  type="radio"
+                  [checked]="choice.isCorrect"
+                  (change)="toggleCorrect(choice.id)"
+                  class="h-4 w-4 text-blue-600"
+                />
+              </div>
+              <!--choice text -->
+              <span class="break-words whitespace-normal overflow-hidden py-2 px-3 w-full max-w-90%"
+                 [class.text-green-600]="choice.isCorrect" [innerHTML]="choice.text">
+                </span>
+              <div class="flex space-x-2 py-2">
+                <button (click)="editChoice(choice.id)" 
+                  class="cursor-pointer text-blue-500 hover:text-blue-700" title="Edit">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                </button>
+                <button (click)="deleteChoice(choice.id)" 
+                  class="cursor-pointer text-red-500 hover:text-red-700" title="Delete">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4m-4 4v12m-4-12v12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <!--add choice button-->
+            <button
+              (click)="addChoice()"
+              class="cursor-pointer bg-secondary hover:bg-green-800 text-white p-2 rounded-full transition duration-200"
+            >
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="#ffffff" d="M11 13H5v-2h6V5h2v6h6v2h-6v6h-2z"/></svg>
+            </button>
+          </div>
+  
+          <!-- Explanation -->
+          <div class="mt-4">
+            <p
+              (click)="showExplanation = !showExplanation"
+              class="text-blue-500 cursor-pointer hover:text-blue-700"
+            >
+              {{ showExplanation ? 'Hide' : 'Show' }} Explanation
+            </p>
+            <div
+              *ngIf="showExplanation"
+              class="mt-2 p-4 bg-gray-50 rounded-md border border-gray-200"
+            >
+              <div class="flex justify-between items-start">
+                <div class="break-words whitespace-normal overflow-hidden py-2 px-3 w-full max-w-90%" [innerHTML]="currentQuestion.explanation"></div>
+                <div class="flex space-x-2 py-2">
+                  <button (click)="editExplanation()" 
+                    class="cursor-pointer text-blue-500 hover:text-blue-700" title="Edit">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!--image list and save button-->
+          <div class="flex justify-between p-4">
+            <!--images list-->
+            <section class="flex flex-col py-2 w-full md:w-5/6 md:flex-row items-center justify gap-2  overflow-x-scroll">
+              @for (url of currentQuestion.imgUrls; track $index) {
+                <div class="flex flex-col min-w-24 h-18 items-center justify-center">
+                  <img (click)="viewImage(url)" src={{url}} class="min-w-24 h-14"/>
+                  <div class="flex justify-evenly w-full ">
+                    <p (click)="onCopyUrl(url)"
+                     class="text-primary cursor-pointer hover:underline">copy</p>
+                    <p (click)="onDeleteImage(url)" 
+                      class="text-red-500 cursor-pointer font-bold">X</p>
+                  </div>
+                </div>
+              }
+            </section>
+            <!--save button-->
+            <div class="w-2/6 flex items-center justify-end px-4">
+              <button
+                (click)="onUpdateQuestion()"
+                class="cursor-pointer bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+          <!-- Next/Previous Buttons -->
+          <div class="flex justify-center gap-10 mb-10 text-xl">
+            <button
+              (click)="previousQuestion()"
+              [disabled]="currentQuestionIndex === 0"
+              class="cursor-pointer text-primary px-4 py-2 transition duration-200 disabled:text-gray-600 disabled:cursor-not-allowed"
+            >
+              Previous
+            </button>
+            <button
+              (click)="nextQuestion()"
+              [disabled]="currentQuestionIndex === questionList.length - 1"
+              class="cursor-pointer text-primary px-4 py-2 transition duration-200 disabled:text-gray-600 disabled:cursor-not-allowed"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      </main>
+    </div>
+</main>

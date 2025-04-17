@@ -7,11 +7,12 @@ import { HttpClient } from '@angular/common/http';
 import { ApiConfiguration, ApiConfigurationParams } from './api-configuration';
 
 import { UsersService } from './services/users.service';
+import { SbuPlansService } from './services/sbu-plans.service';
 import { ResourcesService } from './services/resources.service';
-import { RegisterService } from './services/register.service';
 import { QuestionsService } from './services/questions.service';
 import { ExamsService } from './services/exams.service';
 import { SubscriptionService } from './services/subscription.service';
+import { RegisterService } from './services/register.service';
 import { FilesService } from './services/files.service';
 
 /**
@@ -23,11 +24,12 @@ import { FilesService } from './services/files.service';
   declarations: [],
   providers: [
     UsersService,
+    SbuPlansService,
     ResourcesService,
-    RegisterService,
     QuestionsService,
     ExamsService,
     SubscriptionService,
+    RegisterService,
     FilesService,
     ApiConfiguration
   ],

@@ -5,8 +5,8 @@
 export interface CreateExamDto {
   department?: string;
   description?: string;
-  duration?: string;
+  duration: number;
   id?: string;
-  requiredSubLevel: 'FREE' | 'BASIC' | 'ADVANCED' | 'PREMIUM';
+  requiredSubLevel: 'NONE' | 'BASIC' | 'ADVANCED' | 'PREMIUM';
   title?: string;
 }

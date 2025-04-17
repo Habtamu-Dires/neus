@@ -58,8 +58,11 @@ public class FileStorageService {
     private String constructUrl(String targetFilepath, String fileExtension) {
         if(fileExtension.equalsIgnoreCase("mp4")){
             return serverUrl + "/files/stream-video?file-path="+targetFilepath;
+        } else if(fileExtension.equalsIgnoreCase("pdf")){
+            return serverUrl  + "/files/get-file?file-path="+targetFilepath;
+        } else {
+            return serverUrl  + "/files/get-image?file-path="+targetFilepath;
         }
-        return serverUrl  + "/files/get-file?file-path="+targetFilepath;
     }
     // get file extentin
     private String getFileExtension(MultipartFile file) {

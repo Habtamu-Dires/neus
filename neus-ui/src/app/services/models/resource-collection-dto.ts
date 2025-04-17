@@ -6,7 +6,7 @@ import { ResourceDto } from '../models/resource-dto';
 export interface ResourceCollectionDto {
   department?: string;
   description?: string;
-  requiredSubLevel?: 'FREE' | 'BASIC' | 'ADVANCED' | 'PREMIUM';
+  requiredSubLevel?: 'NONE' | 'BASIC' | 'ADVANCED' | 'PREMIUM';
   resources?: Array<ResourceDto>;
   title?: string;
   type?: 'EXAM' | 'NOTE' | 'VIDEO' | 'BOOK' | 'COLLECTION';

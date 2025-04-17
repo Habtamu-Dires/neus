@@ -8,8 +8,8 @@ export interface CreateResourceDto {
   description?: string;
   id?: string;
   parentResourceId?: string;
-  previewResourceId?: string;
-  requiredSubLevel: 'FREE' | 'BASIC' | 'ADVANCED' | 'PREMIUM';
+  previewResourcePath?: string;
+  requiredSubLevel: 'NONE' | 'BASIC' | 'ADVANCED' | 'PREMIUM';
   title?: string;
   type: 'EXAM' | 'NOTE' | 'VIDEO' | 'BOOK' | 'COLLECTION';
 }

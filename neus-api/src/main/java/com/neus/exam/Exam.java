@@ -29,9 +29,9 @@ public class Exam {
     @Column(nullable = false,updatable = false,unique = true)
     private UUID externalId;
 
-    private Duration duration;
+    private int duration;
 
-    @OneToMany(mappedBy = "exam")
+    @OneToMany(mappedBy = "exam", cascade = {CascadeType.REMOVE, CascadeType.DETACH})
     List<Question> questions;
 
 }

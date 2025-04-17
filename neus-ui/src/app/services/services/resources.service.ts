@@ -15,6 +15,8 @@ import { createResource } from '../fn/resources/create-resource';
 import { CreateResource$Params } from '../fn/resources/create-resource';
 import { deleteResource } from '../fn/resources/delete-resource';
 import { DeleteResource$Params } from '../fn/resources/delete-resource';
+import { deleteResourceContent } from '../fn/resources/delete-resource-content';
+import { DeleteResourceContent$Params } from '../fn/resources/delete-resource-content';
 import { getListOfResources } from '../fn/resources/get-list-of-resources';
 import { GetListOfResources$Params } from '../fn/resources/get-list-of-resources';
 import { getPageOfResources } from '../fn/resources/get-page-of-resources';
@@ -28,6 +30,7 @@ import { GetResourceDetail$Params } from '../fn/resources/get-resource-detail';
 import { ListOfResourcesDto } from '../models/list-of-resources-dto';
 import { PageResponseResourceDto } from '../models/page-response-resource-dto';
 import { ResourceCollectionDto } from '../models/resource-collection-dto';
+import { ResourceDetailDto } from '../models/resource-detail-dto';
 import { ResourceDto } from '../models/resource-dto';
 import { updateResource } from '../fn/resources/update-resource';
 import { UpdateResource$Params } from '../fn/resources/update-resource';
@@ -152,6 +155,35 @@ export class ResourcesService extends BaseService {
     );
   }
 
+  /** Path part for operation `deleteResourceContent()` */
+  static readonly DeleteResourceContentPath = '/resources/content/{resource-id}';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `deleteResourceContent()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  deleteResourceContent$Response(params: DeleteResourceContent$Params, context?: HttpContext): Observable<StrictHttpResponse<{
+}>> {
+    return deleteResourceContent(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `deleteResourceContent$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  deleteResourceContent(params: DeleteResourceContent$Params, context?: HttpContext): Observable<{
+}> {
+    return this.deleteResourceContent$Response(params, context).pipe(
+      map((r: StrictHttpResponse<{
+}>): {
+} => r.body)
+    );
+  }
+
   /** Path part for operation `createResource()` */
   static readonly CreateResourcePath = '/resources';
 
@@ -240,8 +272,7 @@ export class ResourcesService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getResourceDetail$Response(params: GetResourceDetail$Params, context?: HttpContext): Observable<StrictHttpResponse<{
-}>> {
+  getResourceDetail$Response(params: GetResourceDetail$Params, context?: HttpContext): Observable<StrictHttpResponse<ResourceDetailDto>> {
     return getResourceDetail(this.http, this.rootUrl, params, context);
   }
 
@@ -251,12 +282,9 @@ export class ResourcesService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getResourceDetail(params: GetResourceDetail$Params, context?: HttpContext): Observable<{
-}> {
+  getResourceDetail(params: GetResourceDetail$Params, context?: HttpContext): Observable<ResourceDetailDto> {
     return this.getResourceDetail$Response(params, context).pipe(
-      map((r: StrictHttpResponse<{
-}>): {
-} => r.body)
+      map((r: StrictHttpResponse<ResourceDetailDto>): ResourceDetailDto => r.body)
     );
   }
 

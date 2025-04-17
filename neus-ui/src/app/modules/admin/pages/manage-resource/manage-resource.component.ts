@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CreateResourceDto } from '../../../../services/models';
+import { CreateResourceDto, ResourceDto } from '../../../../services/models';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -7,6 +7,7 @@ import { ToastrService } from 'ngx-toastr';
 import { ResourcesService } from '../../../../services/services';
 import { MatDialog } from '@angular/material/dialog';
 import { EditDialogComponent } from '../../components/edit-dialog/edit-dialog.component';
+import { ConfirmDialogComponent } from '../../../../components/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-manage-resource',
@@ -18,16 +19,18 @@ export class ManageResourceComponent implements OnInit{
   
   createResourceDto:CreateResourceDto = {
     type: 'NOTE',
-    requiredSubLevel: 'FREE'
+    requiredSubLevel: 'NONE'
   }
   selectedFile:any;
   selectedFileType:string = '';
+  previewFile:any;
   errMsgs:Array<string> = [];
   showSubscriptionLevelList:boolean = false;
-  subscriptionLevelList:Array<string> = ['FREE','BASIC','ADVANCED','PREMIUM'];
+  subscriptionLevelList:Array<string> = ['NONE','BASIC','ADVANCED','PREMIUM'];
   typeList:Array<string> = ['NOTE','VIDEO','BOOK'];
   showTypeList:boolean = false;
   showFileTypeMatchError:boolean = false;
+  showPreviewFileTypeMatchError:boolean = false;
   isUploading = false;
 
 
@@ -53,18 +56,23 @@ export class ManageResourceComponent implements OnInit{
     this.resourceService.createResource({
       body: {
         dto: this.createResourceDto,
-        file: this.selectedFile
+        file: this.selectedFile,
+        previewFile: this.previewFile
       }
     }).subscribe({
-      next: (response) => {
+      next: () => {
         this.isUploading = false;
         this.toastrService.success('Resource created successfully', 'Success');
         this.router.navigate(['admin','resources']);
       }
-      , error: (error) => {
+      , error: (err) => {
         this.isUploading = false;
-        console.log(error);
-        this.toastrService.error('Error creating resource', 'Error');
+        console.log(err);
+        if(err.error.validationErrors){
+          this.errMsgs = err.error.validationErrors;
+        }else {
+          this.toastrService.error('Something went wrong', 'Error');
+        }
       }
     });
   }
@@ -75,8 +83,19 @@ export class ManageResourceComponent implements OnInit{
       'resource-id': id
     })
     .subscribe({
-      next: (response) => {
-        this.createResourceDto = response as CreateResourceDto;
+      next: (res:ResourceDto) => {
+        this.createResourceDto = {
+          id:res.id,
+          type: res.type as 'EXAM' | 'NOTE' | 'VIDEO' | 'BOOK' | 'COLLECTION',
+          title: res.title,
+          requiredSubLevel: res.requiredSubLevel as "NONE" | "BASIC" | "ADVANCED" | "PREMIUM",
+          department: res.department,
+          description: res.description,
+          contentPath:res.contentPath,
+          previewResourcePath: res.previewContentPath
+
+        };
+        console.log("preview content " + this.createResourceDto.previewResourcePath)
       },
       error: (error) => {
         console.log(error);
@@ -94,27 +113,43 @@ export class ManageResourceComponent implements OnInit{
       next: () => {
         this.toastrService.success('Resource updated successfully', 'Success');
         if(this.selectedFile){
-          this.updateResourceContent();
+          this.updateResourceContent(this.selectedFile,false);
+        }
+        if(this.previewFile){
+          this.updateResourceContent(this.previewFile,true);
+        }
+        if(!this.selectedFile && !this.previewFile){
+          this.isUploading = false;
+          window.history.back();
         }
       }
-      , error: (error) => {
-        console.log(error);
-        this.toastrService.error('Error updating resource', 'Error'); 
+      , error: (err) => {
+        console.log(err);
+        if(err.error.validationErrors){
+          this.errMsgs = err.error.validationErrors;
+        }else {
+          this.toastrService.error('Something went wrong', 'Error');
+        } 
       }
     });
   }
 
   // upload file
-  updateResourceContent(){
+  updateResourceContent(file:any,isPreview:boolean){
     this.resourceService.updateResourceContent({
       'resource-id': this.createResourceDto.id as string,
+      isPreview: isPreview,
       body:{
-        file: this.selectedFile
+        file: file
       } 
     }).subscribe({
       next:()=>{
         this.isUploading = false;
-        this.toastrService.success('Resource content updated successfully', 'Success');
+        if(!isPreview){
+          this.toastrService.success('Resource content updated successfully', 'Success');
+        } else {
+          this.toastrService.success('Resource preview content updated successfully', 'Success');
+        }
         this.router.navigate(['admin','resources']);
         this.selectedFile = null;
       },
@@ -145,12 +180,14 @@ export class ManageResourceComponent implements OnInit{
   }
 
   //file methods
-  onFileSelected(event:any){
+  onFileSelected(event:any,isPreview:boolean){
     const file = event.target.files[0];
      this.selectedFileType = file.type;
     console.log(this.selectedFileType);
-    if(file){
+    if(file && !isPreview){
       this.selectedFile = file;
+    } else if(file && isPreview){
+      this.previewFile = file;
     }
   
   }
@@ -166,26 +203,48 @@ export class ManageResourceComponent implements OnInit{
     this.showTypeList = false;
   }
 
+  resetFileInput(element:HTMLInputElement, isPreview:boolean){
+    element.value = '';
+    if(isPreview){
+      this.previewFile = null;
+    } else {
+      this.selectedFile = null;
+    }
+  }
 
-  //open edit dialog
-  openEditDialog(){
-    const dialog = this.matDialog.open(EditDialogComponent,{
-        maxWidth: '90vw', // 90% of viewport width
-        maxHeight: '90vh', // 90% of viewport height
-        width: '60%', // Default width, constrained by maxWidth
-        height: '70%', // Let content determine height, constrained by maxHeight
+  //delete file
+  deleteFile(url:any, isPreview:boolean){
+    const dialog = this.matDialog.open(ConfirmDialogComponent,{
+        width: '400px',
         data:{
-          content:this.createResourceDto.description,
-          title: 'Resource Description'
+          message:'you wants to delete this resource',
+          buttonName: 'Delete',
+          isWarning: true
         }
     });
+      dialog.afterClosed().subscribe((result) => {
+        if(result){
+          this.deleteContent(url, isPreview);
+        }
+      });
+  }
 
-    dialog.afterClosed().subscribe((result) => {
-      if(result){
-        console.log("udpated " + result)
-        this.createResourceDto.description = result.content;
+  // delete content
+  deleteContent(url:string, isPreview:boolean){
+    this.resourceService.deleteResourceContent({
+      'resource-id': this.createResourceDto.id as string,
+      'url': url,
+      'isPreview': isPreview
+    }).subscribe({
+      next:()=>{
+        this.toastrService.success('Content deleted sucessfully', 'Done');
+        this.fetchResourceById(this.createResourceDto.id as string);
+      },
+      error:(err)=>{
+        console.log(err);
+        this.toastrService.error('Something went wrong', 'Error');
       }
-    });
+    })
   }
 
   // on cancle btn clicked

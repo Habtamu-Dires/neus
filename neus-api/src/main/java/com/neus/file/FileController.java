@@ -22,6 +22,28 @@ import java.nio.file.Paths;
 @Tag(name = "files")
 public class FileController {
 
+    @GetMapping("/get-image")
+    public ResponseEntity<Resource> getImage(
+            @RequestParam("file-path") String filePath
+    ) throws MalformedURLException {
+        Path path = Paths.get(filePath);
+        Resource resource = new UrlResource(path.toUri());
+        if(resource.exists() && resource.isReadable()){
+            String contentType;
+            try {
+                contentType = Files.probeContentType(path);
+            } catch (IOException e) {
+                contentType = "application/octet-stream";
+            }
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + filePath + "\"")
+                    .body(resource);
+        }else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
     @GetMapping("/get-file")
     public ResponseEntity<Resource> getFile(
         @RequestParam("file-path") String filePath

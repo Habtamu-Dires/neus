@@ -14,11 +14,11 @@ public record CreateExamDto(
     String id,
     @NotEmpty(message = "Title is mandatory")
     String title,
-    @NotEmpty(message = "Department is mandatory")
     String department,
     @NotEmpty(message = "Description is mandatory")
     String description,
     @NotNull(message = "Subscription level is mandatory")
     SubscriptionLevel requiredSubLevel,
-    Duration duration
+    @NotNull(message = "Exam Duration is mandatory")
+    int duration
 ) {}

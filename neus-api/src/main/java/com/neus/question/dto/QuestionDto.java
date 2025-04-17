@@ -6,6 +6,9 @@ import java.util.List;
 
 @Builder
 public record QuestionDto(
+        String id,
+        String examId,
+        Integer questionNumber,
         String questionText,
         List<Choice> choices,
         String explanation,

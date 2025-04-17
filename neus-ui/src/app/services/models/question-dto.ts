@@ -5,7 +5,10 @@
 import { Choice } from '../models/choice';
 export interface QuestionDto {
   choices?: Array<Choice>;
+  examId?: string;
   explanation?: string;
+  id?: string;
   imgUrls?: Array<string>;
+  questionNumber?: number;
   questionText?: string;
 }

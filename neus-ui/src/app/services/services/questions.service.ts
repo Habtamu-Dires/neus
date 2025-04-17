@@ -13,11 +13,52 @@ import { StrictHttpResponse } from '../strict-http-response';
 
 import { createQuestions } from '../fn/questions/create-questions';
 import { CreateQuestions$Params } from '../fn/questions/create-questions';
+import { deleteImage } from '../fn/questions/delete-image';
+import { DeleteImage$Params } from '../fn/questions/delete-image';
+import { deleteQuestion } from '../fn/questions/delete-question';
+import { DeleteQuestion$Params } from '../fn/questions/delete-question';
+import { getQuestionsByExamId } from '../fn/questions/get-questions-by-exam-id';
+import { GetQuestionsByExamId$Params } from '../fn/questions/get-questions-by-exam-id';
+import { QuestionDto } from '../models/question-dto';
+import { TextDto } from '../models/text-dto';
+import { updateQuestion } from '../fn/questions/update-question';
+import { UpdateQuestion$Params } from '../fn/questions/update-question';
+import { uploadImage } from '../fn/questions/upload-image';
+import { UploadImage$Params } from '../fn/questions/upload-image';
 
 @Injectable({ providedIn: 'root' })
 export class QuestionsService extends BaseService {
   constructor(config: ApiConfiguration, http: HttpClient) {
     super(config, http);
+  }
+
+  /** Path part for operation `updateQuestion()` */
+  static readonly UpdateQuestionPath = '/questions';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `updateQuestion()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateQuestion$Response(params: UpdateQuestion$Params, context?: HttpContext): Observable<StrictHttpResponse<{
+}>> {
+    return updateQuestion(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `updateQuestion$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateQuestion(params: UpdateQuestion$Params, context?: HttpContext): Observable<{
+}> {
+    return this.updateQuestion$Response(params, context).pipe(
+      map((r: StrictHttpResponse<{
+}>): {
+} => r.body)
+    );
   }
 
   /** Path part for operation `createQuestions()` */
@@ -43,6 +84,110 @@ export class QuestionsService extends BaseService {
   createQuestions(params: CreateQuestions$Params, context?: HttpContext): Observable<{
 }> {
     return this.createQuestions$Response(params, context).pipe(
+      map((r: StrictHttpResponse<{
+}>): {
+} => r.body)
+    );
+  }
+
+  /** Path part for operation `uploadImage()` */
+  static readonly UploadImagePath = '/questions/upload-image';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `uploadImage()` instead.
+   *
+   * This method sends `multipart/form-data` and handles request body of type `multipart/form-data`.
+   */
+  uploadImage$Response(params?: UploadImage$Params, context?: HttpContext): Observable<StrictHttpResponse<TextDto>> {
+    return uploadImage(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `uploadImage$Response()` instead.
+   *
+   * This method sends `multipart/form-data` and handles request body of type `multipart/form-data`.
+   */
+  uploadImage(params?: UploadImage$Params, context?: HttpContext): Observable<TextDto> {
+    return this.uploadImage$Response(params, context).pipe(
+      map((r: StrictHttpResponse<TextDto>): TextDto => r.body)
+    );
+  }
+
+  /** Path part for operation `getQuestionsByExamId()` */
+  static readonly GetQuestionsByExamIdPath = '/questions/{exam-id}';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getQuestionsByExamId()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getQuestionsByExamId$Response(params: GetQuestionsByExamId$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<QuestionDto>>> {
+    return getQuestionsByExamId(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getQuestionsByExamId$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getQuestionsByExamId(params: GetQuestionsByExamId$Params, context?: HttpContext): Observable<Array<QuestionDto>> {
+    return this.getQuestionsByExamId$Response(params, context).pipe(
+      map((r: StrictHttpResponse<Array<QuestionDto>>): Array<QuestionDto> => r.body)
+    );
+  }
+
+  /** Path part for operation `deleteQuestion()` */
+  static readonly DeleteQuestionPath = '/questions/{question-id}';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `deleteQuestion()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  deleteQuestion$Response(params: DeleteQuestion$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+    return deleteQuestion(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `deleteQuestion$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  deleteQuestion(params: DeleteQuestion$Params, context?: HttpContext): Observable<void> {
+    return this.deleteQuestion$Response(params, context).pipe(
+      map((r: StrictHttpResponse<void>): void => r.body)
+    );
+  }
+
+  /** Path part for operation `deleteImage()` */
+  static readonly DeleteImagePath = '/questions/image';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `deleteImage()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  deleteImage$Response(params: DeleteImage$Params, context?: HttpContext): Observable<StrictHttpResponse<{
+}>> {
+    return deleteImage(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `deleteImage$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  deleteImage(params: DeleteImage$Params, context?: HttpContext): Observable<{
+}> {
+    return this.deleteImage$Response(params, context).pipe(
       map((r: StrictHttpResponse<{
 }>): {
 } => r.body)

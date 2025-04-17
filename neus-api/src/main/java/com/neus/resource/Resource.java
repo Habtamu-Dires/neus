@@ -1,6 +1,7 @@
 package com.neus.resource;
 
 import com.neus.common.SubscriptionLevel;
+import com.neus.subscription_plan.SubscriptionPlan;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,10 +29,12 @@ public class Resource {
     @Column(unique = true, nullable = false)
     private String title;
     private String department;
+    @Column(columnDefinition = "TEXT")
     private String description;
     @Enumerated(EnumType.STRING)
-    private SubscriptionLevel requiredSubLevel = SubscriptionLevel.FREE;
+    private SubscriptionLevel requiredSubLevel;
     private String contentPath;
+    private String previewContentPath;
 
     @OneToMany(mappedBy = "parentResource")
     private List<Resource> resourceList;
@@ -39,9 +42,5 @@ public class Resource {
     @ManyToOne
     @JoinColumn(name = "parent_resource_id")
     private Resource parentResource;
-
-    @OneToOne
-    @JoinColumn(name = "preview_resource_id")
-    private Resource previewResource;
 
 }

@@ -5,8 +5,7 @@
 export interface ListOfResourcesDto {
   department?: string;
   description?: string;
-  previewId?: string;
-  requiredSubLevel?: 'FREE' | 'BASIC' | 'ADVANCED' | 'PREMIUM';
+  requiredSubLevel?: 'NONE' | 'BASIC' | 'ADVANCED' | 'PREMIUM';
   resourceId?: string;
   title?: string;
   type?: 'EXAM' | 'NOTE' | 'VIDEO' | 'BOOK' | 'COLLECTION';

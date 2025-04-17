@@ -1,0 +1,95 @@
+<main class="max-container w-full min-h-screen py-10 flex flex-col justify-center items-center gap-6">
+    <!-- Cancel -->
+    <div class="fixed top-4 right-4">
+      <svg class="cursor-pointer" (click)="onCancel()"
+        xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24">
+        <path fill="#888888"
+          d="m12 13.4l-4.9 4.9q-.275.275-.7.275t-.7-.275t-.275-.7t.275-.7l4.9-4.9l-4.9-4.9q-.275-.275-.275-.7t.275-.7t.7-.275t.7.275l4.9 4.9l4.9-4.9q.275-.275.7-.275t.7.275t.275.7t-.275.7L13.4 12l4.9 4.9q.275.275.275.7t-.275.7t-.7.275t-.7-.275z" />
+      </svg>
+    </div>
+  
+    <!-- Header -->
+    <header class="text-center">
+      <p class="text-2xl font-mono font-bold">Manage Subscription Plan</p>
+    </header>
+  
+    <!-- Form -->
+    <section class="w-full max-w-3xl space-y-4">
+      <!-- Error Messages -->
+      <div *ngIf="errMsgs" class="text-center space-y-1">
+        <p *ngFor="let msg of errMsgs" class="text-red-500 text-sm">
+          {{ msg }}
+        </p>
+      </div>
+  
+  
+      <!-- Level -->
+      <div class="grid grid-cols-12 gap-2 items-center">
+        <label class="form-label">Level<span class="text-red-400">*</span></label>
+        <input disabled="disabled" [(ngModel)]="updateSubPlanDto.level" class="form-input" type="text" placeholder="Title" />
+      </div>
+  
+      <!-- Price -->
+      <div class="grid grid-cols-12 gap-2 items-center">
+        <label class="form-label">Price</label>
+        <input [(ngModel)]="updateSubPlanDto.price" class="form-input" type="number" placeholder="Price" />
+      </div>
+  
+      <!-- Duration -->
+      <div class="grid grid-cols-12 gap-2 items-start">
+        <label class="form-label">Duration In Month<span class="text-red-400">*</span></label>
+        <input [(ngModel)]="updateSubPlanDto.durationInMonth" class="form-input"  placeholder="duration"/>
+      </div>
+
+      <!--Benefits-->
+      <div class="grid grid-cols-12 gap-2 items-start">
+        <label class="form-label">Benefits<span class="text-red-400">*</span></label>
+        <div class="col-span-12 md:col-span-10 flex flex-col gap-2">
+            <div class="w-full flex gap-4 justify-between">
+                <input [(ngModel)]="benefit" class="w-full form-input" placeholder="benefit"/>
+                <button (click)="addBenefit()"
+                    class="cursor-pointer bg-secondary hover:bg-green-800 text-white p-2 rounded-full transition duration-200"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="#ffffff" d="M11 13H5v-2h6V5h2v6h6v2h-6v6h-2z"/></svg>
+                </button>
+            </div>
+            @for (benefit of updateSubPlanDto.benefits; track $index; let idx = $index) {
+                <div class="w-full flex justify-between">
+                    <p class="w-full form-input">{{benefit}}</p>
+                    <button (click)="removeBenefit(idx)" 
+                        class="px-4 cursor-pointer text-red-500 hover:text-red-700" title="Delete">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4m-4 4v12m-4-12v12" />
+                        </svg>
+                    </button>
+                </div>
+            }
+        </div>
+      </div>
+
+      <div class="w-full grid grid-cols-12">
+        <label class="form-label">Enabled<span class="text-red-400">*</span></label>
+        <div class="w-full col-span-12 md:col-span-10 flex justify-start gap-5">
+            <div class="text-lg">
+                <input [(ngModel)]="updateSubPlanDto.enabled"  type="radio" [value]="true"
+                    class="w-5 h-5"/>
+                Yes
+            </div>
+            <div class="text-lg">
+                <input [(ngModel)]="updateSubPlanDto.enabled" type="radio" [value]="false"
+                class="w-5 h-5"/>
+                No
+            </div>
+        </div>
+    </div>
+  
+      <!-- Save Button -->
+      <div class="flex justify-center pt-4">
+        <button class="form-button bg-green-600 hover:bg-green-700 w-40 h-12 relative cursor-pointer"
+          (click)="onSave()">
+          Save
+        </button>
+      </div>
+    </section>
+</main>
+  

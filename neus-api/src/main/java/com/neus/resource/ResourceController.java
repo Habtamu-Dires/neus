@@ -1,10 +1,7 @@
 package com.neus.resource;
 
 import com.neus.common.PageResponse;
-import com.neus.resource.dto.CreateResourceDto;
-import com.neus.resource.dto.ResourceCollectionDto;
-import com.neus.resource.dto.ResourceDto;
-import com.neus.resource.dto.ListOfResourcesDto;
+import com.neus.resource.dto.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,26 +25,27 @@ public class ResourceController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createResource(
             @RequestPart @Valid CreateResourceDto dto,
-            @RequestPart MultipartFile file
+            @RequestPart(required = false) MultipartFile file,
+            @RequestPart(required = false) MultipartFile previewFile
     ){
-        resourceService.createResource(dto, file);
+        resourceService.createResource(dto, file, previewFile);
         return ResponseEntity.accepted().build();
     }
 
-    // list of resources
+    // get list of resources
     @GetMapping("/list")
     public ResponseEntity<List<ListOfResourcesDto>> getListOfResources(){
         var  res = resourceService.getListOfResources();
         return ResponseEntity.ok(res);
     }
 
-    // get resource
+    // get resource detail
     @GetMapping("/detail/{resource-id}")
-    public ResponseEntity<?> getResourceDetail(
+    public ResponseEntity<ResourceDetailDto> getResourceDetail(
             @PathVariable("resource-id") String resourceId,
             Authentication authentication
     ){
-        ResourceDto res = resourceService.getResourceDetail(resourceId, authentication);
+        var res = resourceService.getResourceDetail(resourceId, authentication);
         return ResponseEntity.ok(res);
     }
 
@@ -89,14 +87,25 @@ public class ResourceController {
         return ResponseEntity.accepted().build();
     }
 
-
     // update resource content
     @PutMapping(value = "/content/{resource-id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> updateResourceContent(
             @RequestPart MultipartFile file,
-            @PathVariable("resource-id") String resourceId
+            @PathVariable("resource-id") String resourceId,
+            @RequestParam("isPreview") Boolean isPreview
     ){
-        resourceService.updateResourceContent(file,resourceId);
+        resourceService.updateResourceContent(file,resourceId, isPreview);
+        return ResponseEntity.accepted().build();
+    }
+
+    // delete resource content
+    @DeleteMapping(value = "/content/{resource-id}")
+    public ResponseEntity<?> deleteResourceContent(
+            @PathVariable("resource-id") String resourceId,
+            @RequestParam("url") String url,
+            @RequestParam("isPreview") Boolean isPreview
+    ){
+        resourceService.deleteResourceContent(url,resourceId, isPreview);
         return ResponseEntity.accepted().build();
     }
 

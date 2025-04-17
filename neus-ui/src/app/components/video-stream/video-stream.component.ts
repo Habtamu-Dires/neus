@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { VgApiService } from '@videogular/ngx-videogular/core';
 import { VgStreamingModule } from '@videogular/ngx-videogular/streaming';
 import { VgCoreModule } from '@videogular/ngx-videogular/core';
@@ -7,6 +7,7 @@ import { VgOverlayPlayModule } from '@videogular/ngx-videogular/overlay-play';
 import { VgBufferingModule } from '@videogular/ngx-videogular/buffering';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { UserDto } from '../../services/models';
 
 @Component({
   selector: 'app-video-stream',
@@ -15,26 +16,17 @@ import { CommonModule } from '@angular/common';
   templateUrl: './video-stream.component.html',
   styleUrl: './video-stream.component.css'
 })
-export class VideoStreamComponent implements OnInit{
+export class VideoStreamComponent {
 
-  videoSource: string = ''; // URL for the video (e.g., HLS .m3u8 or MP4)
-  title: string = 'Video Lecture';
+  @Input() videoSource: string = ''; 
+  @Input() title: string | undefined;
+  @Input() description:string = '';
+  @Output() onClose = new EventEmitter<{}>();
 
   api: VgApiService | undefined;
-  isVideoAvailable: boolean = true; // Track if video is available
-  errorMessage: string = ''; // Store error message
+  isVideoAvailable: boolean = true; 
+  errorMessage: string = ''; 
 
-  constructor(private activatedRoute: ActivatedRoute) {}
-
-  ngOnInit(): void {
-    this.activatedRoute.queryParams.subscribe((params) => {
-      this.videoSource = params['videoSource'] || this.videoSource;
-      this.title = params['title'] || this.title;
-      // Reset state when source changes
-      this.isVideoAvailable = true;
-      this.errorMessage = '';
-    });
-  }
 
   onPlayerReady(api: VgApiService) {
     this.api = api;
@@ -61,6 +53,10 @@ export class VideoStreamComponent implements OnInit{
       this.isVideoAvailable = false;
       this.errorMessage = 'No video source provided.';
     }
+  }
+
+  close(){
+    this.onClose.emit();
   }
 
 } 

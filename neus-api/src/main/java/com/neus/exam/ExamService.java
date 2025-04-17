@@ -1,16 +1,20 @@
 package com.neus.exam;
 
+import com.neus.common.PageResponse;
 import com.neus.common.SubscriptionLevel;
 import com.neus.exam.dto.CreateExamDto;
+import com.neus.exam.dto.ExamDetailDto;
 import com.neus.exam.dto.ExamDto;
+import com.neus.exam.dto.ExamDtoMapper;
 import com.neus.exceptions.ResourceNotFoundException;
+import com.neus.question.QuestionRepository;
 import com.neus.question.dto.QuestionDto;
 import com.neus.question.dto.QuestionDtoMapper;
-import com.neus.question.QuestionRepository;
 import com.neus.resource.Resource;
 import com.neus.resource.ResourceRepository;
 import com.neus.resource.ResourceType;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -32,8 +36,72 @@ public class ExamService {
     private final ResourceRepository resourceRepository;
     private final QuestionRepository questionRepository;
     private final QuestionDtoMapper questionDtoMapper;
+    private final ExamDtoMapper examDtoMapper;
 
-    public ExamDto getExamDetail(String examId, Authentication authentication) {
+    // create an exam
+    @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
+    public void createExam(CreateExamDto dto){
+        Resource resource = resourceRepository.save(
+            Resource.builder()
+                .externalId(UUID.randomUUID())
+                .title(dto.title())
+                .department(dto.department())
+                .description(dto.description())
+                .type(ResourceType.EXAM)
+                .requiredSubLevel(dto.requiredSubLevel())
+                .build()
+        );
+
+        examRepository.save(
+            Exam.builder()
+                .resource(resource)
+                .externalId(resource.getExternalId())
+                .duration(dto.duration())
+                .build()
+        );
+    }
+
+    // find exam by external id
+    public Exam findByExternalId(String externalId) {
+         return examRepository.findExternalId(UUID.fromString(externalId))
+                 .orElseThrow(()-> new ResourceNotFoundException("Exam not found"));
+    }
+    // get page of exams
+    @PreAuthorize("hasRole('ADMIN')")
+    @Transactional
+    public PageResponse<ExamDto> getPageOfExams(int page, int size) {
+        Pageable pageable = PageRequest.of(page,size);
+        Page<Exam> res = examRepository.findAll(pageable);
+
+        List<ExamDto> examDtoList = res.map(exam -> {
+            Resource resource = this.findResourceById(exam.getId());
+            return examDtoMapper.mapToExamDto(exam, resource);
+        }).toList();
+
+        return PageResponse.<ExamDto>builder()
+                .content(examDtoList)
+                .totalElements(res.getTotalElements())
+                .numberOfElements(res.getNumberOfElements())
+                .totalPages(res.getTotalPages())
+                .size(res.getSize())
+                .number(res.getNumber())
+                .first(res.isFirst())
+                .last(res.isLast())
+                .empty(res.isEmpty())
+                .build();
+    }
+
+    // get exam by id
+    @PreAuthorize("hasRole('ADMIN')")
+    public ExamDto getExamById(String examId) {
+        Exam exam = this.findByExternalId(examId);
+        Resource resource = this.findResourceById(exam.getId());
+        return examDtoMapper.mapToExamDto(exam,resource);
+    }
+
+    // get exam detail
+    public ExamDetailDto getExamDetail(String examId, Authentication authentication) {
         // Fetch the resource
         Resource resource = resourceRepository.findByExternalId(UUID.fromString(examId))
                 .orElseThrow(() -> new ResourceNotFoundException("Resource not found"));
@@ -71,41 +139,42 @@ public class ExamService {
         }
 
         // Build & Return the response DTO
-        return ExamDto.builder()
-                .title(resource.getTitle())
-                .description(resource.getDescription())
-                .duration(exam.getDuration())
-                .questions(questionDtos)
-                .build();
+        return examDtoMapper.mapToExamDetailDto(exam, resource, questionDtos);
     }
 
-    // create an exam
-    @Transactional
+    // find resource by id
+    public Resource findResourceById(Long id){
+        return resourceRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Resource not found"));
+    }
+
+    // update exam
     @PreAuthorize("hasRole('ADMIN')")
-    public void createExam(CreateExamDto dto){
-        Resource resource = resourceRepository.save(
-            Resource.builder()
-                .externalId(UUID.randomUUID())
-                .title(dto.title())
-                .department(dto.department())
-                .description(dto.description())
-                .type(ResourceType.EXAM)
-                .requiredSubLevel(dto.requiredSubLevel())
-                .build()
-        );
+    @Transactional
+    public void updateExam(CreateExamDto dto) {
+        Exam exam = this.findByExternalId(dto.id());
+        Resource resource = this.findResourceById(exam.getId());
 
-        examRepository.save(
-            Exam.builder()
-                .resource(resource)
-                .externalId(resource.getExternalId())
-                .duration(dto.duration())
-                .build()
-        );
+        resource.setTitle(dto.title());
+        resource.setDescription(dto.description());
+        resource.setRequiredSubLevel(dto.requiredSubLevel());
+        resource.setDepartment(dto.department());
+        resourceRepository.save(resource);
+
+        // save exam
+        exam.setDuration(dto.duration());
+        examRepository.save(exam);
+
     }
 
-    // find exam by external id
-    public Exam findByExternalId(String externalId) {
-         return examRepository.findExternalId(UUID.fromString(externalId))
-                 .orElseThrow(()-> new ResourceNotFoundException("Exam not found"));
+    // delete exam
+    @PreAuthorize("hasRole('ADMIN')")
+    @Transactional
+    public void deleteExam(String examId) {
+        Exam exam = this.findByExternalId(examId);
+        Resource resource = this.findResourceById(exam.getId());
+        examRepository.delete(exam);
+        resourceRepository.delete(resource);
     }
+
 }

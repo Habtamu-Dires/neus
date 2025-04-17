@@ -1,17 +1,25 @@
-<main>
-    <ngx-extended-pdf-viewer
-        [src]="pdfSrc"
-        height="100vh"
-        width="100%"
-        [showPrintButton]="false"
-        [showDownloadButton]="false"
-        [showOpenFileButton]="false"
-        [textLayer]="true"
-    ></ngx-extended-pdf-viewer>
-    <div
-      *ngIf="!pdfSrc"
-      class="h-96 flex items-center justify-center text-gray-500"
+<main class="flex" [ngClass]="{'justify-center items-center': !pdfSrc, 'items-start':pdfSrc}">
+  <ngx-extended-pdf-viewer
+      [src]="pdfSrc"
+      height="100vh"
+      width="100%"
+      [showPrintButton]="false"
+      [showDownloadButton]="false"
+      [showOpenFileButton]="false"
+      [textLayer]="true"
+      class="w-full"
+      *ngIf="pdfSrc"
+  ></ngx-extended-pdf-viewer>
+  <!--close button-->
+  <button *ngIf="pdfSrc" class="p-1 bg-gray-100 cursor-pointer">
+    <svg (click)="close()"
+      xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12z"/></svg>
+  </button>
+  <div
+    *ngIf="!pdfSrc"
+    class="h-96 flex flex-col items-center justify-center gap-4 text-gray-500"
     >
-      No PDF file selected.
-    </div>
+    No PDF file found.
+    <button (click)="close()" class="text-primary underline cursor-pointer">back</button>
+  </div>
 </main>

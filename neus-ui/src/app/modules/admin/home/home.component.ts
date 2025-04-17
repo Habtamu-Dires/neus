@@ -16,7 +16,7 @@ export class HomeComponent {
   
   profile:UserProfile | undefined;
   onShawDrawer:boolean = false;
-  activeComponent:string = 'Resources';
+  activeComponent:string = 'Exams';
 
   constructor(
     private keycloakService:KeycloakService,
@@ -25,7 +25,7 @@ export class HomeComponent {
   ){}
 
   ngOnInit(): void {
-    this.setActiveComponent('Resources');
+    this.setActiveComponent('Exams');
     this.profile = this.keycloakService.profile;
     // get show drawer 
     this.adminUxService.showDrawer$.subscribe((onShawDrawer:boolean)=>{

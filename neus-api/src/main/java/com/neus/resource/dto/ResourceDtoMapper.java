@@ -1,7 +1,6 @@
 package com.neus.resource.dto;
 
 import com.neus.resource.Resource;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -22,6 +21,7 @@ public class ResourceDtoMapper {
                 .parentResource(resource.getParentResource()!=null
                         ? resource.getParentResource().getTitle() : null)
                 .contentPath(resource.getContentPath())
+                .previewContentPath(resource.getPreviewContentPath())
                 .build();
     }
 
@@ -34,8 +34,6 @@ public class ResourceDtoMapper {
                 .title(r.getTitle())
                 .description(r.getDescription())
                 .requiredSubLevel(r.getRequiredSubLevel())
-                .previewId(r.getPreviewResource() != null
-                        ? r.getPreviewResource().getExternalId() : null)
                 .build();
     }
 
@@ -53,4 +51,22 @@ public class ResourceDtoMapper {
                 .resources(resourceDtos)
                 .build();
     }
+
+    public static ResourceDetailDto mapToResourceDetailDto(Resource resource, String contentPath){
+        return ResourceDetailDto.builder()
+                .id(resource.getExternalId().toString())
+                .title(resource.getTitle())
+                .type(resource.getType())
+                .department(resource.getDepartment())
+                .description(resource.getDescription())
+                .requiredSubLevel(resource.getRequiredSubLevel())
+                .parentResourceId(resource.getParentResource()!=null
+                        ? resource.getParentResource().getExternalId().toString() : null)
+                .parentResource(resource.getParentResource()!=null
+                        ? resource.getParentResource().getTitle() : null)
+                .contentPath(contentPath)
+                .build();
+    }
+
+
 }

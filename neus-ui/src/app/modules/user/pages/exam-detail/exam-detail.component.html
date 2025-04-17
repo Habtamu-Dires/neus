@@ -1,0 +1,120 @@
+<main class="max-container flex gap-2 w-full h-screen overflow-hidden">
+
+    <div class="flex flex-col md:flex-row gap-2 w-full h-screen overflow-hidden">
+      <!-- Sidebar (Drawer on Mobile) -->
+      <aside class="md:w-[10%] w-full md:h-full flex flex-row justify-between md:justify-normal md:flex-col bg-gray-100 p-4 rounded-lg">
+        <p class="text-lg font-semibold text-gray-800 mb-4">Questions</p>
+        <div class="space-y-2 hidden md:block">
+          <div
+            *ngFor="let question of questionList; let i = index"
+            (click)="selectQuestion(i)"
+            class="p-2 rounded-md cursor-pointer hover:bg-gray-100"
+            [class.bg-blue-100]="i === currentQuestionIndex"
+            [class.text-blue-700]="i === currentQuestionIndex"
+          >
+            Question {{ question.questionNumber }}
+          </div>
+        </div>
+        <svg  
+            class="cursor-pointer block md:hidden"
+            xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 14 14"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="M13.5 2H.5m13 5H.5m13 5H.5"/>
+        </svg>
+      </aside>
+  
+      <!-- Main Content -->
+      <main class="h-full md:w-[90%] w-full bg-gray-100 p-4 rounded-lg overflow-hidden">
+        <div class="flex justify-between items-center mb-3">
+            <h2 class="text-xl font-semibold text-gray-800">
+              Question {{ questionList.length !==0 ? currentQuestionIndex + 1 : 0}} of {{ questionList.length }}
+            </h2>
+            <!--close button-->
+            <button class="p-1 bg-gray-100 cursor-pointer">
+              <svg (click)="close()"
+                xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12z"/></svg>
+            </button>
+          </div>
+        <!-- No Questions Case -->
+        <div
+          *ngIf="questionList.length === 0"
+          class="h-64 flex items-center justify-center text-gray-600 text-lg"
+        >
+          No questions available for this exam.
+        </div>
+  
+        <!-- Question Display -->
+        <div #questionContainer
+          *ngIf="questionList.length > 0"
+          class="h-full bg-white p-4 rounded-md border border-gray-200 overflow-y-scroll overflow-x-hidden"
+        > 
+          <!--question number-->
+          <div>
+              <input class="form-input" [(ngModel)]="currentQuestion.questionNumber" type="number"/>
+          </div>
+          <div class="flex justify-between items-start mb-4">
+            <!--question text-->
+            <div class="break-words whitespace-normal overflow-hidden py-2 px-3 w-full max-w-90%" [innerHTML]="currentQuestion.questionText"></div>
+          </div>
+  
+          <!-- Choices with Labels and Toggle -->
+          <div class="space-y-2 mb-4">
+            <div
+              *ngFor="let choice of currentQuestion.choices; let i = index;"
+              class="flex items-start  space-x-2"
+            >
+              <div class="flex items-center py-2">
+                <span class="w-6 font-bold">{{ getChoiceLetter(i) }}.</span>
+                <input
+                  type="radio"
+                  [checked]="choice.isCorrect"
+                  (change)="toggleCorrect(choice.id)"
+                  class="h-4 w-4 text-blue-600"
+                />
+              </div>
+              <!--choice text -->
+              <span class="break-words whitespace-normal overflow-hidden py-2 px-3 w-full max-w-90%"
+                 [class.text-green-600]="choice.isCorrect" [innerHTML]="choice.text">
+              </span>
+            </div>
+          </div>
+  
+          <!-- Explanation -->
+          <div class="mt-4">
+            <p
+              (click)="showExplanation = !showExplanation"
+              class="text-blue-500 cursor-pointer hover:text-blue-700"
+            >
+              {{ showExplanation ? 'Hide' : 'Show' }} Explanation
+            </p>
+            <div
+              *ngIf="showExplanation"
+              class="mt-2 p-4 bg-gray-50 rounded-md border border-gray-200"
+            >
+            <div class="flex justify-between items-start">
+              <div class="break-words whitespace-normal overflow-hidden py-2 px-3 w-full max-w-90%" 
+                  [innerHTML]="currentQuestion.explanation">
+              </div>          
+            </div>
+            </div>
+          </div>
+          <!-- Next/Previous Buttons -->
+          <div class="flex justify-center gap-10 mb-10 text-xl">
+            <button
+              (click)="previousQuestion()"
+              [disabled]="currentQuestionIndex === 0"
+              class="cursor-pointer text-primary px-4 py-2 transition duration-200 disabled:text-gray-600 disabled:cursor-not-allowed"
+            >
+              Previous
+            </button>
+            <button
+              (click)="nextQuestion()"
+              [disabled]="currentQuestionIndex === questionList.length - 1"
+              class="cursor-pointer text-primary px-4 py-2 transition duration-200 disabled:text-gray-600 disabled:cursor-not-allowed"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      </main>
+    </div>
+</main>
+

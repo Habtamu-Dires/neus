@@ -77,6 +77,57 @@
                 }
             }
         },
+        "/sub-plans": {
+            "get": {
+                "tags": [
+                    "sbu-plans"
+                ],
+                "operationId": "getSubPlans",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/SubPlanDto"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "sbu-plans"
+                ],
+                "operationId": "updateSubPlan",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateSubPlanDto"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/resources/{resource-id}": {
             "get": {
                 "tags": [
@@ -187,6 +238,14 @@
                         "schema": {
                             "type": "string"
                         }
+                    },
+                    {
+                        "name": "isPreview",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "boolean"
+                        }
                     }
                 ],
                 "requestBody": {
@@ -219,6 +278,236 @@
                         }
                     }
                 }
+            },
+            "delete": {
+                "tags": [
+                    "resources"
+                ],
+                "operationId": "deleteResourceContent",
+                "parameters": [
+                    {
+                        "name": "resource-id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "url",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "isPreview",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/questions": {
+            "put": {
+                "tags": [
+                    "questions"
+                ],
+                "operationId": "updateQuestion",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateQuestionDto"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "questions"
+                ],
+                "operationId": "createQuestions",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateQuestionDto"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/exams": {
+            "get": {
+                "tags": [
+                    "exams"
+                ],
+                "operationId": "getPageOfExams",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "default": 0
+                        }
+                    },
+                    {
+                        "name": "size",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "default": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PageResponseExamDto"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "exams"
+                ],
+                "operationId": "updateExam",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateExamDto"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "exams"
+                ],
+                "operationId": "createExam",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateExamDto"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/subscription/{sub-plan-id}": {
+            "post": {
+                "tags": [
+                    "subscription"
+                ],
+                "operationId": "createSubscription",
+                "parameters": [
+                    {
+                        "name": "sub-plan-id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
             }
         },
         "/resources": {
@@ -239,11 +528,16 @@
                                     "file": {
                                         "type": "string",
                                         "format": "binary"
+                                    },
+                                    "previewFile": {
+                                        "type": "string",
+                                        "format": "binary"
                                     }
                                 },
                                 "required": [
                                     "dto",
-                                    "file"
+                                    "file",
+                                    "previewFile"
                                 ]
                             }
                         }
@@ -293,51 +587,29 @@
                 }
             }
         },
-        "/questions": {
+        "/questions/upload-image": {
             "post": {
                 "tags": [
                     "questions"
                 ],
-                "operationId": "createQuestions",
+                "operationId": "uploadImage",
                 "requestBody": {
                     "content": {
-                        "application/json": {
+                        "multipart/form-data": {
                             "schema": {
-                                "$ref": "#/components/schemas/CreateQuestionDto"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object"
-                                }
+                                "type": "object",
+                                "properties": {
+                                    "file": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "required": [
+                                    "file"
+                                ]
                             }
                         }
                     }
-                }
-            }
-        },
-        "/exams": {
-            "post": {
-                "tags": [
-                    "exams"
-                ],
-                "operationId": "createExam",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/CreateExamDto"
-                            }
-                        }
-                    },
-                    "required": true
                 },
                 "responses": {
                     "200": {
@@ -345,7 +617,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object"
+                                    "$ref": "#/components/schemas/TextDto"
                                 }
                             }
                         }
@@ -448,6 +720,59 @@
                 }
             }
         },
+        "/sub-plans/{plan-id}": {
+            "get": {
+                "tags": [
+                    "sbu-plans"
+                ],
+                "operationId": "getSubPlanById",
+                "parameters": [
+                    {
+                        "name": "plan-id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SubPlanDto"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/sub-plans/enabled": {
+            "get": {
+                "tags": [
+                    "sbu-plans"
+                ],
+                "operationId": "getEnabledSubPlans",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/SubPlanDto"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/resources/page": {
             "get": {
                 "tags": [
@@ -535,7 +860,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object"
+                                    "$ref": "#/components/schemas/ResourceDetailDto"
                                 }
                             }
                         }
@@ -573,6 +898,39 @@
                 }
             }
         },
+        "/questions/{exam-id}": {
+            "get": {
+                "tags": [
+                    "questions"
+                ],
+                "operationId": "getQuestionsByExamId",
+                "parameters": [
+                    {
+                        "name": "exam-id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/QuestionDto"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/files/stream-video": {
             "get": {
                 "tags": [
@@ -592,6 +950,37 @@
                         "name": "Range",
                         "in": "header",
                         "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "string",
+                                    "format": "binary"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/files/get-image": {
+            "get": {
+                "tags": [
+                    "files"
+                ],
+                "operationId": "getImage",
+                "parameters": [
+                    {
+                        "name": "file-path",
+                        "in": "query",
+                        "required": true,
                         "schema": {
                             "type": "string"
                         }
@@ -648,7 +1037,7 @@
                 "tags": [
                     "exams"
                 ],
-                "operationId": "getExamDetail",
+                "operationId": "getExamById",
                 "parameters": [
                     {
                         "name": "exam-id",
@@ -671,11 +1060,155 @@
                         }
                     }
                 }
+            },
+            "delete": {
+                "tags": [
+                    "exams"
+                ],
+                "operationId": "deleteExam",
+                "parameters": [
+                    {
+                        "name": "exam-id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/exams/detail/{exam-id}": {
+            "get": {
+                "tags": [
+                    "exams"
+                ],
+                "operationId": "getExamDetail",
+                "parameters": [
+                    {
+                        "name": "exam-id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExamDetailDto"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/questions/{question-id}": {
+            "delete": {
+                "tags": [
+                    "questions"
+                ],
+                "operationId": "deleteQuestion",
+                "parameters": [
+                    {
+                        "name": "question-id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/questions/image": {
+            "delete": {
+                "tags": [
+                    "questions"
+                ],
+                "operationId": "deleteImage",
+                "parameters": [
+                    {
+                        "name": "url",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     },
     "components": {
         "schemas": {
+            "UpdateSubPlanDto": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "level": {
+                        "type": "string"
+                    },
+                    "price": {
+                        "type": "number"
+                    },
+                    "durationInMonth": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "enabled": {
+                        "type": "boolean"
+                    },
+                    "benefits": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "required": [
+                    "benefits",
+                    "durationInMonth",
+                    "enabled",
+                    "price"
+                ]
+            },
             "CreateResourceDto": {
                 "type": "object",
                 "properties": {
@@ -699,15 +1232,14 @@
                     "requiredSubLevel": {
                         "type": "string",
                         "enum": [
-                            "FREE",
+                            "NONE",
                             "BASIC",
                             "ADVANCED",
                             "PREMIUM"
                         ]
                     },
                     "department": {
-                        "type": "string",
-                        "minLength": 1
+                        "type": "string"
                     },
                     "description": {
                         "type": "string",
@@ -716,7 +1248,7 @@
                     "contentPath": {
                         "type": "string"
                     },
-                    "previewResourceId": {
+                    "previewResourcePath": {
                         "type": "string"
                     },
                     "parentResourceId": {
@@ -728,27 +1260,13 @@
                     "type"
                 ]
             },
-            "registrationDto": {
-                "type": "object",
-                "properties": {
-                    "username": {
-                        "type": "string",
-                        "minLength": 1
-                    },
-                    "email": {
-                        "type": "string",
-                        "minLength": 1
-                    },
-                    "password": {
-                        "type": "string",
-                        "maxLength": 2147483647,
-                        "minLength": 4
-                    }
-                }
-            },
             "Choice": {
                 "type": "object",
                 "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
                     "text": {
                         "type": "string"
                     },
@@ -760,9 +1278,16 @@
             "CreateQuestionDto": {
                 "type": "object",
                 "properties": {
+                    "id": {
+                        "type": "string"
+                    },
                     "examId": {
                         "type": "string",
                         "minLength": 1
+                    },
+                    "questionNumber": {
+                        "type": "integer",
+                        "format": "int32"
                     },
                     "questionText": {
                         "type": "string",
@@ -785,7 +1310,10 @@
                             "type": "string"
                         }
                     }
-                }
+                },
+                "required": [
+                    "questionNumber"
+                ]
             },
             "CreateExamDto": {
                 "type": "object",
@@ -798,8 +1326,7 @@
                         "minLength": 1
                     },
                     "department": {
-                        "type": "string",
-                        "minLength": 1
+                        "type": "string"
                     },
                     "description": {
                         "type": "string",
@@ -808,20 +1335,47 @@
                     "requiredSubLevel": {
                         "type": "string",
                         "enum": [
-                            "FREE",
+                            "NONE",
                             "BASIC",
                             "ADVANCED",
                             "PREMIUM"
                         ]
                     },
                     "duration": {
-                        "type": "string",
-                        "example": "PT2H30M"
+                        "type": "integer",
+                        "format": "int32"
                     }
                 },
                 "required": [
+                    "duration",
                     "requiredSubLevel"
                 ]
+            },
+            "registrationDto": {
+                "type": "object",
+                "properties": {
+                    "username": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "email": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "password": {
+                        "type": "string",
+                        "maxLength": 2147483647,
+                        "minLength": 4
+                    }
+                }
+            },
+            "TextDto": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "string"
+                    }
+                }
             },
             "UserDto": {
                 "type": "object",
@@ -838,7 +1392,7 @@
                     "subscriptionLevel": {
                         "type": "string",
                         "enum": [
-                            "FREE",
+                            "NONE",
                             "BASIC",
                             "ADVANCED",
                             "PREMIUM"
@@ -911,7 +1465,7 @@
                     "level": {
                         "type": "string",
                         "enum": [
-                            "FREE",
+                            "NONE",
                             "BASIC",
                             "ADVANCED",
                             "PREMIUM"
@@ -924,6 +1478,39 @@
                     "endDate": {
                         "type": "string",
                         "format": "date-time"
+                    }
+                }
+            },
+            "SubPlanDto": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "level": {
+                        "type": "string",
+                        "enum": [
+                            "NONE",
+                            "BASIC",
+                            "ADVANCED",
+                            "PREMIUM"
+                        ]
+                    },
+                    "price": {
+                        "type": "number"
+                    },
+                    "durationInMonth": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "enabled": {
+                        "type": "boolean"
+                    },
+                    "benefits": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
                     }
                 }
             },
@@ -949,7 +1536,7 @@
                     "requiredSubLevel": {
                         "type": "string",
                         "enum": [
-                            "FREE",
+                            "NONE",
                             "BASIC",
                             "ADVANCED",
                             "PREMIUM"
@@ -968,6 +1555,9 @@
                         "type": "string"
                     },
                     "contentPath": {
+                        "type": "string"
+                    },
+                    "previewContentPath": {
                         "type": "string"
                     }
                 }
@@ -1041,15 +1631,56 @@
                     "requiredSubLevel": {
                         "type": "string",
                         "enum": [
-                            "FREE",
+                            "NONE",
+                            "BASIC",
+                            "ADVANCED",
+                            "PREMIUM"
+                        ]
+                    }
+                }
+            },
+            "ResourceDetailDto": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "EXAM",
+                            "NOTE",
+                            "VIDEO",
+                            "BOOK",
+                            "COLLECTION"
+                        ]
+                    },
+                    "requiredSubLevel": {
+                        "type": "string",
+                        "enum": [
+                            "NONE",
                             "BASIC",
                             "ADVANCED",
                             "PREMIUM"
                         ]
                     },
-                    "previewId": {
-                        "type": "string",
-                        "format": "uuid"
+                    "department": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "parentResourceId": {
+                        "type": "string"
+                    },
+                    "parentResource": {
+                        "type": "string"
+                    },
+                    "contentPath": {
+                        "type": "string"
                     }
                 }
             },
@@ -1072,7 +1703,7 @@
                     "requiredSubLevel": {
                         "type": "string",
                         "enum": [
-                            "FREE",
+                            "NONE",
                             "BASIC",
                             "ADVANCED",
                             "PREMIUM"
@@ -1092,36 +1723,19 @@
                     }
                 }
             },
-            "ExamDto": {
-                "type": "object",
-                "properties": {
-                    "title": {
-                        "type": "string"
-                    },
-                    "description": {
-                        "type": "string"
-                    },
-                    "duration": {
-                        "type": "string",
-                        "example": "PT2H30M"
-                    },
-                    "questions": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/QuestionDto"
-                        }
-                    },
-                    "previewQuestions": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/QuestionDto"
-                        }
-                    }
-                }
-            },
             "QuestionDto": {
                 "type": "object",
                 "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "examId": {
+                        "type": "string"
+                    },
+                    "questionNumber": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
                     "questionText": {
                         "type": "string"
                     },
@@ -1138,6 +1752,107 @@
                         "type": "array",
                         "items": {
                             "type": "string"
+                        }
+                    }
+                }
+            },
+            "ExamDto": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "department": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "duration": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "numberOfQuestions": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "requiredSubLevel": {
+                        "type": "string",
+                        "enum": [
+                            "NONE",
+                            "BASIC",
+                            "ADVANCED",
+                            "PREMIUM"
+                        ]
+                    }
+                }
+            },
+            "PageResponseExamDto": {
+                "type": "object",
+                "properties": {
+                    "content": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ExamDto"
+                        }
+                    },
+                    "number": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "size": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "totalElements": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "numberOfElements": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "totalPages": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "last": {
+                        "type": "boolean"
+                    },
+                    "first": {
+                        "type": "boolean"
+                    },
+                    "empty": {
+                        "type": "boolean"
+                    }
+                }
+            },
+            "ExamDetailDto": {
+                "type": "object",
+                "properties": {
+                    "title": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "duration": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "questions": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/QuestionDto"
+                        }
+                    },
+                    "previewQuestions": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/QuestionDto"
                         }
                     }
                 }

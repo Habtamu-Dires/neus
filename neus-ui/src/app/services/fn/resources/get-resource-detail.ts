@@ -8,13 +8,13 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
+import { ResourceDetailDto } from '../../models/resource-detail-dto';
 
 export interface GetResourceDetail$Params {
   'resource-id': string;
 }
 
-export function getResourceDetail(http: HttpClient, rootUrl: string, params: GetResourceDetail$Params, context?: HttpContext): Observable<StrictHttpResponse<{
-}>> {
+export function getResourceDetail(http: HttpClient, rootUrl: string, params: GetResourceDetail$Params, context?: HttpContext): Observable<StrictHttpResponse<ResourceDetailDto>> {
   const rb = new RequestBuilder(rootUrl, getResourceDetail.PATH, 'get');
   if (params) {
     rb.path('resource-id', params['resource-id'], {});
@@ -25,8 +25,7 @@ export function getResourceDetail(http: HttpClient, rootUrl: string, params: Get
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<{
-      }>;
+      return r as StrictHttpResponse<ResourceDetailDto>;
     })
   );
 }

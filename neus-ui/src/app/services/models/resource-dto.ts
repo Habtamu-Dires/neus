@@ -9,7 +9,8 @@ export interface ResourceDto {
   id?: string;
   parentResource?: string;
   parentResourceId?: string;
-  requiredSubLevel?: 'FREE' | 'BASIC' | 'ADVANCED' | 'PREMIUM';
+  previewContentPath?: string;
+  requiredSubLevel?: 'NONE' | 'BASIC' | 'ADVANCED' | 'PREMIUM';
   title?: string;
   type?: 'EXAM' | 'NOTE' | 'VIDEO' | 'BOOK' | 'COLLECTION';
 }

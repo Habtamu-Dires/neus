@@ -23,6 +23,7 @@ export class RegisterComponent {
   showPassConfError:boolean = false;
   showPassMandatoryError:boolean = false;
   showPassLenghtError:boolean = false;
+  isUploading:boolean = false;
 
   constructor(
     private registerService: RegisterService,
@@ -99,16 +100,17 @@ export class RegisterComponent {
 
   // register
   register(){
+    this.isUploading = true;
     this.registerService.register({
       body: this.registrationDto
     }).subscribe({
       next: () => {
+        this.isUploading = false;
         this.toastrService.success('User registered successfully', 'Success');
-        setTimeout(()=>{
-          this.keycloakService.login();
-        },500);
+        this.keycloakService.login();
       },
       error: (err) => {
+        this.isUploading = false;
         console.log(err);
         if(err.error.validationErrors){
           this.errMsgs = err.error.validationErrors;

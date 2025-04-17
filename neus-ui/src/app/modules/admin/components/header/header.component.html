@@ -1,14 +1,17 @@
 <main class="w-full flex flex-col md:flex-row gap-1 p-2 justify-between">
     <section class="w-full md:w-4/5 flex flex-col gap-4 md:flex-row">
         <div class="flex gap-4 items-center">
+            <!--toggle side bar-->
             <svg *ngIf="onShowDrawer" (click)="toggleShowDrawer()" 
                 class="cursor-pointer"
                 xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 14 14"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="M13.5 2H.5m13 5H.5m13 5H.5"/>
             </svg>
             <!--Create new button-->
             @if (componentName.toLocaleLowerCase() !== 'user' 
+                && componentName.toLocaleLowerCase() !== 'subscription' 
                 && componentName.toLocaleLowerCase() !== 'payment') {
-                <button class="flex gap-2 px-3 py-2 bg-primary rounded-lg bg-grn items-center text-white font-medium cursor-pointer"
+                <button class="flex gap-2 px-3 py-2 bg-secondary rounded-lg bg-grn items-center text-white 
+                                font-medium cursor-pointer hover:bg-green-700"
                     (click)="onCreateNew()">
                     <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24"><path fill="currentColor" d="M12 21q-.425 0-.712-.288T11 20v-7H4q-.425 0-.712-.288T3 12t.288-.712T4 11h7V4q0-.425.288-.712T12 3t.713.288T13 4v7h7q.425 0 .713.288T21 12t-.288.713T20 13h-7v7q0 .425-.288.713T12 21"/></svg>
                     CREATE NEW {{componentName.toUpperCase()}} 
@@ -33,10 +36,10 @@
         </div>
     </section>
     <!--Search bar-->
-    <section class="w-full md:w-1/2 lg:w-2/6 flex gap-1 justify-end items-center  md:order-last">
+    <section class="w-full md:w-1/2 lg:w-3/6 flex gap-1 justify-end items-center  md:order-last">
         <div class="relative w-full">
             <input  type="text" #searchInput  placeholder="serach"  
-                class="w-full p-2 rounded-lg border-2 border-grn bg-white outline-none" 
+                class="w-full p-2 rounded-lg border-2 border-secondary bg-white outline-none" 
                 [formControl]="searchControl"
             />
             <button (click)="clearSearchArea()" 

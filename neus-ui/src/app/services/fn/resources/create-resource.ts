@@ -14,6 +14,7 @@ export interface CreateResource$Params {
       body?: {
 'dto': CreateResourceDto;
 'file': Blob;
+'previewFile': Blob;
 }
 }
 

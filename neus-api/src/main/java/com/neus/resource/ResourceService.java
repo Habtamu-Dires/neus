@@ -5,9 +5,7 @@ import com.neus.common.SubscriptionLevel;
 import com.neus.exceptions.ResourceNotFoundException;
 import com.neus.file.FileStorageService;
 import com.neus.resource.dto.*;
-import com.neus.user.User;
-import com.neus.user.dto.UserDto;
-import com.neus.user.dto.UserDtoMapper;
+import com.neus.subscription_plan.SubscriptionPlanService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -31,24 +29,23 @@ public class ResourceService {
 
     private final ResourceRepository resourceRepository;
     private final FileStorageService fileStorageService;
+    private final SubscriptionPlanService subPlanService;
 
     //create resource
     @PreAuthorize("hasRole('ADMIN')")
     @Transactional
-    public void createResource(@Valid CreateResourceDto dto, MultipartFile file) {
+    public void createResource(
+            @Valid CreateResourceDto dto,
+           MultipartFile file,
+           MultipartFile previewFile
+    ) {
 
-        // check preview resource
-        Resource previewResource = null;
-        if(dto.previewResourceId() != null && !dto.previewResourceId().isBlank()){
-            previewResource = this.findResourceByExternalId(dto.previewResourceId());
-        }
         // check for parent resource
         Resource parentResource = null;
         if(dto.parentResourceId() != null && !dto.parentResourceId().isBlank()){
             parentResource = this.findResourceByExternalId(dto.parentResourceId());
         }
 
-        System.out.println("requred sub level " + dto.requiredSubLevel());
         Resource resource = Resource.builder()
                 .externalId(UUID.randomUUID())
                 .type(dto.type())
@@ -57,13 +54,18 @@ public class ResourceService {
                 .description(dto.description())
                 .requiredSubLevel(dto.requiredSubLevel())
                 .parentResource(parentResource)
-                .previewResource(previewResource)
                 .build();
 
         Resource savedResource = resourceRepository.save(resource);
 
         // save file
-        saveFile(file,savedResource);
+        if(file != null){
+            saveFile(file,savedResource);
+        }
+        // save preview file
+        if(previewFile != null){
+            savePreviewFile(previewFile,savedResource);
+        }
     }
 
     // update resource
@@ -72,11 +74,6 @@ public class ResourceService {
     public void updateResource(CreateResourceDto dto, String externalId){
         Resource resource = this.findResourceByExternalId(externalId);
 
-        // check preview resource
-        Resource previewResource = null;
-        if(dto.previewResourceId() != null && !dto.previewResourceId().isBlank()){
-            previewResource = this.findResourceByExternalId(dto.previewResourceId());
-        }
         // check for parent resource
         Resource parentResource = null;
         if(dto.parentResourceId() != null && !dto.parentResourceId().isBlank()){
@@ -89,7 +86,6 @@ public class ResourceService {
         resource.setDescription(dto.description());
         resource.setRequiredSubLevel(dto.requiredSubLevel());
         resource.setParentResource(parentResource);
-        resource.setPreviewResource(previewResource);
 
         resourceRepository.save(resource);
 
@@ -97,13 +93,13 @@ public class ResourceService {
 
     // get resource list
     public List<ListOfResourcesDto> getListOfResources() {
-        return resourceRepository.getListOfResources().stream()
+        return resourceRepository.findAll().stream()
                 .map(ResourceDtoMapper::mapToListOfResourceDto)
                 .toList();
     }
 
     // get resource detail
-    public ResourceDto getResourceDetail(String resourceId, Authentication authentication) {
+    public ResourceDetailDto getResourceDetail(String resourceId, Authentication authentication) {
         // Fetch the resource
         Resource resource = resourceRepository.findByExternalId(UUID.fromString(resourceId))
                 .orElseThrow(() -> new ResourceNotFoundException("Resource not found"));
@@ -116,16 +112,17 @@ public class ResourceService {
         SubscriptionLevel userLevel = mapRoleToSubscriptionLevel(userRole);
 
         //  Determine access
-        boolean hasFullAccess = userLevel != null && userLevel.compareTo(requiredLevel) >= 0;
+        boolean hasFullAccess = false;
+        if(requiredLevel == SubscriptionLevel.NONE){
+            hasFullAccess = true;
+        } else {
+            hasFullAccess = userLevel != null && userLevel.compareTo(requiredLevel) >= 0;
+        }
 
         if(hasFullAccess){
-            return ResourceDtoMapper.mapToResourceDto(resource);
-        } else if(resource.getPreviewResource() != null){
-            return resourceRepository
-                    .findByExternalId(resource.getPreviewResource().getExternalId())
-                    .map(ResourceDtoMapper::mapToResourceDto)
-                    .orElseThrow(() -> new ResourceNotFoundException("Preview Resource not found"));
-
+            return ResourceDtoMapper.mapToResourceDetailDto(resource, resource.getContentPath());
+        } else if(!resource.getPreviewContentPath().isEmpty()){
+            return ResourceDtoMapper.mapToResourceDetailDto(resource, resource.getPreviewContentPath());
         }
         return null;
     }
@@ -138,6 +135,7 @@ public class ResourceService {
 
         // Get the required subscription level
         SubscriptionLevel requiredLevel = resource.getRequiredSubLevel();
+
 
         // Check user’s subscription level (from JWT roles)
         String userRole = getUserRoleFromJwt(authentication);
@@ -153,14 +151,15 @@ public class ResourceService {
                     .map(ResourceDtoMapper::mapToResourceDto)
                     .toList();
             return ResourceDtoMapper.mapToResourceCollectionDto(resource,resourceDtoList);
-        } else if(resource.getPreviewResource() != null) {
-            ResourceDto resourceDto = resourceRepository
-                    .findByExternalId(resource.getPreviewResource().getExternalId())
-                    .map(ResourceDtoMapper::mapToResourceDto)
-                    .orElseThrow(() -> new ResourceNotFoundException("Preview Resource not found"));
-
-            return ResourceDtoMapper.mapToResourceCollectionDto(resource,List.of(resourceDto));
         }
+//        else if(resource.getPreviewResource() != null) {
+//            ResourceDto resourceDto = resourceRepository
+//                    .findByExternalId(resource.getPreviewResource().getExternalId())
+//                    .map(ResourceDtoMapper::mapToResourceDto)
+//                    .orElseThrow(() -> new ResourceNotFoundException("Preview Resource not found"));
+//
+//            return ResourceDtoMapper.mapToResourceCollectionDto(resource,List.of(resourceDto));
+//        }
 
         return null;
     }
@@ -172,6 +171,16 @@ public class ResourceService {
         }
         String url = fileStorageService.saveFile(file, resource.getType().toString());
         resource.setContentPath(url);
+        resourceRepository.save(resource);
+    }
+
+    // save preview file
+    private void savePreviewFile(MultipartFile file, Resource resource){
+        if(resource.getPreviewContentPath() != null){
+            fileStorageService.deleteFile(resource.getPreviewContentPath());
+        }
+        String url = fileStorageService.saveFile(file, resource.getType().toString());
+        resource.setPreviewContentPath(url);
         resourceRepository.save(resource);
     }
 
@@ -208,16 +217,36 @@ public class ResourceService {
     public void deleteResource(String resourceId) {
         Resource resource = this.findResourceByExternalId(resourceId);
         String contentPath = resource.getContentPath();
+        String previewContentPath = resource.getPreviewContentPath();
         resourceRepository.delete(resource);
         fileStorageService.deleteFile(contentPath);
+        fileStorageService.deleteFile(previewContentPath);
     }
 
     // update resource content
     @PreAuthorize("hasRole('ADMIN')")
     @Transactional
-    public void updateResourceContent(MultipartFile file, String resourceId) {
+    public void updateResourceContent(MultipartFile file, String resourceId, boolean isPreview) {
         Resource resource = this.findResourceByExternalId(resourceId);
-        this.saveFile(file,resource);
+        if(isPreview){
+            this.savePreviewFile(file,resource);
+        } else { // main file
+            this.saveFile(file, resource);
+        }
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @Transactional
+    public void deleteResourceContent(String url, String resourceId, boolean isPreview) {
+        Resource resource = this.findResourceByExternalId(resourceId);
+        if(isPreview){
+            fileStorageService.deleteFile(url);
+            resource.setPreviewContentPath(null);
+        } else { // main file
+            fileStorageService.deleteFile(url);
+            resource.setContentPath(null);
+        }
+        resourceRepository.save(resource);
     }
 
     // get resource by id

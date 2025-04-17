@@ -14,5 +14,6 @@ public record ResourceDto(
         String description,
         String parentResourceId,
         String parentResource,
-        String contentPath
+        String contentPath,
+        String previewContentPath
 ) {}

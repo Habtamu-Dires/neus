@@ -79,7 +79,7 @@ export class ResourceComponent implements OnInit{
   }
 
   // on read dialog
-  readDescription(description:any, type:any){
+  readDescription(description:any, title:any){
     console.log("The descripiton " + description)
     const dialog = this.matDialog.open(ReadDialogComponent,{
       maxWidth: '90vw',
@@ -88,7 +88,7 @@ export class ResourceComponent implements OnInit{
       height: '60%',
           data:{
             content:description,
-            title: type
+            title: title
           }
     });
 
@@ -101,15 +101,18 @@ export class ResourceComponent implements OnInit{
   }
 
   // on view content
-  viewContent(contentPath:any, type:any, title:any){
-    console.log("type " + contentPath);
-   if(type == 'VIDEO'){
-    this.router.navigate(['admin','video-streaming'],
-      {queryParams:{'videoSource': contentPath  , title: title}}
-    )
+  viewContent(resouce:ResourceDto){
+    console.log("tye " + resouce.type);
+   if(resouce.type === 'VIDEO'){
+    this.router.navigate(['admin','video-streamer'],
+      {queryParams:{
+        'videoSrc': resouce.contentPath  , 
+        'title': resouce.title,
+        'description':resouce.description
+      }})
    } else {
     this.router.navigate(['admin','pdf-reader'],
-      {queryParams:{'pdfSrc': contentPath  , 'title': title}})
+      {queryParams:{'pdfSrc': resouce.contentPath}})
    }
   }
 

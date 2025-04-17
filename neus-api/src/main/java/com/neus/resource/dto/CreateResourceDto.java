@@ -17,11 +17,10 @@ public record CreateResourceDto(
         String title,
         @NotNull(message = "Subscription Level is Mandatory")
         SubscriptionLevel requiredSubLevel,
-        @NotEmpty(message = "Department is Mandatory")
         String department,
         @NotEmpty(message = "Description is Mandatory")
         String description,
         String contentPath,
-        String previewResourceId,
+        String previewResourcePath,
         String parentResourceId
 ) {}

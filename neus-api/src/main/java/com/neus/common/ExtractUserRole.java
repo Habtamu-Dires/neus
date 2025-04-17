@@ -30,4 +30,16 @@ public class ExtractUserRole {
             default -> null; // No valid subscription
         };
     }
+
+    public static String mapSubscriptionLevelToKeycloakRole(SubscriptionLevel level){
+        if (level == null) {
+            return null; // No subscription (e.g., guest)
+        }
+        return switch (level) {
+            case SubscriptionLevel.BASIC -> "basic_subscriber";
+            case  SubscriptionLevel.ADVANCED -> "advanced_subscriber";
+            case  SubscriptionLevel.PREMIUM -> "premium_subscriber";
+            default -> null; // No valid subscription
+        };
+    }
 }

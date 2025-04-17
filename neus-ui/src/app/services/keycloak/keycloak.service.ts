@@ -39,7 +39,7 @@ export class KeycloakService {
     if(authenticated){
       this._profile = (await this.keycloak?.loadUserProfile()) as UserProfile;
       // Start token refresh mechanism
-      this.startTokenRefresh();
+      // this.startTokenRefresh();
 
       if(this.isAdminUser){
         this.router.navigate(['admin'])
@@ -84,6 +84,22 @@ export class KeycloakService {
       return true;
     }
       return false;
+  }
+
+  // decode the user subscription level
+  get subscriptionLevel():any{
+    const parsedToken = this.keycloak.tokenParsed;
+    const roles:string[] = parsedToken?.realm_access?.roles as string[];
+    console.log("roles " + roles);
+    if(roles.includes('basic_subscriber')){
+      return 'basic_subscriber'
+    } else if(roles.includes('advanced_subscriber')){
+      return 'advanced_subscriber'
+    } else if(roles.includes('premium_subscriber')){
+      return 'premium_subscriber'
+    } else {
+      return undefined;
+    }
   }
 
   // Get the current access token

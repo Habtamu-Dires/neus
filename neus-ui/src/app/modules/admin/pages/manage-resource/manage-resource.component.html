@@ -1,4 +1,4 @@
-<main class="max-container w-full min-h-screen px-4 py-10 flex flex-col justify-center items-center gap-6">
+<main class="max-container w-full min-h-screen py-10 flex flex-col justify-center items-center gap-6">
     <!-- Cancel -->
     <div class="fixed top-4 right-4">
       <svg class="cursor-pointer" (click)="onCancel()"
@@ -50,7 +50,7 @@
   
       <!-- Department -->
       <div class="grid grid-cols-12 gap-2 items-center">
-        <label class="form-label">Department<span class="text-red-400">*</span></label>
+        <label class="form-label">Department</label>
         <input [(ngModel)]="createResourceDto.department" class="form-input" type="text" placeholder="Department" />
       </div>
   
@@ -78,18 +78,59 @@
       <!-- Description -->
       <div class="grid grid-cols-12 gap-2 items-start">
         <label class="form-label">Description<span class="text-red-400">*</span></label>
-        <div (click)="openEditDialog()" [innerHTML]="createResourceDto.description"
-          class="form-input cursor-pointer min-h-[3rem]">
-        </div>
+        <textarea [(ngModel)]="createResourceDto.description" rows="4" 
+          class="form-input"  placeholder="description"></textarea>
       </div>
   
       <!-- File Selector -->
       <div class="grid grid-cols-12 gap-2 items-center">
         <label class="form-label">Content</label>
-        <input class="form-input cursor-pointer" type="file" (change)="onFileSelected($event)" />
+        <div class="w-full col-span-12 md:col-span-10 flex justify-between gap-2">
+          <input #fileInput class="w-full form-input cursor-pointer" type="file" (change)="onFileSelected($event, false)" />
+          <button (click)="resetFileInput(fileInput, false)" 
+              class="px-4 cursor-pointer text-red-500 hover:text-red-700" title="Delete">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4m-4 4v12m-4-12v12" />
+              </svg>
+          </button>
+        </div>
       </div>
+
+      <!--existing file-->
+      <div *ngIf="createResourceDto.id && createResourceDto.contentPath"
+        class="grid grid-cols-12 gap-4 items-center ms-2 md:ms-12">
+          <input disabled type="text" class="w-full form-input" value={{createResourceDto.contentPath}} />
+          <button (click)="deleteFile(createResourceDto.contentPath, false)" 
+            class="text-red-500 cursor-pointer">delete</button>
+      </div>
+
       <!--file didn't match error-->
       <p *ngIf="showFileTypeMatchError" class="text-red-500 text-sm">Selected file type doesn't match</p>
+
+      <!-- Preview File Selector -->
+      <div class="grid grid-cols-12 gap-2 items-center">
+        <label class="form-label">Preview Content</label>
+        <div class="w-full col-span-12 md:col-span-10 flex justify-between gap-2">
+          <input #previewFileInput class="w-full form-input cursor-pointer" type="file" (change)="onFileSelected($event, true)" />
+          <button (click)="resetFileInput(previewFileInput, true)" 
+              class="px-4 cursor-pointer text-red-500 hover:text-red-700" title="Delete">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4m-4 4v12m-4-12v12" />
+              </svg>
+          </button>
+        </div>
+      </div>
+      <!--existing preview  file-->
+      <div *ngIf="createResourceDto.id && createResourceDto.previewResourcePath"
+        class="grid grid-cols-12 gap-4 items-center ms-2 md:ms-12">
+          <input disabled type="text" class="w-full form-input" value={{createResourceDto.previewResourcePath}} />
+          <button (click)="deleteFile(createResourceDto.previewResourcePath,true)" 
+            class="text-red-500 cursor-pointer">delete</button>
+      </div>
+
+       <!-- preview file didn't match error-->
+       <p *ngIf="showPreviewFileTypeMatchError" class="text-red-500 text-sm">Selected file type doesn't match</p>
+  
   
       <!-- Save Button -->
       <div class="flex justify-center pt-4">
@@ -97,7 +138,9 @@
           [disabled]="isUploading"
           (click)="onSave()">
           <ng-container *ngIf="!isUploading; else loading">
-            <p class="text-lg">Save</p>
+            <p class="text-lg">
+              <span>{{createResourceDto.id ? 'Update' : 'Save'}}</span>
+            </p>
           </ng-container>
           <ng-template #loading>
             <div class="w-6 h-6 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -105,5 +148,5 @@
         </button>
       </div>
     </section>
-  </main>
+</main>
   

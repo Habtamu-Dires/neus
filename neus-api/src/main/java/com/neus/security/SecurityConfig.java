@@ -22,6 +22,9 @@ public class SecurityConfig {
         http.authorizeHttpRequests(request -> request
                 .requestMatchers(
                         "/files/**",
+                        "exams/detail/**",
+                        "resources/detail/**",
+                        "/sub-plans/enabled",
                         "/resources/list",
                         "/register/**",
                         "/v2/api-docs",

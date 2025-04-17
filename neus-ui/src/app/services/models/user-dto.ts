@@ -9,6 +9,6 @@ export interface UserDto {
   id?: string;
   registeredDate?: string;
   startDate?: string;
-  subscriptionLevel?: 'FREE' | 'BASIC' | 'ADVANCED' | 'PREMIUM';
+  subscriptionLevel?: 'NONE' | 'BASIC' | 'ADVANCED' | 'PREMIUM';
   username?: string;
 }

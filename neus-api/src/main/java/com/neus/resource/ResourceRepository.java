@@ -11,10 +11,6 @@ import java.util.UUID;
 
 public interface ResourceRepository extends JpaRepository<Resource,Long> {
 
-    @Query("""
-            SELECT r FROM Resource r WHERE r.previewResource IS NULL
-            """)
-    List<Resource> getListOfResources();
 
     @Query("""
             SELECT r FROM Resource r Where r.externalId = :resourceId

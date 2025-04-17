@@ -5,6 +5,6 @@
 export interface SubscriptionResponse {
   endDate?: string;
   externalId?: string;
-  level?: 'FREE' | 'BASIC' | 'ADVANCED' | 'PREMIUM';
+  level?: 'NONE' | 'BASIC' | 'ADVANCED' | 'PREMIUM';
   startDate?: string;
 }

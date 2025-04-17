@@ -11,6 +11,8 @@ import { BaseService } from '../base-service';
 import { ApiConfiguration } from '../api-configuration';
 import { StrictHttpResponse } from '../strict-http-response';
 
+import { createSubscription } from '../fn/subscription/create-subscription';
+import { CreateSubscription$Params } from '../fn/subscription/create-subscription';
 import { getCurrentSubscription } from '../fn/subscription/get-current-subscription';
 import { GetCurrentSubscription$Params } from '../fn/subscription/get-current-subscription';
 import { SubscriptionResponse } from '../models/subscription-response';
@@ -19,6 +21,35 @@ import { SubscriptionResponse } from '../models/subscription-response';
 export class SubscriptionService extends BaseService {
   constructor(config: ApiConfiguration, http: HttpClient) {
     super(config, http);
+  }
+
+  /** Path part for operation `createSubscription()` */
+  static readonly CreateSubscriptionPath = '/subscription/{sub-plan-id}';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `createSubscription()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  createSubscription$Response(params: CreateSubscription$Params, context?: HttpContext): Observable<StrictHttpResponse<{
+}>> {
+    return createSubscription(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `createSubscription$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  createSubscription(params: CreateSubscription$Params, context?: HttpContext): Observable<{
+}> {
+    return this.createSubscription$Response(params, context).pipe(
+      map((r: StrictHttpResponse<{
+}>): {
+} => r.body)
+    );
   }
 
   /** Path part for operation `getCurrentSubscription()` */

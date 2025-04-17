@@ -13,6 +13,8 @@ import { StrictHttpResponse } from '../strict-http-response';
 
 import { getFile } from '../fn/files/get-file';
 import { GetFile$Params } from '../fn/files/get-file';
+import { getImage } from '../fn/files/get-image';
+import { GetImage$Params } from '../fn/files/get-image';
 import { streamVideo } from '../fn/files/stream-video';
 import { StreamVideo$Params } from '../fn/files/stream-video';
 
@@ -43,6 +45,31 @@ export class FilesService extends BaseService {
    */
   streamVideo(params: StreamVideo$Params, context?: HttpContext): Observable<Blob> {
     return this.streamVideo$Response(params, context).pipe(
+      map((r: StrictHttpResponse<Blob>): Blob => r.body)
+    );
+  }
+
+  /** Path part for operation `getImage()` */
+  static readonly GetImagePath = '/files/get-image';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getImage()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getImage$Response(params: GetImage$Params, context?: HttpContext): Observable<StrictHttpResponse<Blob>> {
+    return getImage(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getImage$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getImage(params: GetImage$Params, context?: HttpContext): Observable<Blob> {
+    return this.getImage$Response(params, context).pipe(
       map((r: StrictHttpResponse<Blob>): Blob => r.body)
     );
   }

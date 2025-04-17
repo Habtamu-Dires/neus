@@ -1,0 +1,10 @@
+<section class="flex items-center justify-center min-h-[400px] bg-gradient-to-br from-gray-100 to-blue-200 py-24 px-4 text-center">
+    <div class="max-w-2xl">
+      <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-6">{{ headline }}</h1>
+      <p class="text-lg md:text-xl text-gray-600 mb-8">{{ subtext }}</p>
+      <p (click)="gotoAction()"  
+        class="cursor-pointer inline-block bg-primary text-white py-3 px-6 rounded-lg text-base font-medium hover:bg-blue-500 transition-colors">
+        {{ ctaText }}
+      </p>
+    </div>
+  </section>

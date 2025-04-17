@@ -1,5 +1,5 @@
 package com.neus.common;
 
 public enum SubscriptionLevel {
-    FREE,BASIC,ADVANCED,PREMIUM
+    NONE,BASIC,ADVANCED,PREMIUM
 }

@@ -1,0 +1,82 @@
+<main class="admin-container">
+    <div class="sticky top-0 w-full z-10 bg-white">
+      <app-header
+        componentName="Subscription"
+        (onSearch)="onSearch($event)"
+      >
+      </app-header>
+    </div>
+    <!--no user found message-->
+    <div *ngIf="subPlanList.length === 0" 
+        class="w-full h-64 flex items-center justify-center text-gray-600 text-lg">
+             No Subscription plan found.
+    </div>
+    <section *ngIf="subPlanList.length > 0">
+      <!--on large screen-->
+        <div class="hidden md:block">
+            <table class="min-w-full border border-gray-300 bg-white">
+                <thead class="bg-gray-200 sticky top-16">
+                    <tr>
+                        <th class="table-head w-1/12">Level</th>
+                        <th class="table-head w-1/12">Price</th>
+                        <th class="table-head w-1/12">Duration</th>
+                        <th class="table-head w-1/12">Benefits</th>
+                        <th class="table-head w-1/12">Enabled</th>
+                        <th class="table-head w-1/12">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let plan of subPlanList" class="border-b border-gray-300 hover:bg-gray-100">                          
+                        <td class="table-data">{{ plan.level }}</td>
+                        <td class="table-data">{{ plan.price  }}</td>
+                        <td class="table-data">{{ plan.durationInMonth}}</td>
+                        <td class="table-data">
+                            <span (click)="openReadDialog(plan.level,plan.benefits)" 
+                                class="text-primary cursor-pointer">read</span>
+                        </td>
+                        <td class="table-data">
+                            <span>{{plan.enabled ? 'Yes' : 'NO'}}</span>
+                        </td>
+                        <td class="table-data">
+                            <div class="flex gap-5 relative">
+                                <!-- <p class="text-blue-500 cursor-pointer">detail</p>  -->
+                                <p (click)="onEdit(plan.id)" class="text-primary cursor-pointer">edit</p>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!--on mobile view-->
+        <div class="block md:hidden">
+            <div *ngFor="let plan of subPlanList" class="bg-white rounded-lg shadow-md p-4 mb-4 border border-gray-200">
+                <div class="mb-2">
+                    <span class="font-semibold text-gray-600">Level:</span>
+                    <span class="ml-2">{{ plan.level }}</span>
+                </div>
+                <div class="mb-2">
+                    <span class="font-semibold text-gray-600">Price:</span>
+                    <span class="ml-2">{{ plan.price }}</span>
+                </div>
+                <div class="mb-2">
+                    <span class="font-semibold text-gray-600">Duration:</span>
+                    <span class="ml-2">{{ plan.durationInMonth }}</span>
+                </div>
+                <div class="mb-2">
+                    <span class="font-semibold text-gray-600">Benefits:</span>
+                    <span (click)="openReadDialog(plan.level,plan.benefits)" 
+                            class="text-primary cursor-pointer">read</span>
+                </div>
+                <div class="mb-2">
+                    <span class="font-semibold text-gray-600">Enabled:</span>
+                    <span class="ml-2">{{ plan.enabled ? 'YES' : 'NO' }}</span>
+                </div>
+        
+                <!-- Actions -->
+                <div class="flex items-center justify-end mt-4 gap-4 relative">                        
+                    <p (click)="onEdit(plan.id)" class="text-primary cursor-pointer">edit</p>
+                </div>
+            </div>
+        </div>
+  </section>
+</main>

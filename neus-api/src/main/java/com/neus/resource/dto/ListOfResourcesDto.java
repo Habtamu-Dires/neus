@@ -13,6 +13,5 @@ public record ListOfResourcesDto(
         String title,
         String department,
         String description,
-        SubscriptionLevel requiredSubLevel,
-        UUID previewId
+        SubscriptionLevel requiredSubLevel
 ) { }

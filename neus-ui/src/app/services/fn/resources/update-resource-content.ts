@@ -11,6 +11,7 @@ import { RequestBuilder } from '../../request-builder';
 
 export interface UpdateResourceContent$Params {
   'resource-id': string;
+  isPreview: boolean;
       body?: {
 'file': Blob;
 }
@@ -21,6 +22,7 @@ export function updateResourceContent(http: HttpClient, rootUrl: string, params:
   const rb = new RequestBuilder(rootUrl, updateResourceContent.PATH, 'put');
   if (params) {
     rb.path('resource-id', params['resource-id'], {});
+    rb.query('isPreview', params.isPreview, {});
     rb.body(params.body, 'multipart/form-data');
   }
 

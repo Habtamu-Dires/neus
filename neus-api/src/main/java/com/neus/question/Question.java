@@ -6,6 +6,7 @@ import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,6 +25,9 @@ public class Question {
     @Column(unique = true)
     private UUID externalId;
 
+    @Column(unique = true)
+    private int questionNumber;
+
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
     private List<Choice> choice;
@@ -31,7 +35,7 @@ public class Question {
     private String questionText;
     @Column(columnDefinition = "TEXT")
     private String explanation;
-    private List<String> imageUrls;
+    private List<String> imageUrls = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "exam_id")

@@ -13,14 +13,78 @@ import { StrictHttpResponse } from '../strict-http-response';
 
 import { createExam } from '../fn/exams/create-exam';
 import { CreateExam$Params } from '../fn/exams/create-exam';
+import { deleteExam } from '../fn/exams/delete-exam';
+import { DeleteExam$Params } from '../fn/exams/delete-exam';
+import { ExamDetailDto } from '../models/exam-detail-dto';
 import { ExamDto } from '../models/exam-dto';
+import { getExamById } from '../fn/exams/get-exam-by-id';
+import { GetExamById$Params } from '../fn/exams/get-exam-by-id';
 import { getExamDetail } from '../fn/exams/get-exam-detail';
 import { GetExamDetail$Params } from '../fn/exams/get-exam-detail';
+import { getPageOfExams } from '../fn/exams/get-page-of-exams';
+import { GetPageOfExams$Params } from '../fn/exams/get-page-of-exams';
+import { PageResponseExamDto } from '../models/page-response-exam-dto';
+import { updateExam } from '../fn/exams/update-exam';
+import { UpdateExam$Params } from '../fn/exams/update-exam';
 
 @Injectable({ providedIn: 'root' })
 export class ExamsService extends BaseService {
   constructor(config: ApiConfiguration, http: HttpClient) {
     super(config, http);
+  }
+
+  /** Path part for operation `getPageOfExams()` */
+  static readonly GetPageOfExamsPath = '/exams';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getPageOfExams()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getPageOfExams$Response(params?: GetPageOfExams$Params, context?: HttpContext): Observable<StrictHttpResponse<PageResponseExamDto>> {
+    return getPageOfExams(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getPageOfExams$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getPageOfExams(params?: GetPageOfExams$Params, context?: HttpContext): Observable<PageResponseExamDto> {
+    return this.getPageOfExams$Response(params, context).pipe(
+      map((r: StrictHttpResponse<PageResponseExamDto>): PageResponseExamDto => r.body)
+    );
+  }
+
+  /** Path part for operation `updateExam()` */
+  static readonly UpdateExamPath = '/exams';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `updateExam()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateExam$Response(params: UpdateExam$Params, context?: HttpContext): Observable<StrictHttpResponse<{
+}>> {
+    return updateExam(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `updateExam$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  updateExam(params: UpdateExam$Params, context?: HttpContext): Observable<{
+}> {
+    return this.updateExam$Response(params, context).pipe(
+      map((r: StrictHttpResponse<{
+}>): {
+} => r.body)
+    );
   }
 
   /** Path part for operation `createExam()` */
@@ -52,8 +116,62 @@ export class ExamsService extends BaseService {
     );
   }
 
+  /** Path part for operation `getExamById()` */
+  static readonly GetExamByIdPath = '/exams/{exam-id}';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getExamById()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getExamById$Response(params: GetExamById$Params, context?: HttpContext): Observable<StrictHttpResponse<ExamDto>> {
+    return getExamById(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getExamById$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getExamById(params: GetExamById$Params, context?: HttpContext): Observable<ExamDto> {
+    return this.getExamById$Response(params, context).pipe(
+      map((r: StrictHttpResponse<ExamDto>): ExamDto => r.body)
+    );
+  }
+
+  /** Path part for operation `deleteExam()` */
+  static readonly DeleteExamPath = '/exams/{exam-id}';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `deleteExam()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  deleteExam$Response(params: DeleteExam$Params, context?: HttpContext): Observable<StrictHttpResponse<{
+}>> {
+    return deleteExam(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `deleteExam$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  deleteExam(params: DeleteExam$Params, context?: HttpContext): Observable<{
+}> {
+    return this.deleteExam$Response(params, context).pipe(
+      map((r: StrictHttpResponse<{
+}>): {
+} => r.body)
+    );
+  }
+
   /** Path part for operation `getExamDetail()` */
-  static readonly GetExamDetailPath = '/exams/{exam-id}';
+  static readonly GetExamDetailPath = '/exams/detail/{exam-id}';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
@@ -61,7 +179,7 @@ export class ExamsService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getExamDetail$Response(params: GetExamDetail$Params, context?: HttpContext): Observable<StrictHttpResponse<ExamDto>> {
+  getExamDetail$Response(params: GetExamDetail$Params, context?: HttpContext): Observable<StrictHttpResponse<ExamDetailDto>> {
     return getExamDetail(this.http, this.rootUrl, params, context);
   }
 
@@ -71,9 +189,9 @@ export class ExamsService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getExamDetail(params: GetExamDetail$Params, context?: HttpContext): Observable<ExamDto> {
+  getExamDetail(params: GetExamDetail$Params, context?: HttpContext): Observable<ExamDetailDto> {
     return this.getExamDetail$Response(params, context).pipe(
-      map((r: StrictHttpResponse<ExamDto>): ExamDto => r.body)
+      map((r: StrictHttpResponse<ExamDetailDto>): ExamDetailDto => r.body)
     );
   }
 

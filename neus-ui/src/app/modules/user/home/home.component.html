@@ -1,2 +1,29 @@
-<p>home works!</p>
-<button class="p-2 bg-amber-300 cursor-pointer" (click)="signIn()">signIn</button>
+<main class="relative min-h-screen w-full flex flex-col gap-4"
+       [ngClass]="{'black-bg': drawerShown}">
+    <!--header-->
+    <section class="fixed top-0 z-50 bg-bgBrand flex justify-center items-center w-full">
+            <app-header 
+                class="w-full"
+                (onSectionSelected)="onSectionSelected($event)"
+                (onShowDrawer)="onShawDrawer($event)"
+            ></app-header>       
+    </section>
+    <!--hero-->
+    <section id="home">
+        <app-hero
+            (navigateToAction)="onSectionSelected($event)">            
+        </app-hero>
+    </section>
+    <!--subscription plan-->
+    <section id="plan">
+        <app-subscriptions></app-subscriptions>
+    </section>
+    <!--resources-->
+    <section id="resources">
+        <app-resources></app-resources>
+    </section>
+    <!--footer-->
+    <footer id="contactus" class="w-full">
+        <app-footer [showDrawer]="drawerShown"></app-footer>
+    </footer>
+</main>

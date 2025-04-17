@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 public interface QuestionRepository extends JpaRepository<Question,Long> {
 
@@ -14,7 +16,12 @@ public interface QuestionRepository extends JpaRepository<Question,Long> {
     List<Question> findByExamId(Long examId);
 
     @Query("""
-            SELECT q FrOM Question q WHERE q.exam.id = :examId
+            SELECT q FROM Question q WHERE q.exam.id = :examId
             """)
     List<Question> findPreviewQuestions(Long examId, Pageable pageable);
+
+    @Query("""
+            SELECT q FROM Question q WHERE q.externalId = :externalId
+            """)
+    Optional<Question> findByExternalId(UUID externalId);
 }

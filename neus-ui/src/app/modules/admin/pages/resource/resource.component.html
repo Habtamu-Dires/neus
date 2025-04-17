@@ -1,4 +1,4 @@
-<main>
+<main class="admin-container">
     <div class="sticky top-0 w-full z-10 bg-white">
       <app-header
         componentName="Resource"
@@ -8,9 +8,10 @@
       </app-header>
     </div>
     <!--no user found message-->
-    <ng-container *ngIf="resourcesList.length === 0" class="flex justify-center py-10">
-      No resource found.
-    </ng-container>
+    <div *ngIf="resourcesList.length === 0" 
+        class="w-full h-64 flex items-center justify-center text-gray-600 text-lg">
+             No resource found.
+    </div>
     <section *ngIf="resourcesList.length > 0">
       <!--on large screen-->
         <div class="hidden md:block">
@@ -23,6 +24,7 @@
                     <th class="table-head w-1/12">Subscription Level</th>
                     <th class="table-head w-1/12">Description</th>
                     <th class="table-head w-1/12">Content</th>
+                    <th class="table-head w-1/12">Preview Content</th>
                     <th class="table-head w-1/12">Parent</th>
                     <th class="table-head w-1/12">Actions</th>
                 </tr>
@@ -37,7 +39,10 @@
                         <span (click)="readDescription(resource.description, resource.title)" class="text-primary cursor-pointer">read</span>
                     </td>
                     <td class="table-data">
-                        <span (click)="viewContent(resource.contentPath, resource.type, resource.title)" class="text-primary cursor-pointer">view</span>
+                        <span (click)="viewContent(resource)" class="text-primary cursor-pointer">view</span>
+                    </td>
+                    <td class="table-data">
+                        <span (click)="viewContent(resource)" class="text-primary cursor-pointer">view</span>
                     </td>
                     <td class="table-data">{{resource.parentResource ? resource.parentResource : '--'}}</td>
                     <td class="table-data">
@@ -91,7 +96,7 @@
                 </div>
                 <div class="mb-2">
                     <span class="font-semibold text-gray-600">Content</span>
-                    <span (click)="viewContent(resource.contentPath, resource.type, resource.title)" class="text-primary cursor-pointer">view</span>
+                    <span (click)="viewContent(resource)" class="text-primary cursor-pointer">view</span>
                 </div>
                 <div class="mb-2">
                     <span class="font-semibold text-gray-600">Parent:</span>
