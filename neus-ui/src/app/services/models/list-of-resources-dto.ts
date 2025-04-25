@@ -8,5 +8,5 @@ export interface ListOfResourcesDto {
   requiredSubLevel?: 'NONE' | 'BASIC' | 'ADVANCED' | 'PREMIUM';
   resourceId?: string;
   title?: string;
-  type?: 'EXAM' | 'NOTE' | 'VIDEO' | 'BOOK' | 'COLLECTION';
+  type?: 'EXAM' | 'READING_MATERIAL' | 'VIDEO' | 'BOOK' | 'LECTURE_VIDEOS' | 'LECTURE_NOTES';
 }

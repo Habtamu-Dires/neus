@@ -74,7 +74,6 @@ export class KeycloakService {
     this.keycloak.accountManagement();
   }
 
-
   // decode the users role
   get isAdminUser():boolean{
     const parsedToken = this.keycloak.tokenParsed;

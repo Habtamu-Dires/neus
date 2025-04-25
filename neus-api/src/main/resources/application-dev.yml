@@ -27,7 +27,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
-    show-sql: true
+    show-sql: false
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   security:
@@ -47,7 +47,7 @@ application:
   cors:
     origins: http://localhost:4200
   file-storage:
-    path: ./uploadedFiles
+    path: ${FILE_PATH:./uploadedFiles}
   server:
     url: http://localhost:8088/api
 

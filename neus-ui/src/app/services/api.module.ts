@@ -7,6 +7,7 @@ import { HttpClient } from '@angular/common/http';
 import { ApiConfiguration, ApiConfigurationParams } from './api-configuration';
 
 import { UsersService } from './services/users.service';
+import { UserExamService } from './services/user-exam.service';
 import { SbuPlansService } from './services/sbu-plans.service';
 import { ResourcesService } from './services/resources.service';
 import { QuestionsService } from './services/questions.service';
@@ -24,6 +25,7 @@ import { FilesService } from './services/files.service';
   declarations: [],
   providers: [
     UsersService,
+    UserExamService,
     SbuPlansService,
     ResourcesService,
     QuestionsService,

@@ -14,6 +14,7 @@ export class VideoStreamerComponent implements OnInit{
   videoSource:string = '';
   title:string | undefined;
   description:string = '';
+  isLoading:boolean = true;
 
   constructor(
     private activatedRoute:ActivatedRoute,
@@ -25,6 +26,7 @@ export class VideoStreamerComponent implements OnInit{
       this.videoSource = params['videoSrc'];
       this.title = params['title'];
       this.description=params['description']
+      this.isLoading = false;
     });
   }
 

@@ -1,7 +1,7 @@
-<main class="bg-primary w-full h-full">
+<main class="bg-header w-full h-full">
     <!--header-->
     <div class="max-container flex justify-between items-center rounded-lg"
-    [ngClass]="{'bg-black':showDrawer}">
+        [ngClass]="{'bg-black':showDrawer}">
     <!--logo and company name-->
     <section class="p-2 md:p-0 text-xl text-white font-semibold font-mono flex items-center gap-4">
         <!-- <img class="w-16 h-16 rounded-2xl" src="/logo.png"/> -->
@@ -15,13 +15,13 @@
     <section class="hidden md:block">
         <div class="flex-1 flex justify-center items-center p-4 gap-10">
             <app-drawer-item
-                componentName="HOME"
+                componentName="Home"
                 [isActiveComponent]="selectedComponent==='home'"
                 (click)="selectComponent('home')"
             >
             </app-drawer-item>
             <app-drawer-item
-                componentName="RESOURCES"
+                componentName="Resources"
                 [isActiveComponent]="selectedComponent === 'resources'"
                 (click)="selectComponent('resources')"
             >
@@ -33,17 +33,23 @@
             >
             </app-drawer-item>
             <app-drawer-item
-                componentName="CONTACT US"
+                componentName="ContactUS"
+                [isActiveComponent]="selectedComponent === 'contactus'"
+                (click)="selectComponent('contactus')"
+            >
+            </app-drawer-item>
+            <app-drawer-item *ngIf="isLoggedIn"
+                componentName="Profile"
                 [isActiveComponent]="selectedComponent === 'contactus'"
                 (click)="selectComponent('contactus')"
             >
             </app-drawer-item>
             <button *ngIf="!isLoggedIn" (click)="login()"
-                class="bg-secondary px-4 py-2 rounded-md cursor-pointer hover:bg-green-700">
+                class="text-white border-2 px-3 py-[3px]  border-white hover:border-secondary rounded-xl cursor-pointer">
                 SignIn
             </button>
             <button *ngIf="isLoggedIn" (click)="logout()"
-                class="bg-secondary px-4 py-2 rounded-md cursor-pointer hover:bg-green-700">
+            class="text-white border-2 px-3 py-[3px]  border-white hover:border-secondary rounded-xl cursor-pointer">
                 logout
             </button>
         </div>

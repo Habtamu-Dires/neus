@@ -77,6 +77,82 @@
                 }
             }
         },
+        "/user-exam": {
+            "put": {
+                "tags": [
+                    "user-exam"
+                ],
+                "operationId": "saveUserAnswers",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateUserExamDto"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/user-exam/reset/{user-id}/{exam-id}/{mode}": {
+            "put": {
+                "tags": [
+                    "user-exam"
+                ],
+                "operationId": "restUserAnswers",
+                "parameters": [
+                    {
+                        "name": "user-id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "exam-id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "mode",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/sub-plans": {
             "get": {
                 "tags": [
@@ -535,9 +611,7 @@
                                     }
                                 },
                                 "required": [
-                                    "dto",
-                                    "file",
-                                    "previewFile"
+                                    "dto"
                                 ]
                             }
                         }
@@ -690,6 +764,36 @@
                 }
             }
         },
+        "/user-exam/{exam-id}": {
+            "get": {
+                "tags": [
+                    "user-exam"
+                ],
+                "operationId": "getUserAnswers",
+                "parameters": [
+                    {
+                        "name": "exam-id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserExamDto"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/subscription/current/{user-id}": {
             "get": {
                 "tags": [
@@ -765,6 +869,39 @@
                                     "type": "array",
                                     "items": {
                                         "$ref": "#/components/schemas/SubPlanDto"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/resources/search-parent/{title}": {
+            "get": {
+                "tags": [
+                    "resources"
+                ],
+                "operationId": "searchParentResourceByTitle",
+                "parameters": [
+                    {
+                        "name": "title",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ResourceDto"
                                     }
                                 }
                             }
@@ -1176,6 +1313,59 @@
     },
     "components": {
         "schemas": {
+            "CorrectAnswer": {
+                "type": "object",
+                "properties": {
+                    "questionId": {
+                        "type": "string"
+                    },
+                    "isCorrect": {
+                        "type": "boolean"
+                    }
+                }
+            },
+            "UpdateUserExamDto": {
+                "type": "object",
+                "properties": {
+                    "examId": {
+                        "type": "string"
+                    },
+                    "mode": {
+                        "type": "string",
+                        "enum": [
+                            "STUDY",
+                            "TEST"
+                        ]
+                    },
+                    "timeLeftInMinutes": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "userAnswers": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/UserAnswer"
+                        }
+                    },
+                    "correctAnswers": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CorrectAnswer"
+                        }
+                    }
+                }
+            },
+            "UserAnswer": {
+                "type": "object",
+                "properties": {
+                    "questionId": {
+                        "type": "string"
+                    },
+                    "choiceId": {
+                        "type": "string"
+                    }
+                }
+            },
             "UpdateSubPlanDto": {
                 "type": "object",
                 "properties": {
@@ -1219,10 +1409,11 @@
                         "type": "string",
                         "enum": [
                             "EXAM",
-                            "NOTE",
+                            "READING_MATERIAL",
                             "VIDEO",
                             "BOOK",
-                            "COLLECTION"
+                            "LECTURE_VIDEOS",
+                            "LECTURE_NOTES"
                         ]
                     },
                     "title": {
@@ -1455,6 +1646,52 @@
                     }
                 }
             },
+            "UserExamDto": {
+                "type": "object",
+                "properties": {
+                    "userId": {
+                        "type": "string"
+                    },
+                    "examId": {
+                        "type": "string"
+                    },
+                    "mode": {
+                        "type": "string"
+                    },
+                    "lastModifiedDate": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "timeLeftInMinutes": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "studyModeUserAnswers": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/UserAnswer"
+                        }
+                    },
+                    "studyModeCorrectAnswers": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CorrectAnswer"
+                        }
+                    },
+                    "testModeUserAnswers": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/UserAnswer"
+                        }
+                    },
+                    "testModeCorrectAnswers": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CorrectAnswer"
+                        }
+                    }
+                }
+            },
             "SubscriptionResponse": {
                 "type": "object",
                 "properties": {
@@ -1527,10 +1764,11 @@
                         "type": "string",
                         "enum": [
                             "EXAM",
-                            "NOTE",
+                            "READING_MATERIAL",
                             "VIDEO",
                             "BOOK",
-                            "COLLECTION"
+                            "LECTURE_VIDEOS",
+                            "LECTURE_NOTES"
                         ]
                     },
                     "requiredSubLevel": {
@@ -1551,7 +1789,7 @@
                     "parentResourceId": {
                         "type": "string"
                     },
-                    "parentResource": {
+                    "parentResourceTitle": {
                         "type": "string"
                     },
                     "contentPath": {
@@ -1613,10 +1851,11 @@
                         "type": "string",
                         "enum": [
                             "EXAM",
-                            "NOTE",
+                            "READING_MATERIAL",
                             "VIDEO",
                             "BOOK",
-                            "COLLECTION"
+                            "LECTURE_VIDEOS",
+                            "LECTURE_NOTES"
                         ]
                     },
                     "title": {
@@ -1652,10 +1891,11 @@
                         "type": "string",
                         "enum": [
                             "EXAM",
-                            "NOTE",
+                            "READING_MATERIAL",
                             "VIDEO",
                             "BOOK",
-                            "COLLECTION"
+                            "LECTURE_VIDEOS",
+                            "LECTURE_NOTES"
                         ]
                     },
                     "requiredSubLevel": {
@@ -1691,10 +1931,11 @@
                         "type": "string",
                         "enum": [
                             "EXAM",
-                            "NOTE",
+                            "READING_MATERIAL",
                             "VIDEO",
                             "BOOK",
-                            "COLLECTION"
+                            "LECTURE_VIDEOS",
+                            "LECTURE_NOTES"
                         ]
                     },
                     "title": {
@@ -1842,6 +2083,15 @@
                     "duration": {
                         "type": "integer",
                         "format": "int32"
+                    },
+                    "requiredSubLevel": {
+                        "type": "string",
+                        "enum": [
+                            "NONE",
+                            "BASIC",
+                            "ADVANCED",
+                            "PREMIUM"
+                        ]
                     },
                     "questions": {
                         "type": "array",

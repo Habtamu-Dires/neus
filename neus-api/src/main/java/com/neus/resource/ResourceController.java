@@ -118,5 +118,14 @@ public class ResourceController {
         return ResponseEntity.accepted().build();
     }
 
+    // search parent resource by title
+    @GetMapping("/search-parent/{title}")
+    public ResponseEntity<List<ResourceDto>> searchParentResourceByTitle(
+            @PathVariable("title") String title
+    ){
+        var res = resourceService.searchParentResourcesByTitle(title);
+        return ResponseEntity.ok(res);
+    }
+
 
 }

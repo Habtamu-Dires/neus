@@ -1,24 +1,24 @@
 import { Component, OnInit } from '@angular/core';
-import { CreateResourceDto, ResourceDto } from '../../../../services/models';
+import { CreateResourceDto, ListOfResourcesDto, ResourceDto } from '../../../../services/models';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { ResourcesService } from '../../../../services/services';
 import { MatDialog } from '@angular/material/dialog';
-import { EditDialogComponent } from '../../components/edit-dialog/edit-dialog.component';
 import { ConfirmDialogComponent } from '../../../../components/confirm-dialog/confirm-dialog.component';
+import { debounceTime, throttleTime } from 'rxjs';
 
 @Component({
   selector: 'app-manage-resource',
-  imports: [CommonModule,FormsModule],
+  imports: [CommonModule,FormsModule, ReactiveFormsModule],
   templateUrl: './manage-resource.component.html',
   styleUrl: './manage-resource.component.css'
 })
 export class ManageResourceComponent implements OnInit{
   
   createResourceDto:CreateResourceDto = {
-    type: 'NOTE',
+    type: 'READING_MATERIAL',
     requiredSubLevel: 'NONE'
   }
   selectedFile:any;
@@ -27,13 +27,15 @@ export class ManageResourceComponent implements OnInit{
   errMsgs:Array<string> = [];
   showSubscriptionLevelList:boolean = false;
   subscriptionLevelList:Array<string> = ['NONE','BASIC','ADVANCED','PREMIUM'];
-  typeList:Array<string> = ['NOTE','VIDEO','BOOK'];
+  typeList:Array<string> = ["READING_MATERIAL", "VIDEO" , "LECTURE_VIDEOS" , "LECTURE_NOTES","BOOK"];
   showTypeList:boolean = false;
   showFileTypeMatchError:boolean = false;
   showPreviewFileTypeMatchError:boolean = false;
   isUploading = false;
-
-
+  searchControl = new FormControl('');
+  showParentResourceList = false;
+  parentResourceList:ResourceDto[] = [];
+  parentResourceName = '';
 
   constructor(
     private resourceService:ResourcesService,
@@ -48,6 +50,8 @@ export class ManageResourceComponent implements OnInit{
     if(resourceId){
       this.fetchResourceById(resourceId);
     }
+    // form
+    this.parentSearchFormControl();
   }
 
 
@@ -86,16 +90,18 @@ export class ManageResourceComponent implements OnInit{
       next: (res:ResourceDto) => {
         this.createResourceDto = {
           id:res.id,
-          type: res.type as 'EXAM' | 'NOTE' | 'VIDEO' | 'BOOK' | 'COLLECTION',
+          type: res.type as "EXAM" | "VIDEO" | "BOOK" | "READING_MATERIAL" | "LECTURE_VIDEOS" | "LECTURE_VIDEOS",
           title: res.title,
           requiredSubLevel: res.requiredSubLevel as "NONE" | "BASIC" | "ADVANCED" | "PREMIUM",
           department: res.department,
           description: res.description,
           contentPath:res.contentPath,
-          previewResourcePath: res.previewContentPath
+          previewResourcePath: res.previewContentPath,
+          parentResourceId: res.parentResourceId
 
         };
-        console.log("preview content " + this.createResourceDto.previewResourcePath)
+        this.parentResourceName = res.parentResourceTitle as string;
+        this.searchControl.setValue(res.parentResourceTitle as string);
       },
       error: (error) => {
         console.log(error);
@@ -161,12 +167,55 @@ export class ManageResourceComponent implements OnInit{
     })
   }
 
+  // search parent resources by title
+  searchParentResourceByTitle(title:string){
+    this.resourceService.searchParentResourceByTitle({
+      'title': title
+    }).subscribe({
+      next: (res:ResourceDto[]) => {
+        console.log(res);
+        this.parentResourceList = res;
+        if(res.length > 0){
+          this.showParentResourceList = true;
+        }
+      },
+      error:(err)=>{
+        console.log(err);
+        this.toastrService.error('Error fetching resources', 'Error');
+      }
+    })
+  }
+
+  // on parent resource selected
+  onParentResourceSelected(resource:ResourceDto){
+    this.parentResourceName = resource.title as string;
+    this.searchControl.setValue(this.parentResourceName);
+    this.createResourceDto.parentResourceId = resource.id;
+    this.showParentResourceList = false;
+  }
+
+  // parent seach from control
+  parentSearchFormControl(){
+    this.searchControl.valueChanges
+     .pipe(
+        debounceTime(300),  // wait 300ms after user stop writing
+        throttleTime(1000) // one request per second
+     ).subscribe((value:any)=>{
+       const text = value as string;
+       if(text.length >= 3){
+          if(this.parentResourceName !== text){
+            this.searchParentResourceByTitle(text);
+          }
+       }
+     })
+  }
+
   // on save btn clicked
   onSave() {
     if (this.selectedFileType === 'application/pdf' && this.createResourceDto.type === 'VIDEO') {
       this.showFileTypeMatchError = true;
   } else if (this.selectedFileType === 'video/mp4' && 
-      (this.createResourceDto.type === 'NOTE' || this.createResourceDto.type === 'BOOK')) {
+      (this.createResourceDto.type === 'READING_MATERIAL' || this.createResourceDto.type === 'BOOK')) {
       this.showFileTypeMatchError = true;
     }else {
         // if no error

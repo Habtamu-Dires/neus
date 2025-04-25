@@ -14,5 +14,4 @@ public record ResourceCollectionDto(
         String department,
         String description,
         List<ResourceDto> resources
-) {
-}
+) {}

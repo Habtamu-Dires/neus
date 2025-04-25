@@ -37,7 +37,7 @@ public class Resource {
     private String previewContentPath;
 
     @OneToMany(mappedBy = "parentResource")
-    private List<Resource> resourceList;
+    private List<Resource> childResources;
 
     @ManyToOne
     @JoinColumn(name = "parent_resource_id")

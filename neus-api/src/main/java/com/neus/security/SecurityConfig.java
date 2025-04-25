@@ -24,6 +24,7 @@ public class SecurityConfig {
                         "/files/**",
                         "exams/detail/**",
                         "resources/detail/**",
+                        "resources/collection/**",
                         "/sub-plans/enabled",
                         "/resources/list",
                         "/register/**",

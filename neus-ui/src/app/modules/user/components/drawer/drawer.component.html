@@ -1,13 +1,13 @@
 <main class="absolute  right-0 flex flex-col w-screen">
     <section class="flex flex-col p-4 gap-4 bg-white  ms-5 me-2 rounded-lg shadow-2xl">
         <app-drawer-item
-            componentName="HOME"
+            componentName="Home"
             [isActiveComponent]="selectedComponent==='home'"
             (click)="selectComponent('home')"
             >
         </app-drawer-item>
         <app-drawer-item
-            componentName="RESOURCES"
+            componentName="Resoruces"
             [isActiveComponent]="selectedComponent === 'resources'"
             (click)="selectComponent('resources')"
         >
@@ -19,11 +19,27 @@
         >
         </app-drawer-item>
         <app-drawer-item
-            componentName="CONTACT US"
+            componentName="Contact US"
             [isActiveComponent]="selectedComponent === 'contactus'"
             (click)="selectComponent('contactus')"
         >
         </app-drawer-item>
+        <app-drawer-item *ngIf="isLoggedIn"
+            componentName="Profile"
+            [isActiveComponent]="selectedComponent === 'contactus'"
+            (click)="selectComponent('contactus')"
+        >
+        </app-drawer-item>
+       <div class="text-black">
+        <button *ngIf="!isLoggedIn" (click)="login()"
+            class=" px-3 py-[3px]    cursor-pointer">
+            SignIn
+        </button>
+        <button *ngIf="isLoggedIn" (click)="logout()"
+        class="px-3 py-[3px] cursor-pointer">
+            logout
+        </button>
+       </div>
     </section>
 </main>
 

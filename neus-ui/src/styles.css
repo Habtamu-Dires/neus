@@ -5,8 +5,11 @@
 @import "../node_modules/@videogular/ngx-videogular/fonts/videogular.css";
 
 @theme {
-    --color-primary: #2979FF;
-    --color-secondary: #4CAF50;
+    --color-primary: #567bba;    /*#6c93d4 -- light /* #2979FF;  -- blue*/ 
+    --color-secondary: #45cca6; /*#56ba61; /* #4CAF50; */
+    --color-header: #567bba;   
+    --color-btnHover: #3d5887 ; /* --hover*/
+    --color-btnSecHover: #34a384;
 }
 
 body {
@@ -25,11 +28,11 @@ body {
   }
     
   .table-head {
-    @apply p-4 text-left font-semibold bg-primary text-white;
+    @apply p-4 text-left font-semibold bg-gradient-to-br from-gray-100 to-blue-200 text-black;
   }
     
   .table-data {
-    @apply p-5 text-black  ;
+    @apply p-5 text-black;
   }
 
   .form-label {
@@ -37,15 +40,15 @@ body {
   }
 
   .form-input {
-    @apply col-span-12 md:col-span-10 p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400;
+    @apply col-span-12 md:col-span-10 p-2 rounded-lg border border-gray-400 focus:outline-none focus:ring-1 focus:ring-primary;
   }
-
+  ring-blue-400
   .form-button {
     @apply flex items-center justify-center text-white px-6 py-2 rounded-md font-semibold transition-all duration-200;
   }
 
   .input-style {
-    @apply w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500;
+    @apply w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary;
   }
 }
 

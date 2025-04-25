@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { ResourceDetailDto } from '../../../../services/models';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ResourcesService } from '../../../../services/services';
@@ -13,12 +13,13 @@ import { CommonModule } from '@angular/common';
 })
 export class VideoDetailComponent implements OnInit{
 
-  videoId:string | undefined;
+  @Input() videoId:string | undefined;
   resourceDetail:ResourceDetailDto = {}
   vidoeSrc:string = '';
   title:string = '';
   description:string = '';
-  isVideoAvailable:boolean = false;
+  isLoading:boolean = true;
+
 
   constructor(
     private activatedRoute:ActivatedRoute,
@@ -27,10 +28,10 @@ export class VideoDetailComponent implements OnInit{
   ){}
 
   ngOnInit(): void {
-    console.log("are we even here ??");
-    this.videoId = this.activatedRoute.snapshot.params['videoId'];
-    if(this.videoId){
-      console.log("video id " + this.videoId)
+    const videoId = this.activatedRoute.snapshot.params['videoId'];
+    if(videoId){
+      this.fetchVideoDetailById(videoId);
+    } else if(this.videoId){
       this.fetchVideoDetailById(this.videoId);
     }
   }
@@ -46,7 +47,7 @@ export class VideoDetailComponent implements OnInit{
         this.vidoeSrc = this.resourceDetail.contentPath as string;
         this.title = res.title as  string;
         this.description = res.description as string;
-        this.isVideoAvailable = true;
+        this.isLoading = false;
       },
       error:(err) =>{
         console.log(err);

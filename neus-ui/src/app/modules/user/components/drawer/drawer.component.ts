@@ -2,10 +2,11 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { DrawerItemComponent } from "../drawer-item/drawer-item.component";
 import { KeycloakService } from '../../../../services/keycloak/keycloak.service';
 import { UserDto } from '../../../../services/models';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-drawer',
-  imports: [DrawerItemComponent],
+  imports: [DrawerItemComponent,CommonModule],
   templateUrl: './drawer.component.html',
   styleUrl: './drawer.component.css'
 })
@@ -35,5 +36,13 @@ export class DrawerComponent implements OnInit{
 
   selectComponent(component:string){
     this.onComponentSelect.emit(component);
+  }
+
+  login(){
+    this.keycloakService.login();
+  }
+
+  logout(){
+    this.keycloakService.logout();
   }
 }

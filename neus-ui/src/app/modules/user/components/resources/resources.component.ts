@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular/core';
 import { ListOfResourcesDto, ResourceDto } from '../../../../services/models';
 import { ResourcesService } from '../../../../services/services';
 import { Router } from '@angular/router';
@@ -24,6 +24,8 @@ export class ResourcesComponent {
   subscriptionLevel: string | null = null;
   showSearchInput:boolean = false;
 
+  @Output() onFilterChanged = new EventEmitter<string>();
+
   @ViewChild('searchInput') searchInputRef!:ElementRef<HTMLInputElement>;
 
   constructor(
@@ -41,7 +43,7 @@ export class ResourcesComponent {
         this.subscriptionLevel = subscriptionType.replace('_subscriber','').toUpperCase();
       }
     }
-
+    // fetch resources
     this.fetchResource();
   }
 
@@ -50,9 +52,7 @@ export class ResourcesComponent {
      this.resourcesService.getListOfResources().subscribe({
       next:(res:ResourceDto[])=>{
         this.resources = res;
-        console.log("resources " + res)
         if(this.subscriptionLevel){
-          console.log(this.subscriptionLevel);
           this.applyFilter(this.subscriptionLevel);
         } else {
           this.applyFilter('FREE');
@@ -68,7 +68,6 @@ export class ResourcesComponent {
 
   // apply filter
   applyFilter(filter: string): void {
-    this.scrollToResources();
     this.activeFilter = filter;
     if (filter === 'FREE') {
       this.filteredResources = this.resources.filter(
@@ -82,9 +81,17 @@ export class ResourcesComponent {
 
     // Group resources by type
     this.examResources = this.filteredResources.filter(r => r.type === 'EXAM');
-    this.noteResources = this.filteredResources.filter(r => r.type === 'NOTE');
-    this.videoResources = this.filteredResources.filter(r => r.type === 'VIDEO');
+    this.noteResources = this.filteredResources.filter(r => 
+        r.type === 'READING_MATERIAL' || r.type === 'LECTURE_NOTES');
+    this.videoResources = this.filteredResources.filter(r => 
+        r.type === 'VIDEO' || r.type === 'LECTURE_VIDEOS');
     this.bookResources = this.filteredResources.filter(r => r.type === 'BOOK');
+  }
+
+  // on filter selected
+  onFilterSelected(filter: string): void {
+    this.applyFilter(filter);
+    this.onFilterChanged.emit('resources');
   }
 
   navigateToDetail(resource: ListOfResourcesDto): void {
@@ -92,7 +99,8 @@ export class ResourcesComponent {
       EXAM: 'exams',
       VIDEO: 'videos',
       NOTE: 'notes',
-      LECTURE_SERIES: 'lectures'
+      LECTURE_VIDEOS: 'lectures',
+      LECTURE_NOTES: 'lectures'
     };
     const route = routeMap[resource.type as string];
     this.router.navigate([`user/${route}/${resource.resourceId}`]);
@@ -112,7 +120,7 @@ export class ResourcesComponent {
     this.activeFilter = 'ALL';
     setTimeout(() => {
       this.searchInputRef.nativeElement.focus();
-   }, 0);
+    }, 0);
   }
 
   // onsearch
@@ -121,13 +129,15 @@ export class ResourcesComponent {
     if(text.length >= 3){
       this.activeFilter = 'ALL';
       this.filteredResources = this.resources.filter(
-        resource => resource.title?.startsWith(text)
+        resource => resource.title?.toLocaleLowerCase().includes(text.toLocaleLowerCase())
       );
 
     // Group resources by type
     this.examResources = this.filteredResources.filter(r => r.type === 'EXAM');
-    this.noteResources = this.filteredResources.filter(r => r.type === 'NOTE');
-    this.videoResources = this.filteredResources.filter(r => r.type === 'VIDEO');
+    this.noteResources = this.filteredResources.filter(r => 
+        r.type === 'READING_MATERIAL' || r.type === 'LECTURE_NOTES');
+    this.videoResources = this.filteredResources.filter(r => 
+        r.type === 'VIDEO' || r.type === 'LECTURE_VIDEOS');
     this.bookResources = this.filteredResources.filter(r => r.type === 'BOOK');
     
     }
@@ -139,18 +149,5 @@ export class ResourcesComponent {
     this.applyFilter(this.activeFilter);
   }
 
-
-  scrollToResources() {
-    const element = document.getElementById('resources');
-    if (element) {
-      const headerOffset = 80;
-      const elementPosition = element.getBoundingClientRect().top + window.scrollY;
-      const offsetPosition = elementPosition - headerOffset;
-
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth'
-      })
-    }
-  }
+  
 }

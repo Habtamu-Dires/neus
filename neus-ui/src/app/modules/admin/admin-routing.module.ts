@@ -14,6 +14,7 @@ import { SubscriptionPlanComponent } from './pages/subscription-plan/subscriptio
 import { ManageSubPlanComponent } from './pages/manage-sub-plan/manage-sub-plan.component';
 import { PdfReaderComponent } from './pages/pdf-reader/pdf-reader.component';
 import { VideoStreamerComponent } from './pages/video-streamer/video-streamer.component';
+import { PaymentComponent } from './pages/payment/payment.component';
 
 const routes: Routes = [
   {path:'', 
@@ -34,6 +35,7 @@ const routes: Routes = [
       {path:'create-question',component:CreateQuestionComponent},
       {path:'sub-plans',component:SubscriptionPlanComponent},
       {path:'sub-plans/manage/:planId',component:ManageSubPlanComponent},
+      {path:'payments',component:PaymentComponent}
           
     ]},
 ]

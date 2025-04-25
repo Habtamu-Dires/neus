@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -29,15 +30,14 @@ public class ResourceService {
 
     private final ResourceRepository resourceRepository;
     private final FileStorageService fileStorageService;
-    private final SubscriptionPlanService subPlanService;
 
     //create resource
     @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     public void createResource(
             @Valid CreateResourceDto dto,
-           MultipartFile file,
-           MultipartFile previewFile
+            MultipartFile file,
+            MultipartFile previewFile
     ) {
 
         // check for parent resource
@@ -52,7 +52,9 @@ public class ResourceService {
                 .title(dto.title())
                 .department(dto.department())
                 .description(dto.description())
-                .requiredSubLevel(dto.requiredSubLevel())
+                .requiredSubLevel(parentResource != null
+                        ? parentResource.getRequiredSubLevel() : SubscriptionLevel.NONE
+                )
                 .parentResource(parentResource)
                 .build();
 
@@ -73,6 +75,7 @@ public class ResourceService {
     @Transactional
     public void updateResource(CreateResourceDto dto, String externalId){
         Resource resource = this.findResourceByExternalId(externalId);
+        SubscriptionLevel oldRequiredSubLevel = resource.getRequiredSubLevel();
 
         // check for parent resource
         Resource parentResource = null;
@@ -88,12 +91,23 @@ public class ResourceService {
         resource.setParentResource(parentResource);
 
         resourceRepository.save(resource);
+        
+        //  is parent resource ? && required sub level changed ?
+        if(oldRequiredSubLevel != dto.requiredSubLevel()
+                && resource.getChildResources() !=null
+                && !resource.getChildResources().isEmpty())
+        {
+            resource.getChildResources().forEach(childResource -> {
+                childResource.setRequiredSubLevel(dto.requiredSubLevel());
+                resourceRepository.save(childResource);
+            });
+        }
 
     }
 
     // get resource list
     public List<ListOfResourcesDto> getListOfResources() {
-        return resourceRepository.findAll().stream()
+        return resourceRepository.findParentResources().stream()
                 .map(ResourceDtoMapper::mapToListOfResourceDto)
                 .toList();
     }
@@ -121,10 +135,9 @@ public class ResourceService {
 
         if(hasFullAccess){
             return ResourceDtoMapper.mapToResourceDetailDto(resource, resource.getContentPath());
-        } else if(!resource.getPreviewContentPath().isEmpty()){
+        } else {
             return ResourceDtoMapper.mapToResourceDetailDto(resource, resource.getPreviewContentPath());
         }
-        return null;
     }
 
     // get resource collection
@@ -133,35 +146,13 @@ public class ResourceService {
         Resource resource = resourceRepository.findByExternalId(UUID.fromString(resourceId))
                 .orElseThrow(() -> new ResourceNotFoundException("Resource not found"));
 
-        // Get the required subscription level
-        SubscriptionLevel requiredLevel = resource.getRequiredSubLevel();
+        List<ResourceDto> resourceDtoList = resourceRepository
+                .findByParentResource(resource.getId())
+                .stream()
+                .map(ResourceDtoMapper::mapToResourceDto)
+                .toList();
+        return ResourceDtoMapper.mapToResourceCollectionDto(resource,resourceDtoList);
 
-
-        // Check user’s subscription level (from JWT roles)
-        String userRole = getUserRoleFromJwt(authentication);
-        SubscriptionLevel userLevel = mapRoleToSubscriptionLevel(userRole);
-
-        //  Determine access
-        boolean hasFullAccess = userLevel != null && userLevel.compareTo(requiredLevel) >= 0;
-
-        if(hasFullAccess){
-            List<ResourceDto> resourceDtoList = resourceRepository
-                    .findByParentResource(resource.getId())
-                    .stream()
-                    .map(ResourceDtoMapper::mapToResourceDto)
-                    .toList();
-            return ResourceDtoMapper.mapToResourceCollectionDto(resource,resourceDtoList);
-        }
-//        else if(resource.getPreviewResource() != null) {
-//            ResourceDto resourceDto = resourceRepository
-//                    .findByExternalId(resource.getPreviewResource().getExternalId())
-//                    .map(ResourceDtoMapper::mapToResourceDto)
-//                    .orElseThrow(() -> new ResourceNotFoundException("Preview Resource not found"));
-//
-//            return ResourceDtoMapper.mapToResourceCollectionDto(resource,List.of(resourceDto));
-//        }
-
-        return null;
     }
 
     // save file
@@ -253,4 +244,15 @@ public class ResourceService {
     public ResourceDto getResourceById(String resourceId) {
         return ResourceDtoMapper.mapToResourceDto(this.findResourceByExternalId(resourceId));
     }
+
+
+    // search parent resource by title
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<ResourceDto> searchParentResourcesByTitle(String title){
+        return resourceRepository.searchParentResourcesByTitle(title)
+                .stream()
+                .map(ResourceDtoMapper::mapToResourceDto)
+                .toList();
+    }
+
 }

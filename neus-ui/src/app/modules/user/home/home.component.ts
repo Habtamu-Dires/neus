@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { HeaderComponent } from "../components/header/header.component";
 import { CommonModule } from '@angular/common';
 import { HeroComponent } from "../components/hero/hero.component";
@@ -13,13 +13,16 @@ import { SubscriptionsComponent } from "../components/subscriptions/subscription
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit{
 
   selectedSection:string = 'Home';
   drawerShown:boolean = false;
 
-
   constructor() {}
+
+  ngOnInit(): void {
+    this.scrollToSection('home');
+  }
 
   onSectionSelected(section:any){
     this.selectedSection = section;
@@ -31,9 +34,11 @@ export class HomeComponent {
   }
 
   scrollToSection(sectionId: string) {
+    console.log("scrollToSection", sectionId);
     const element = document.getElementById(sectionId);
     if (element) {
-      const headerOffset = 80;
+      console.log("is element")
+      const headerOffset = 50;
       const elementPosition = element.getBoundingClientRect().top + window.scrollY;
       const offsetPosition = elementPosition - headerOffset;
 

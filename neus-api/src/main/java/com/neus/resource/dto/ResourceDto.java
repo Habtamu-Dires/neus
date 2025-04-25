@@ -13,7 +13,7 @@ public record ResourceDto(
         String department,
         String description,
         String parentResourceId,
-        String parentResource,
+        String parentResourceTitle,
         String contentPath,
         String previewContentPath
 ) {}

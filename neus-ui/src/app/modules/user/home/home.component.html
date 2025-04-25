@@ -1,4 +1,4 @@
-<main class="relative min-h-screen w-full flex flex-col gap-4"
+<main class="relative min-h-screen w-full flex flex-col gap-0"
        [ngClass]="{'black-bg': drawerShown}">
     <!--header-->
     <section class="fixed top-0 z-50 bg-bgBrand flex justify-center items-center w-full">
@@ -20,7 +20,9 @@
     </section>
     <!--resources-->
     <section id="resources">
-        <app-resources></app-resources>
+        <app-resources 
+        (onFilterChanged)="scrollToSection($event)">            
+        </app-resources>
     </section>
     <!--footer-->
     <footer id="contactus" class="w-full">

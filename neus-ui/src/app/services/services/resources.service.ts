@@ -32,6 +32,8 @@ import { PageResponseResourceDto } from '../models/page-response-resource-dto';
 import { ResourceCollectionDto } from '../models/resource-collection-dto';
 import { ResourceDetailDto } from '../models/resource-detail-dto';
 import { ResourceDto } from '../models/resource-dto';
+import { searchParentResourceByTitle } from '../fn/resources/search-parent-resource-by-title';
+import { SearchParentResourceByTitle$Params } from '../fn/resources/search-parent-resource-by-title';
 import { updateResource } from '../fn/resources/update-resource';
 import { UpdateResource$Params } from '../fn/resources/update-resource';
 import { updateResourceContent } from '../fn/resources/update-resource-content';
@@ -210,6 +212,31 @@ export class ResourcesService extends BaseService {
       map((r: StrictHttpResponse<{
 }>): {
 } => r.body)
+    );
+  }
+
+  /** Path part for operation `searchParentResourceByTitle()` */
+  static readonly SearchParentResourceByTitlePath = '/resources/search-parent/{title}';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `searchParentResourceByTitle()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  searchParentResourceByTitle$Response(params: SearchParentResourceByTitle$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<ResourceDto>>> {
+    return searchParentResourceByTitle(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `searchParentResourceByTitle$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  searchParentResourceByTitle(params: SearchParentResourceByTitle$Params, context?: HttpContext): Observable<Array<ResourceDto>> {
+    return this.searchParentResourceByTitle$Response(params, context).pipe(
+      map((r: StrictHttpResponse<Array<ResourceDto>>): Array<ResourceDto> => r.body)
     );
   }
 

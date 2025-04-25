@@ -1,0 +1,18 @@
+<main class="absolute  right-0 flex flex-col w-screen">
+    <section class="flex flex-col p-4 gap-3 bg-white  ms-5 me-2 rounded-lg shadow-2xl">
+        <p class="text-lg font-semibold text-gray-800 mb-4">Questions</p>
+        @for (question of questionList; track $index; let i = $index) {
+            <div (click)="selectQuestion(i)"
+                class="p-2 rounded-md cursor-pointer hover:text-secondary"
+                [class.bg-blue-100]="i === currentQuestionIndex"
+                [class.text-green-700]="i === currentQuestionIndex"
+                [class.bg-green-100]="correctAnswers.get(question.id ?? '') === true"
+                [class.bg-red-100]="correctAnswers.get(question.id ?? '') === false"
+            >
+                Question {{ question.questionNumber }}
+            </div>
+        }
+    </section>
+</main>
+
+

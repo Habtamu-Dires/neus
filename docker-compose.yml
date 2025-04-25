@@ -1,0 +1,49 @@
+services:
+    backend:
+      container_name: neus-api
+      image: neus-api:v8
+      ports:
+        - "8088:8088"
+      environment:
+        FILE_PATH: /file/uploadedFiles
+        ALLOWED_ORIGINS: http://host.docker.internal:4200 # Browser
+        SPRING_DATASOURCE_URL: jdbc:postgresql://host.docker.internal:5432/neus_db
+        SPRING_DATASOURCE_USERNAME: hab
+        SPRING_DATASOURCE_PASSWORD: password
+#        OAUTH2_JWT_ISSUER_URI: http://host.docker.internal:9090/realms/alem-ekub
+#        OAUTH2_JWK_SET_URI: http://host.docker.internal:9090/realms/alem-ekub/protocol/openid-connect/certs
+#        KEYCLOAK_AUTH_SERVER_URL: http://keycloak:8080
+#        KEYCLOAK_CLIENT_ID: api-service
+#        KEYCLOAK_CLIENT_SECRET: mztotjdj2zSvizLBaJw1MWSztEKKRVh7
+#        S3_SPACES_ACCESS_KEY: dadf
+#        S3_SPACES_SECRET_KEY: ZbO1V4o
+#        S3_SPACES_ENDPOINT: https://eqib.com
+#        S3_BUCKET_NAME: images
+#        S3_REGION: ETH1
+      extra_hosts:
+        - "host.docker.internal:host-gateway"  # Maps to the host's IP
+      volumes:
+        - ./uploadedFiles:/file/uploadedFiles
+      networks:
+        - neus-network
+
+#    front-end:
+#      container_name: ekub-ui
+#      image: habtamudires/alem-ekub-ui
+#      ports:
+#        - "4200:80"
+#      environment:
+#        API_URL: http://localhost:8088/api/v1
+#        KEYCLOAK_URL: http://host.docker.internal:9090
+#        REALM: alem-ekub
+#        CLIENT_ID: ekub-user-login
+#        REDIRECT_URL: http://localhost:4200
+#      networks:
+#        - alem-ekub
+
+volumes:
+  neus_volume:
+    driver: local
+networks:
+  neus-network:
+    driver: bridge

@@ -13,8 +13,8 @@ import { CreateResourceDto } from '../../models/create-resource-dto';
 export interface CreateResource$Params {
       body?: {
 'dto': CreateResourceDto;
-'file': Blob;
-'previewFile': Blob;
+'file'?: Blob;
+'previewFile'?: Blob;
 }
 }
 

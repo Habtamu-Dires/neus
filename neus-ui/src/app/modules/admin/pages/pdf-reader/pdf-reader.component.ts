@@ -11,6 +11,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 export class PdfReaderComponent implements OnInit{
 
   pdfSrc:string | undefined;
+  isLoading:boolean = true;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -20,6 +21,7 @@ export class PdfReaderComponent implements OnInit{
   ngOnInit(): void {
     this.activatedRoute.queryParams.subscribe((params) => {
       this.pdfSrc = params['pdfSrc'];
+      this.isLoading = false;
     });
     
   }

@@ -18,7 +18,7 @@ public class ResourceDtoMapper {
                 .requiredSubLevel(resource.getRequiredSubLevel())
                 .parentResourceId(resource.getParentResource()!=null
                         ? resource.getParentResource().getExternalId().toString() : null)
-                .parentResource(resource.getParentResource()!=null
+                .parentResourceTitle(resource.getParentResource()!=null
                         ? resource.getParentResource().getTitle() : null)
                 .contentPath(resource.getContentPath())
                 .previewContentPath(resource.getPreviewContentPath())

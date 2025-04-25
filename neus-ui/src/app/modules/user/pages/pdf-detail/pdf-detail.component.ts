@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ResourcesService } from '../../../../services/services';
 import { ResourceDetailDto, ResourceDto, UserDto } from '../../../../services/models';
@@ -12,9 +12,10 @@ import { PdfReaderExtendedComponent } from "../../../../components/pdf-reader-ex
 })
 export class PdfDetailComponent implements OnInit{
   
-  pdfId:string | undefined;
+  @Input() pdfId:string | undefined;
   resourceDetail:ResourceDetailDto = {}
   pdfSrc:string | undefined;
+  isLoading:boolean = true;
 
   constructor(
     private activatedRoute:ActivatedRoute,
@@ -23,8 +24,10 @@ export class PdfDetailComponent implements OnInit{
   ){}
 
   ngOnInit(): void {
-    this.pdfId = this.activatedRoute.snapshot.params['pdfId'];
-    if(this.pdfId){
+    const pdfId = this.activatedRoute.snapshot.params['pdfId'];
+    if(pdfId){
+      this.fetchPdfDetailById(pdfId);
+    } else if(this.pdfId){
       this.fetchPdfDetailById(this.pdfId);
     }
   }
@@ -38,6 +41,7 @@ export class PdfDetailComponent implements OnInit{
         console.log(res);
         this.resourceDetail = res;
         this.pdfSrc = this.resourceDetail.contentPath;
+        this.isLoading = false;
       },
       error:(err) =>{
         console.log(err);

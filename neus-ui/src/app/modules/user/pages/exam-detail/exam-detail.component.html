@@ -1,120 +1,187 @@
-<main class="max-container flex gap-2 w-full h-screen overflow-hidden">
-
-    <div class="flex flex-col md:flex-row gap-2 w-full h-screen overflow-hidden">
-      <!-- Sidebar (Drawer on Mobile) -->
-      <aside class="md:w-[10%] w-full md:h-full flex flex-row justify-between md:justify-normal md:flex-col bg-gray-100 p-4 rounded-lg">
-        <p class="text-lg font-semibold text-gray-800 mb-4">Questions</p>
-        <div class="space-y-2 hidden md:block">
-          <div
-            *ngFor="let question of questionList; let i = index"
-            (click)="selectQuestion(i)"
-            class="p-2 rounded-md cursor-pointer hover:bg-gray-100"
-            [class.bg-blue-100]="i === currentQuestionIndex"
-            [class.text-blue-700]="i === currentQuestionIndex"
-          >
-            Question {{ question.questionNumber }}
-          </div>
-        </div>
-        <svg  
-            class="cursor-pointer block md:hidden"
-            xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 14 14"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="M13.5 2H.5m13 5H.5m13 5H.5"/>
+<main class="flex flex-col md:flex-row gap-2 w-full h-screen overflow-hidden">
+  <!--loading .... section-->
+  <div *ngIf="isLoading" class="w-full flex h-44 justify-center items-center">
+    <svg xmlns="http://www.w3.org/2000/svg" width="42" height="42" viewBox="0 0 24 24"><circle cx="12" cy="2" r="0" fill="#2979FF"><animate attributeName="r" begin="0" calcMode="spline" dur="1s" keySplines="0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8" repeatCount="indefinite" values="0;2;0;0"/></circle><circle cx="12" cy="2" r="0" fill="#2979FF" transform="rotate(45 12 12)"><animate attributeName="r" begin="0.125s" calcMode="spline" dur="1s" keySplines="0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8" repeatCount="indefinite" values="0;2;0;0"/></circle><circle cx="12" cy="2" r="0" fill="#2979FF" transform="rotate(90 12 12)"><animate attributeName="r" begin="0.25s" calcMode="spline" dur="1s" keySplines="0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8" repeatCount="indefinite" values="0;2;0;0"/></circle><circle cx="12" cy="2" r="0" fill="#2979FF" transform="rotate(135 12 12)"><animate attributeName="r" begin="0.375s" calcMode="spline" dur="1s" keySplines="0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8" repeatCount="indefinite" values="0;2;0;0"/></circle><circle cx="12" cy="2" r="0" fill="#2979FF" transform="rotate(180 12 12)"><animate attributeName="r" begin="0.5s" calcMode="spline" dur="1s" keySplines="0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8" repeatCount="indefinite" values="0;2;0;0"/></circle><circle cx="12" cy="2" r="0" fill="#2979FF" transform="rotate(225 12 12)"><animate attributeName="r" begin="0.625s" calcMode="spline" dur="1s" keySplines="0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8" repeatCount="indefinite" values="0;2;0;0"/></circle><circle cx="12" cy="2" r="0" fill="#2979FF" transform="rotate(270 12 12)"><animate attributeName="r" begin="0.75s" calcMode="spline" dur="1s" keySplines="0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8" repeatCount="indefinite" values="0;2;0;0"/></circle><circle cx="12" cy="2" r="0" fill="#2979FF" transform="rotate(315 12 12)"><animate attributeName="r" begin="0.875s" calcMode="spline" dur="1s" keySplines="0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8" repeatCount="indefinite" values="0;2;0;0"/></circle></svg>
+  </div>
+  <!-- Mode Selection -->
+  <div *ngIf="!isLoading && !examStarted" class="p-4 bg-gray-100 rounded-lg">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-xl font-semibold">Choose Mode</h2>
+      <button class="p-1 bg-gray-100 cursor-pointer" (click)="close()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+          <path fill="currentColor" d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12z"/>
         </svg>
-      </aside>
-  
-      <!-- Main Content -->
-      <main class="h-full md:w-[90%] w-full bg-gray-100 p-4 rounded-lg overflow-hidden">
-        <div class="flex justify-between items-center mb-3">
-            <h2 class="text-xl font-semibold text-gray-800">
-              Question {{ questionList.length !==0 ? currentQuestionIndex + 1 : 0}} of {{ questionList.length }}
-            </h2>
-            <!--close button-->
-            <button class="p-1 bg-gray-100 cursor-pointer">
-              <svg (click)="close()"
-                xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12z"/></svg>
-            </button>
-          </div>
-        <!-- No Questions Case -->
-        <div
-          *ngIf="questionList.length === 0"
-          class="h-64 flex items-center justify-center text-gray-600 text-lg"
-        >
-          No questions available for this exam.
-        </div>
-  
-        <!-- Question Display -->
-        <div #questionContainer
-          *ngIf="questionList.length > 0"
-          class="h-full bg-white p-4 rounded-md border border-gray-200 overflow-y-scroll overflow-x-hidden"
-        > 
-          <!--question number-->
-          <div>
-              <input class="form-input" [(ngModel)]="currentQuestion.questionNumber" type="number"/>
-          </div>
-          <div class="flex justify-between items-start mb-4">
-            <!--question text-->
-            <div class="break-words whitespace-normal overflow-hidden py-2 px-3 w-full max-w-90%" [innerHTML]="currentQuestion.questionText"></div>
-          </div>
-  
-          <!-- Choices with Labels and Toggle -->
-          <div class="space-y-2 mb-4">
-            <div
-              *ngFor="let choice of currentQuestion.choices; let i = index;"
-              class="flex items-start  space-x-2"
-            >
-              <div class="flex items-center py-2">
-                <span class="w-6 font-bold">{{ getChoiceLetter(i) }}.</span>
-                <input
-                  type="radio"
-                  [checked]="choice.isCorrect"
-                  (change)="toggleCorrect(choice.id)"
-                  class="h-4 w-4 text-blue-600"
-                />
-              </div>
-              <!--choice text -->
-              <span class="break-words whitespace-normal overflow-hidden py-2 px-3 w-full max-w-90%"
-                 [class.text-green-600]="choice.isCorrect" [innerHTML]="choice.text">
-              </span>
-            </div>
-          </div>
-  
-          <!-- Explanation -->
-          <div class="mt-4">
-            <p
-              (click)="showExplanation = !showExplanation"
-              class="text-blue-500 cursor-pointer hover:text-blue-700"
-            >
-              {{ showExplanation ? 'Hide' : 'Show' }} Explanation
-            </p>
-            <div
-              *ngIf="showExplanation"
-              class="mt-2 p-4 bg-gray-50 rounded-md border border-gray-200"
-            >
-            <div class="flex justify-between items-start">
-              <div class="break-words whitespace-normal overflow-hidden py-2 px-3 w-full max-w-90%" 
-                  [innerHTML]="currentQuestion.explanation">
-              </div>          
-            </div>
-            </div>
-          </div>
-          <!-- Next/Previous Buttons -->
-          <div class="flex justify-center gap-10 mb-10 text-xl">
-            <button
-              (click)="previousQuestion()"
-              [disabled]="currentQuestionIndex === 0"
-              class="cursor-pointer text-primary px-4 py-2 transition duration-200 disabled:text-gray-600 disabled:cursor-not-allowed"
-            >
-              Previous
-            </button>
-            <button
-              (click)="nextQuestion()"
-              [disabled]="currentQuestionIndex === questionList.length - 1"
-              class="cursor-pointer text-primary px-4 py-2 transition duration-200 disabled:text-gray-600 disabled:cursor-not-allowed"
-            >
-              Next
-            </button>
-          </div>
-        </div>
-      </main>
+      </button>
     </div>
-</main>
+    <button (click)="setMode('STUDY')" class="px-4 py-2 bg-primary hover:bg-btnHover text-white rounded mr-2 cursor-pointer">
+      STUDY Mode
+    </button>
+    <button (click)="setMode('TEST')" class="px-4 py-2 bg-primary hover:bg-btnHover text-white rounded cursor-pointer">
+      TEST Mode
+    </button>
+  </div>
 
+  <!-- Sidebar -->
+  <aside *ngIf="examStarted" class="w-full p-2 md:w-[10%] md:h-full flex md:flex-col items-center justify-between md:justify-normal md:items-start bg-gray-100 rounded-lg">
+    <!--mode changer-->
+    <div class="flex justify-start md:justify-center py-3 gap-2 w-full">
+      <select [(ngModel)]="mode" (ngModelChange)="onModeChange($event)" class="cursor-pointer">
+        <option [value]="mode">{{mode}} Mode</option>
+        <option [value]="mode === 'STUDY' ? 'TEST' : 'STUDY'">
+          {{mode === 'STUDY' ? 'TEST Mode' : 'STUDY Mode'}}
+        </option>
+      </select>
+    </div>
+    <!--question number list-->
+    <div class="hidden md:block p-1 w-full">
+      <p class="text-lg font-semibold text-gray-800 mb-4">Questions</p>
+      <div
+        *ngFor="let question of questionList; let i = index"
+        (click)="selectQuestion(i)"
+        class="p-2 mb-1 w-full rounded-md cursor-pointer hover:text-secondary"
+        [class.bg-blue-100]="i === currentQuestionIndex"
+        [class.text-green-700]="i === currentQuestionIndex"
+        [class.bg-green-100]="correctAnswers.get(question.id ?? '') === true"
+        [class.bg-red-100]="correctAnswers.get(question.id ?? '') === false"
+      >
+        Question {{ question.questionNumber }}
+      </div>
+    </div>
+    <!--question number list toggler-->
+    <section class="cursor-pointer block md:hidden">
+      <!--open drawer-->
+      <svg *ngIf="!showQuestionsDrawer" class="cursor-pointer mx-2 my-2"
+          (click)="toggleQuestionsDrawer()"
+          xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="#000000" d="M3.75 5.25a.75.75 0 0 0 0 1.5h16.5a.75.75 0 0 0 0-1.5zm0 6a.75.75 0 0 0 0 1.5h16.5a.75.75 0 0 0 0-1.5zm0 6a.75.75 0 0 0 0 1.5h16.5a.75.75 0 0 0 0-1.5z"/>
+      </svg>
+      <!--close drawer-->
+      <svg *ngIf="showQuestionsDrawer" class="cursor-pointer mx-2 my-2" [ngClass]="{'text-white': showQuestionsDrawer}"
+          (click)="toggleQuestionsDrawer()"
+          xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="#1a4fa3" d="m6.4 18.308l-.708-.708l5.6-5.6l-5.6-5.6l.708-.708l5.6 5.6l5.6-5.6l.708.708l-5.6 5.6l5.6 5.6l-.708.708l-5.6-5.6z"/>
+      </svg>
+      <!--drawer-->
+      <div *ngIf="showQuestionsDrawer" class="w-full">
+         <app-question-list-drawer
+            [questionList]="questionList"
+            [currentQuestionIndex]="currentQuestionIndex"
+            [correctAnswers]="correctAnswers"
+            (onQuestionSelect)="selectQuestion($event)"
+         >
+         </app-question-list-drawer>
+      </div>
+    </section>
+  </aside>
+
+  <!-- Main Content -->
+  <main *ngIf="examStarted" class="h-full w-full md:w-[90%] bg-gray-100 md:p-2 rounded-lg overflow-hidden">
+    <div class="flex justify-between items-center p-2">
+      <h2 class="md:text-xl font-semibold text-gray-800">
+        Question {{ questionList.length !== 0 ? currentQuestionIndex + 1 : 0 }} of {{ questionList.length }}
+      </h2>
+      <div *ngIf="mode === 'TEST'" class="flex gap-1 md:text-lg">
+          <span class="hidden md:block">Time Remaining</span> {{ formatTime(timer) }}
+      </div>
+      <!--score , submit , retak button-->
+      <div class="flex justify-center items-center gap-3 md:gap-6 md:text-lg">
+        <button
+            *ngIf="mode === 'TEST' && !isSubmitted && timer > 0"
+            (click)="submitExam()"
+            class="cursor-pointer text-primary transition duration-200"
+          >
+            Submit
+        </button>
+        <button
+          *ngIf="mode === 'STUDY' && userAnswers.size === questionList.length"
+          (click)="submitExam()"
+          class="cursor-pointer text-primary transition duration-200"
+        >
+          Score
+        </button>
+        <button
+          *ngIf="(mode === 'STUDY' && userAnswers.size === questionList.length) || (mode === 'TEST' && isSubmitted)"
+          (click)="retakeExam()"
+          class="cursor-pointer text-primary transition duration-200"
+        >
+          Retake
+        </button>
+      </div>
+      <!--close button-->
+      <button class="p-1 bg-gray-100 cursor-pointer" (click)="close()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+          <path fill="currentColor" d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12z"/>
+        </svg>
+      </button>
+    </div>
+    <!--no question available section-->
+    <div *ngIf="questionList.length === 0" class="h-64 flex items-center justify-center text-gray-600 text-lg">
+      No questions available for this exam.
+    </div>
+    <!--question display section-->
+    <section #questionContainer *ngIf="questionList.length > 0" class="h-full bg-white p-4 rounded-md border border-gray-200 overflow-y-scroll overflow-x-hidden">
+      <!--qustion text -->
+      <div class="flex items-start mb-4 gap-1">
+        <span>{{ currentQuestion.questionNumber }}.</span>
+        <div class="break-words whitespace-normal overflow-hidden px-3 w-full max-w-90%" [innerHTML]="currentQuestion.questionText"></div>
+      </div>
+      <!--choices-->
+      <div class="space-y-2 mb-4">
+        <div *ngFor="let choice of currentQuestion.choices; let i = index;" class="flex items-start space-x-2">
+          <div class="flex items-center py-2">
+            <span class="w-6 font-bold">{{ getChoiceLetter(i) }}.</span>
+            <input
+              type="radio"
+              [name]="'question_' + currentQuestionIndex"
+              (change)="selectAnswer(choice.id)"
+              [checked]="userAnswers.get(currentQuestion.id ?? '') === choice.id"
+              [disabled]="mode === 'STUDY' && userAnswers.has(currentQuestion.id ?? '')"
+              [disabled]="mode === 'TEST' && isSubmitted"
+              class="h-4 w-4 text-primary cursor-pointer"
+            />
+          </div>
+          <span
+            class="break-words whitespace-normal overflow-hidden py-2 px-3 w-full max-w-90%"
+            [class.text-green-600]="mode === 'STUDY' && choice.isCorrect && userAnswers.has(currentQuestion.id ?? '')"
+            [class.text-green-700]="mode === 'TEST' && isSubmitted && choice.isCorrect && userAnswers.has(currentQuestion.id ?? '')"
+            [innerHTML]="choice.text"
+          ></span>
+        </div>
+      </div>
+
+      <!--explanation-->
+      <div class="mt-4" *ngIf="(userAnswers.has(currentQuestion.id ?? '') &&  mode === 'STUDY') || (mode === 'TEST' && isSubmitted)">
+        <p (click)="showExplanation = !showExplanation" class="text-primary cursor-pointer hover:text-btnHover">
+          {{ showExplanation ? 'Hide' : 'Show' }} Explanation
+        </p>
+        <div *ngIf="showExplanation" class="mt-2 p-4 bg-gray-50 rounded-md border border-gray-200">
+          <div class="break-words whitespace-normal overflow-hidden py-2 px-3 w-full max-w-90%" [innerHTML]="currentQuestion.explanation"></div>
+        </div>
+      </div>
+      <div class="flex flex-col justify-center items-center gap-2">
+        <div class="flex justify-center gap-10 text-xl">
+          <button
+            (click)="previousQuestion()"
+            [disabled]="currentQuestionIndex === 0"
+            class="cursor-pointer text-primary px-4 py-2 transition duration-200 disabled:text-gray-600 disabled:cursor-not-allowed"
+          >
+            Previous
+          </button>
+          <button
+            (click)="nextQuestion()"
+            [disabled]="currentQuestionIndex === questionList.length - 1"
+            class="cursor-pointer text-primary px-4 py-2 transition duration-200 disabled:text-gray-600 disabled:cursor-not-allowed"
+          >
+            Next
+          </button>
+        </div>
+        <div class="flex justify-center gap-10 text-xl">
+          <button
+            (click)="saveProgess()"  
+            class="cursor-pointer text-primary px-4 py-2 transition duration-200 disabled:text-gray-600 disabled:cursor-not-allowed"
+          >
+            save progess
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+</main>

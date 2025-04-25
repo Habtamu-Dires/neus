@@ -119,9 +119,14 @@ public class ExamService {
         SubscriptionLevel userLevel = mapRoleToSubscriptionLevel(userRole);
 
         //  Determine access
-        boolean hasFullAccess = userLevel != null && userLevel.compareTo(requiredLevel) >= 0;
+        boolean hasFullAccess = false;
+        if(requiredLevel == SubscriptionLevel.NONE){
+            hasFullAccess = true;
+        } else {
+            hasFullAccess = userLevel != null && userLevel.compareTo(requiredLevel) >= 0;
+        }
 
-        //  Fetch exam details
+        //  Fetch exam 
         Exam exam = examRepository.findByResourceId(resource.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Exam not found"));
 

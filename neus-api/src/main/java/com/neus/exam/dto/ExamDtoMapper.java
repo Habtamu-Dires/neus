@@ -33,6 +33,7 @@ public class ExamDtoMapper {
                 .title(resource.getTitle())
                 .duration(exam.getDuration())
                 .description(resource.getDescription())
+                .requiredSubLevel(resource.getRequiredSubLevel())
                 .questions(questionDtos)
                 .build();
     }

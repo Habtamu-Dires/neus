@@ -101,45 +101,49 @@ export class ResourceComponent implements OnInit{
   }
 
   // on view content
-  viewContent(resouce:ResourceDto){
-    console.log("tye " + resouce.type);
-   if(resouce.type === 'VIDEO'){
-    this.router.navigate(['admin','video-streamer'],
-      {queryParams:{
-        'videoSrc': resouce.contentPath  , 
-        'title': resouce.title,
-        'description':resouce.description
-      }})
-   } else {
-    this.router.navigate(['admin','pdf-reader'],
-      {queryParams:{'pdfSrc': resouce.contentPath}})
-   }
+  viewContent(resouce:ResourceDto, isPreview:boolean){
+    console.log("tye " + resouce);
+    if(resouce.type === 'VIDEO'){
+      this.router.navigate(['admin','video-streamer'],
+        {queryParams:{
+          'videoSrc': isPreview ? resouce.previewContentPath : resouce.contentPath, 
+          'title': resouce.title,
+          'description':resouce.description
+        }})
+    } else {
+      this.router.navigate(['admin','pdf-reader'],
+        {queryParams:{
+          'pdfSrc': isPreview ? resouce.previewContentPath : resouce.contentPath
+        }})
+    }
   }
 
+  // on show actions
   onShowActions(resourceId:any){
     this.showActions = !this.showActions;
     this.selectedResourceId = resourceId as string;
   }
 
+  // on edit
   onEdit(resourceId:any){
     this.router.navigate(['/admin/resources/manage', resourceId]);
   }
 
   // on delte
   onDelete(resouceId:any){
-     const dialog = this.matDialog.open(ConfirmDialogComponent,{
+    const dialog = this.matDialog.open(ConfirmDialogComponent,{
           width: '400px',
           data:{
             message:'you wants to delete this user',
             buttonName: 'Delete',
             isWarning: true
           }
-        });
-        dialog.afterClosed().subscribe((result) => {
-          if(result){
-            this.delterResource(resouceId)
-          }
-        });
+    });
+    dialog.afterClosed().subscribe((result) => {
+      if(result){
+        this.delterResource(resouceId)
+      }
+    });
   }
 
   // delete resource

@@ -32,19 +32,27 @@
             <tbody>
                 <tr *ngFor="let resource of resourcesList" class="border-b border-gray-300 hover:bg-gray-100">                          
                     <td class="table-data">{{ resource.type }}</td>
-                    <td class="table-data">{{ resource.title }}</td>
+                    <td class="table-data">{{resource.title}}</td>
                     <td class="table-data">{{ resource.department}}</td>
                     <td class="table-data">{{ resource.requiredSubLevel}}</td>
                     <td class="table-data">
                         <span (click)="readDescription(resource.description, resource.title)" class="text-primary cursor-pointer">read</span>
                     </td>
                     <td class="table-data">
-                        <span (click)="viewContent(resource)" class="text-primary cursor-pointer">view</span>
+                        @if (resource.type === 'LECTURE_VIDEOS' || resource.type === 'LECTURE_NOTES') {
+                            <span>--</span>
+                        } @else {
+                            <span (click)="viewContent(resource,false)" class="text-primary cursor-pointer">view</span>
+                        }
                     </td>
                     <td class="table-data">
-                        <span (click)="viewContent(resource)" class="text-primary cursor-pointer">view</span>
+                        @if (resource.type === 'LECTURE_VIDEOS' || resource.type === 'LECTURE_NOTES') {
+                            <span>--</span>
+                        } @else {
+                            <span (click)="viewContent(resource, true)" class="text-primary cursor-pointer">view</span>
+                        }
                     </td>
-                    <td class="table-data">{{resource.parentResource ? resource.parentResource : '--'}}</td>
+                    <td class="table-data">{{resource.parentResourceTitle ? resource.parentResourceTitle : '--'}}</td>
                     <td class="table-data">
                         <div class="flex gap-5 relative">
                             <!-- <p class="text-blue-500 cursor-pointer">detail</p>  -->
@@ -96,11 +104,23 @@
                 </div>
                 <div class="mb-2">
                     <span class="font-semibold text-gray-600">Content</span>
-                    <span (click)="viewContent(resource)" class="text-primary cursor-pointer">view</span>
+                    @if (resource.type === 'LECTURE_VIDEOS' || resource.type === 'LECTURE_NOTES') {
+                        <span>--</span>
+                    } @else {
+                        <span (click)="viewContent(resource,false)" class="text-primary cursor-pointer">view</span>
+                    }
+                </div>
+                <div class="mb-2">
+                    <span class="font-semibold text-gray-600">Preview Content</span>
+                    @if (resource.type === 'LECTURE_VIDEOS' || resource.type === 'LECTURE_NOTES') {
+                        <span>--</span>
+                    } @else {
+                        <span (click)="viewContent(resource, true)" class="text-primary cursor-pointer">view</span>                        
+                    }
                 </div>
                 <div class="mb-2">
                     <span class="font-semibold text-gray-600">Parent:</span>
-                    <span class="ml-2">{{ resource.parentResource ? resource.parentResource : '--' }}</span>
+                    <span class="ml-2">{{ resource.parentResourceTitle ? resource.parentResourceTitle : '--' }}</span>
                 </div>
         
                 <!-- Actions -->

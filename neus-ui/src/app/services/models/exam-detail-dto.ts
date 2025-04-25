@@ -8,5 +8,6 @@ export interface ExamDetailDto {
   duration?: number;
   previewQuestions?: Array<QuestionDto>;
   questions?: Array<QuestionDto>;
+  requiredSubLevel?: 'NONE' | 'BASIC' | 'ADVANCED' | 'PREMIUM';
   title?: string;
 }
