@@ -1,20 +1,31 @@
-<section class="py-12 px-4 bg-gray-100 shadow-2xl border-b-2 border-gray-200">
+<section class="py-12 px-4 bg-gradient-to-t from-blue-100 to-blue-200">
     <div class="max-w-7xl mx-auto">
       <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">Choose Your Plan</h2>
-  
+      
+      
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!--subscription plan box-->
         <div *ngFor="let plan of plans"
-            class="'border border-gray-200'"
-             [ngClass]="{
-               'border-2 shadow-4xl border-secondary': isCurrentPlan(plan.level)
-             }"
-             class="bg-white rounded-lg shadow-md p-6 relative"
+            class='border border-primary shadow-primary shadow-2xl rounded-lg p-6 relative'
+             [ngClass]="[
+              isCurrentPlan(plan.level) ? 'border-4 shadow-4xl border-secondary' : '',
+              plan.level === 'BASIC' ? 'bg-gradient-to-br from-slate-300 to-slate-100' : '',
+              plan.level === 'ADVANCED' ? 'bg-gradient-to-br from-gray-400 to-gray-200' : '',
+              plan.level === 'PREMIUM' ? 'bg-gradient-to-br from-yellow-600 to-yellow-500' : ''   
+            ]"
         >
-          <h3 class="text-2xl font-semibold text-gray-800 mb-4">{{ plan.level }}</h3>
-          <p class="text-xl font-bold text-gray-900 mb-4">{{ plan.price }}</p>
-          <ul class="text-gray-600 mb-6">
+          <h3 class="text-2xl font-semibold text-gray-900 mb-4">{{ plan.level }}</h3>
+          <div class="mb-4 flex items-center justify-between">
+            <p class="text-xl font-bold text-gray-900">{{ plan.price }} birr</p>
+            @if (isCurrentPlan(plan.level)) {
+              <p class="text-sm text-gray-600">till {{formatDate(subscriptionDto?.endDate)}}</p>
+            } @else {
+              <p class="text-sm text-gray-600">for {{plan.durationInMonth}} month</p>
+            }
+          </div>
+          <ul class="h-[200px] text-gray-800 mb-6">
             <li *ngFor="let benefit of plan.benefits" class="mb-2 flex items-center">
-              <svg class="w-5 h-5 text-secondary mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <svg class="w-5 h-5 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
               </svg>
               {{ benefit }}

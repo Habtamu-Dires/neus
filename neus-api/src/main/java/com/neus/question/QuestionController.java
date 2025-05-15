@@ -1,11 +1,13 @@
 package com.neus.question;
 
 import com.neus.common.TextDto;
+import com.neus.exam.ExamType;
 import com.neus.question.dto.CreateQuestionDto;
 import com.neus.question.dto.QuestionDto;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cglib.core.Block;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,7 +37,6 @@ public class QuestionController {
     public ResponseEntity<List<QuestionDto>> getQuestionsByExamId(
             @PathVariable("exam-id") String examId
     ){
-
         var res = questionService.getQuestionByExamId(examId);
         return ResponseEntity.ok(res);
     }
@@ -70,5 +71,25 @@ public class QuestionController {
         return ResponseEntity.accepted().build();
     }
 
+    // get departments  by exam type and year
+    @GetMapping("/departments/{exam-type}/{year}")
+    public ResponseEntity<List<Department[]>> getDepartmentsByExamType(
+            @PathVariable("exam-type") ExamType examType,
+            @PathVariable("year") int year
+        ){
+        var res = questionService.getDepartmentsByExamType(examType, year);
+        return ResponseEntity.ok(res);
+    }
+
+    // get blocks by exam type , year and department
+    @GetMapping("/blocks/{exam-type}/{year}/{department}")
+    public ResponseEntity<List<BlockNumber>> getBlocksByExamTypeAndYearAndDepartment(
+            @PathVariable("exam-type") ExamType examType,
+            @PathVariable("year") int year,
+            @PathVariable("department") String department
+    ){
+        var res = questionService.getBlocksByExamTypeAndYearAndDepartment(examType, year, department);
+        return ResponseEntity.ok(res);
+    }
 
 }

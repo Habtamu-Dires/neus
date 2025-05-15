@@ -1,6 +1,8 @@
 package com.neus.question.dto;
 
+import com.neus.question.BlockNumber;
 import com.neus.question.Choice;
+import com.neus.question.Department;
 import lombok.Builder;
 import java.util.List;
 
@@ -12,5 +14,7 @@ public record QuestionDto(
         String questionText,
         List<Choice> choices,
         String explanation,
-        List<String> imgUrls
+        List<String> imgUrls,
+        Department department,
+        BlockNumber blockNumber
 ) {}

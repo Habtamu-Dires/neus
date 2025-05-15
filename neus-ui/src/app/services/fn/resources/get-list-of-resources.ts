@@ -8,12 +8,12 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { ListOfResourcesDto } from '../../models/list-of-resources-dto';
+import { ResourceInfoDto } from '../../models/resource-info-dto';
 
 export interface GetListOfResources$Params {
 }
 
-export function getListOfResources(http: HttpClient, rootUrl: string, params?: GetListOfResources$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<ListOfResourcesDto>>> {
+export function getListOfResources(http: HttpClient, rootUrl: string, params?: GetListOfResources$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<ResourceInfoDto>>> {
   const rb = new RequestBuilder(rootUrl, getListOfResources.PATH, 'get');
   if (params) {
   }
@@ -23,7 +23,7 @@ export function getListOfResources(http: HttpClient, rootUrl: string, params?: G
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<Array<ListOfResourcesDto>>;
+      return r as StrictHttpResponse<Array<ResourceInfoDto>>;
     })
   );
 }

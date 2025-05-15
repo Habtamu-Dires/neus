@@ -18,7 +18,9 @@
             <table class="min-w-full border border-gray-300 bg-white">
             <thead class="bg-gray-200 sticky top-16">
                 <tr>
-                    <th class="table-head w-1/12">Title</th>
+                    <th class="table-head w-2/12">Title</th>
+                    <th class="table-head w-1/12">Exam Type</th>
+                    <th class="table-head w-1/12">Year</th>
                     <th class="table-head w-1/12">No of Questions</th>
                     <th class="table-head w-1/12">Duration</th>
                     <th class="table-head w-1/12">Subscription Level</th>
@@ -30,6 +32,8 @@
             <tbody>
                 <tr *ngFor="let exam of examList" class="border-b border-gray-300 hover:bg-gray-100">                          
                     <td class="table-data">{{ exam.title }}</td>
+                    <td class="table-data">{{ exam.examType }}</td>
+                    <td class="table-data">{{ exam.year }}</td>
                     <td class="table-data">{{ exam.numberOfQuestions }}</td>
                     <td class="table-data">{{ formatMinutesToDuration(exam.duration) }}</td>
                     <td class="table-data">{{ exam.requiredSubLevel}}</td>
@@ -37,7 +41,7 @@
                         <span (click)="readDescription(exam.description, exam.title)" class="text-primary cursor-pointer">read</span>
                     </td>
                     <td class="table-data">
-                        <span (click)="viewQuestions(exam.id, exam.title)" class="text-primary cursor-pointer">view</span>
+                        <span (click)="viewQuestions(exam)" class="text-primary cursor-pointer">view</span>
                     </td>
                     <td class="table-data">
                         <div class="flex gap-5 relative">
@@ -73,6 +77,14 @@
                     <span class="ml-2">{{ exam.title}}</span>
                 </div>
                 <div class="mb-2">
+                    <span class="font-semibold text-gray-600">Type:</span>
+                    <span class="ml-2">{{ exam.examType}}</span>
+                </div>
+                <div class="mb-2">
+                    <span class="font-semibold text-gray-600">Year:</span>
+                    <span class="ml-2">{{ exam.year}}</span>
+                </div>
+                <div class="mb-2">
                     <span class="font-semibold text-gray-600">No of Questions:</span>
                     <span class="ml-2">{{ exam.numberOfQuestions}}</span>
                 </div>
@@ -90,7 +102,7 @@
                 </div>
                 <div class="mb-2">
                     <span class="font-semibold text-gray-600">Content</span>
-                    <span (click)="viewQuestions(exam.id, exam.title)" class="text-primary cursor-pointer">view</span>
+                    <span (click)="viewQuestions(exam)" class="text-primary cursor-pointer">view</span>
                 </div>
         
                 <!-- Actions -->

@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 @Builder
 public record UserDto(
         String id,
-        String username,
         String email,
         SubscriptionLevel subscriptionLevel,
         LocalDateTime startDate,

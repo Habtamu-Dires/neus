@@ -13,7 +13,6 @@ public class ResourceDtoMapper {
                 .id(resource.getExternalId().toString())
                 .title(resource.getTitle())
                 .type(resource.getType())
-                .department(resource.getDepartment())
                 .description(resource.getDescription())
                 .requiredSubLevel(resource.getRequiredSubLevel())
                 .parentResourceId(resource.getParentResource()!=null
@@ -26,11 +25,10 @@ public class ResourceDtoMapper {
     }
 
     // map to ListOfResourceDto
-    public static ListOfResourcesDto mapToListOfResourceDto(Resource r){
-        return ListOfResourcesDto.builder()
+    public static ResourceInfoDto mapToListOfResourceDto(Resource r){
+        return ResourceInfoDto.builder()
                 .resourceId(r.getExternalId())
                 .type(r.getType())
-                .department(r.getDepartment())
                 .title(r.getTitle())
                 .description(r.getDescription())
                 .requiredSubLevel(r.getRequiredSubLevel())
@@ -40,15 +38,14 @@ public class ResourceDtoMapper {
     // map to resource collection dto
     public static ResourceCollectionDto mapToResourceCollectionDto(
             Resource resource,
-            List<ResourceDto> resourceDtos
+            List<ResourceInfoDto> resourceListDto
     ){
         return ResourceCollectionDto.builder()
                 .title(resource.getTitle())
                 .type(resource.getType())
-                .department(resource.getDepartment())
                 .description(resource.getDescription())
                 .requiredSubLevel(resource.getRequiredSubLevel())
-                .resources(resourceDtos)
+                .resourceList(resourceListDto)
                 .build();
     }
 
@@ -57,7 +54,6 @@ public class ResourceDtoMapper {
                 .id(resource.getExternalId().toString())
                 .title(resource.getTitle())
                 .type(resource.getType())
-                .department(resource.getDepartment())
                 .description(resource.getDescription())
                 .requiredSubLevel(resource.getRequiredSubLevel())
                 .parentResourceId(resource.getParentResource()!=null

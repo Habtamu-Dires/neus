@@ -2,14 +2,11 @@ package com.neus.keycloak;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 
 import java.util.Map;
 
@@ -29,24 +26,30 @@ public class KeycloakClient {
     @Value("${keycloak.realm}")
     private String realm;
 
-    private final RestTemplate restTemplate;
+    private final RestClient restClient;
 
     public String getClientAccessToken(){
-        String url = keycloakAuthUrl + "/realms/" +realm + "/protocol/openid-connect/token";
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        String uri ="/realms/" +realm + "/protocol/openid-connect/token";
 
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "client_credentials");
         body.add("client_id", clientId);
         body.add("client_secret", clientSecret);
 
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(body, headers);
+        Map responseBody = restClient.post()
+                .uri(uri)
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .body(body)
+                .retrieve()
+                .body(Map.class);
 
-        ResponseEntity<Map> response = restTemplate.postForEntity(url, request, Map.class);
-
-        return response.getBody().get("access_token").toString();
-
+        // Extract the access_token from the response map
+        if (responseBody != null && responseBody.containsKey("access_token")) {
+            return responseBody.get("access_token").toString();
+        } else {
+            // Handle the case where the access token is not in the response
+            throw new RuntimeException("Failed to get access token from Keycloak response");
+        }
     }
+
 }

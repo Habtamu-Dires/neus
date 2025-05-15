@@ -1,11 +1,15 @@
 package com.neus.keycloak;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +17,7 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class KeycloakService {
 
     @Value("${keycloak.auth-server-url}")
@@ -28,15 +33,14 @@ public class KeycloakService {
     private String clientSecret;
 
     private final KeycloakClient keycloakClient;
-    private final RestTemplate restTemplate;
+    private final RestClient restClient;
 
-    //create user
-    public String createUser(KeycloakUserRequest userRequest) {
-        String url = keycloakAuthUrl + "/admin/realms/" + realm + "/users";
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(keycloakClient.getClientAccessToken());
+    // create user
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public void createUser(KeycloakUserRequest userRequest) {
+        String uri = "/admin/realms/" + realm + "/users";
+        String token = keycloakClient.getClientAccessToken();
 
         Map<String, Object> payload = new HashMap<>();
         payload.put("username", userRequest.username());
@@ -48,91 +52,115 @@ public class KeycloakService {
                 "temporary", false
         )));
 
-        HttpEntity<Map<String, Object>> request = new HttpEntity<>(payload, headers);
-
-        ResponseEntity<Void> response = restTemplate.postForEntity(url, request, Void.class);
+        ResponseEntity<Void> response = restClient.post()
+                .uri(uri)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer " + token)
+                .body(payload)
+                .retrieve()
+                .toBodilessEntity();
 
         if(response.getStatusCode() == HttpStatus.CREATED){
             String locationHeader = response.getHeaders().getLocation().toString();
-            return locationHeader.substring(locationHeader.lastIndexOf("/") + 1);
         } else {
             throw new RuntimeException("Failed to create user in Keycloak");
         }
     }
 
-    // delete user
+    // delte user
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public void deleteUser(String userId) {
-        String url = keycloakAuthUrl + "/admin/realms/" + realm + "/users/" + userId;
+        String uri = "/admin/realms/" + realm + "/users/" + userId;
+        String token = keycloakClient.getClientAccessToken();
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(keycloakClient.getClientAccessToken());
+        ResponseEntity<Void> response = restClient.delete()
+                .uri(uri)
+                .header("Authorization", "Bearer " + token)
+                .retrieve()
+                .toBodilessEntity();
 
-        HttpEntity<Void> request = new HttpEntity<>(headers);
-
-        restTemplate.exchange(url, HttpMethod.DELETE, request, Void.class);
+        if(response.getStatusCode() == HttpStatus.NO_CONTENT){
+               log.info("User deleted successfully");
+        } else {
+            throw new RuntimeException("Failed to delete user in Keycloak");
+        }
     }
 
-    // update profile
-    public void updateProfile(String userId, KeycloakUserRequest userRequest) {
-        String url = keycloakAuthUrl + "/admin/realms/" + realm + "/users/" + userId;
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(keycloakClient.getClientAccessToken());
+    // update synchronized flag
+    public void updateSynchronizedFlag(String userId, String email) {
+        String uri = "/admin/realms/" + realm + "/users/" + userId;
+        String token = keycloakClient.getClientAccessToken();
 
         Map<String, Object> payload = new HashMap<>();
-        payload.put("username", userRequest.username());
-        payload.put("email", userRequest.email());
+        payload.put("email", email);
+        Map<String, Object> attributes = new HashMap<>();
+        attributes.put("synchronized", List.of("true"));
+        payload.put("attributes", attributes);
 
-        HttpEntity<Map<String, Object>> request = new HttpEntity<>(payload, headers);
+        ResponseEntity<Void> response = restClient.put()
+                .uri(uri)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer " + token)
+                .body(payload)
+                .retrieve()
+                .toBodilessEntity();
 
-        restTemplate.exchange(url, HttpMethod.PUT, request, Void.class);
+        if (response.getStatusCode() == HttpStatus.NO_CONTENT) {
+            log.info("User updated successfully");
+        } else {
+            throw new RuntimeException("Failed to update user in Keycloak");
+        }
     }
 
     // Fetch role representation (id and name) from Keycloak
     private Map<String, String> getRoleRepresentation(String roleName) {
-        String url = keycloakAuthUrl + "/admin/realms/" + realm + "/roles/" + roleName;
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(keycloakClient.getClientAccessToken());
-        HttpEntity<Void> request = new HttpEntity<>(headers);
+        String uri = "/admin/realms/" + realm + "/roles/" + roleName;
+        String token = keycloakClient.getClientAccessToken();
 
-        ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, request, Map.class);
-        Map<String, Object> role = response.getBody();
+        Map response = restClient.get()
+                .uri(uri)
+                .header("Authorization", "Bearer " + token)
+                .retrieve()
+                .body(Map.class);
+
         return Map.of(
-                "id", role.get("id").toString(),
-                "name", role.get("name").toString()
+                "id", response.get("id").toString(),
+                "name", response.get("name").toString()
         );
+
     }
 
     // Assign a realm role to a user
     public void assignRole(String keycloakId, String roleName) {
-        String url = keycloakAuthUrl + "/admin/realms/" + realm + "/users/" + keycloakId + "/role-mappings/realm";
+        String uri = "/admin/realms/" + realm + "/users/" + keycloakId + "/role-mappings/realm";
+        String token = keycloakClient.getClientAccessToken();
+
         Map<String, String> roleRep = getRoleRepresentation(roleName);
         List<Map<String, String>> payload = List.of(roleRep);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(keycloakClient.getClientAccessToken());
-
-        HttpEntity<List<Map<String, String>>> request = new HttpEntity<>(payload, headers);
-
-        restTemplate.postForEntity(url, request, Void.class);
+        restClient.post()
+                .uri(uri)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer " + token)
+                .body(payload)
+                .retrieve()
+                .toBodilessEntity();
     }
 
     // Remove a realm role from a user
     public void removeRole(String keycloakId, String roleName) {
-        String url = keycloakAuthUrl + "/admin/realms/" + realm + "/users/" + keycloakId + "/role-mappings/realm";
+        String uri = "/admin/realms/" + realm + "/users/" + keycloakId + "/role-mappings/realm";
         Map<String, String> roleRep = getRoleRepresentation(roleName);
         List<Map<String, String>> payload = List.of(roleRep);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(keycloakClient.getClientAccessToken());
-        HttpEntity<List<Map<String, String>>> request = new HttpEntity<>(payload, headers);
+        restClient.method(HttpMethod.DELETE)
+                .uri(uri)
+                .contentType(MediaType.APPLICATION_JSON)
+                .headers(headers -> headers.setBearerAuth(keycloakClient.getClientAccessToken()))
+                .body(payload)
+                .retrieve()
+                .toBodilessEntity();
 
-        restTemplate.exchange(url, HttpMethod.DELETE, request, Void.class);
     }
-
-
 }

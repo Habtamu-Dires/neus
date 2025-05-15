@@ -4,12 +4,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { EditDialogComponent } from '../../components/edit-dialog/edit-dialog.component';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { QuestionsService } from '../../../../services/services';
 import { ToastrService } from 'ngx-toastr';
 import { ImageViewerComponent } from '../../components/image-viewer/image-viewer.component';
 import { ConfirmDialogComponent } from '../../../../components/confirm-dialog/confirm-dialog.component';
 import { AdminUxService } from '../../service/admin-ux/admin-ux.service';
+import { SharedStateService } from '../../../../services/shared-state/shared-state.service';
 
 @Component({
   selector: 'app-create-question',
@@ -27,30 +28,36 @@ export class CreateQuestionComponent implements OnInit{
   
   examId:string = '';
   title:string = '';
+  examType:string = '';
   numberOfQuestions:number = 1;
   errMsgs:string[]=[];
-  onShowDrawer:boolean =false;
+  showBlockList:boolean = false;
+  blockNumberList:String[] = [];
+  showDepartmentList:boolean = false;
+  departmentList:string[] = [];
+  filteredDepartmentList:string[] = [];
 
   constructor(
     private questionsService:QuestionsService,
     private activatedRoute:ActivatedRoute,
     private matDialog:MatDialog,
     private toastrService:ToastrService,
-    private adminUxService:AdminUxService
+    public adminUxService:AdminUxService,
+    private sharedStateService:SharedStateService
   ){}
 
   ngOnInit(): void {
     this.activatedRoute.queryParams.subscribe((params) => {
       this.examId = params['examId']; 
       this.title =params['title'];
+      this.examType=params['examType'];
       this.createQuestionDto.questionNumber = Number(params['numberOfQuestions']) + 1;
-      this.createQuestionDto.examId = this.examId;
+      this.createQuestionDto.examId = params['examId'];
     });
 
-    // on show drawer status
-    this.adminUxService.showDrawer$.subscribe((onShowDrawer:boolean)=>{
-      this.onShowDrawer = onShowDrawer;
-    });
+    // fill lists
+    this.blockNumberList = this.sharedStateService.blockNumberList;
+    this.departmentList = this.sharedStateService.departmentList;
   }
 
   // create question
@@ -129,7 +136,11 @@ export class CreateQuestionComponent implements OnInit{
     dialog.afterClosed().subscribe((result) => {
       if (result) {
         const choiceText = result.content;
-        this.createQuestionDto.choices?.push({ text: choiceText, isCorrect: false });
+        const tempNumb = this.createQuestionDto.choices?.length;
+        this.createQuestionDto.choices?.push({id:`${tempNumb}`,  text: choiceText, isCorrect: false });
+        if(result.imageUrls.length > 0){
+          this.createQuestionDto.imgUrls?.push(...result.imageUrls);
+        }
       }
     });    
   }
@@ -155,12 +166,14 @@ export class CreateQuestionComponent implements OnInit{
     });
   }
 
+  // remove choice
   removeChoice(index: number) {
     if (this.createQuestionDto.choices && this.createQuestionDto.choices.length > 1) {
       this.createQuestionDto.choices?.splice(index, 1);
     }
   }
-
+  
+  // toggle correct
   toggleCorrect(index: number) {
     this.createQuestionDto.choices?.forEach((c, i) => (c.isCorrect = i === index)); // Single correct answer
   }
@@ -170,72 +183,73 @@ export class CreateQuestionComponent implements OnInit{
     // Ensure at least one choice is marked correct
     if (!this.createQuestionDto.choices?.some((c) => c.isCorrect)) {
       this.errMsgs.push('Please mark one choice as correct.')
+      this.toastrService.error('Please mark one choice as correct.');
       return;
     }
     this.createQuestion();
   }
 
   // view image
-    viewImage(url:any){
-      this.matDialog.open(ImageViewerComponent, {
-        width: '400px',
-        height: '150px',
-        data: { 
-          imageUrl:url
-        },
-      });
-      
-    }
+  viewImage(url:any){
+    this.matDialog.open(ImageViewerComponent, {
+      width: '400px',
+      height: '150px',
+      data: { 
+        imageUrl:url
+      },
+    });
+  }
   
-    // on delete image
-    onDeleteImage(url:any){
-      const dialog = this.matDialog.open(ConfirmDialogComponent, {
-        width: '400px',
-        height: '150px',
-        data: { 
-          message: 'Are you sure you want to delete this image?', 
-          buttonName: 'Delete',
-          isWarning: true
-        },
-      });
-      dialog.afterClosed().subscribe((result) => {
-        if (result) {
-          this.createQuestionDto.imgUrls = this.createQuestionDto.imgUrls?.filter(imgUrl => imgUrl !== url);
-          this.deleteImage(url);
-        }
-      });
-    }
-  
-    // delete image
-    deleteImage(url:string){
-      this.questionsService.deleteImage({
-        'url':url 
-      }).subscribe({
-        next:()=>{
-          this.toastrService.success('Image deleted','Done');
-          
-        },
-        error:(err)=>{
-          console.log(err);
-          this.toastrService.error("Couldn't delete image", 'Error');
-        }
-      })
-    }
-  
-    // on copy image
-    onCopyUrl(url:any){
-      if (navigator.clipboard) {
-        navigator.clipboard.writeText(url).then(() => {
-          console.log('URL copied to clipboard:', url);
-          this.toastrService.success('Copied')
-        }).catch(err => {
-          console.error('Failed to copy URL:', err);
-        });
-      } else {
-        // Fallback if clipboard API is not supported
-        console.warn('Clipboard API not supported');
+  // on delete image
+  onDeleteImage(url:any){
+    const dialog = this.matDialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      height: '150px',
+      data: { 
+        message: 'Are you sure you want to delete this image?', 
+        buttonName: 'Delete',
+        isWarning: true
+      },
+    });
+    // dialog after closed
+    dialog.afterClosed().subscribe((result) => {
+      if (result) {
+        this.createQuestionDto.imgUrls = this.createQuestionDto.imgUrls?.filter(imgUrl => imgUrl !== url);
+        this.deleteImage(url);
       }
+    });
+  }
+  
+  // delete image
+  deleteImage(url:string){
+    this.questionsService.deleteImage({
+      'url':url 
+    }).subscribe({
+      next:()=>{
+        this.toastrService.success('Image deleted','Done');
+        
+      },
+      error:(err)=>{
+        console.log(err);
+        this.toastrService.error("Couldn't delete image", 'Error');
+      }
+    })
+  }
+  
+  // on copy image
+  onCopyUrl(url:any){
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(url).then(() => {
+        console.log('URL copied to clipboard:', url);
+        this.toastrService.success('Copied')
+      }).catch(err => {
+        console.error('Failed to copy URL:', err);
+      });
+    } else {
+      // Fallback if clipboard API is not supported
+      console.warn('Clipboard API not supported');
     }
+  }
 
   cancel() {
     if(this.createQuestionDto.imgUrls && this.createQuestionDto.imgUrls?.length > 0){
@@ -247,12 +261,24 @@ export class CreateQuestionComponent implements OnInit{
 
   // toogle showdrawer
   toggleShowDrawer(){
-    this.onShowDrawer = !this.onShowDrawer;
-    this.updateShowDrawerStatus();
+    this.adminUxService.toggleShowDrawerStatus();
   }
 
-  // update showDrawer status
-  updateShowDrawerStatus(){
-    this.adminUxService.updateShowDrawerStatus(this.onShowDrawer);
+  // on Block number selected
+  onBlockNumberSelected(block:any){
+    this.createQuestionDto.blockNumber = block;
+    this.showBlockList = false;
+  }
+
+  // on department selected
+  onDepartmentSelected(department:any){
+    this.createQuestionDto.department = department;
+    this.showDepartmentList = false;
+  }
+
+  // on department search
+  onDepartmentSearch(text:string){
+    this.filteredDepartmentList = this.departmentList
+    .filter(dep => dep.toLocaleLowerCase().startsWith(text.toLocaleLowerCase()));
   }
 }

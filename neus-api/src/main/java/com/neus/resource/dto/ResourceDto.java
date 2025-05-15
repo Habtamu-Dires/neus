@@ -10,7 +10,6 @@ public record ResourceDto(
         String title,
         ResourceType type,
         SubscriptionLevel requiredSubLevel,
-        String department,
         String description,
         String parentResourceId,
         String parentResourceTitle,

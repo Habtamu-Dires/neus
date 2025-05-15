@@ -29,7 +29,7 @@ export const appConfig: ApplicationConfig = {
       closeButton: true,
       newestOnTop: true,
       tapToDismiss: true,
-      positionClass: 'toast-top-center',
+      positionClass: 'toast-top-right',
       timeOut: 2000
     }),
   ]

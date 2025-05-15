@@ -1,6 +1,6 @@
 package com.neus.subscription;
 
-import com.neus.subscription.dto.SubscriptionResponse;
+import com.neus.subscription.dto.SubscriptionDto;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,18 +17,19 @@ public class SubscriptionController {
 
     //create subscription
     @PostMapping("/{sub-plan-id}")
-    public ResponseEntity<?> createSubscription(
+    public ResponseEntity<SubscriptionDto> createSubscription(
             @PathVariable("sub-plan-id") String subPlanId,
             Authentication authentication){
-        subscriptionService.createSubscription(subPlanId, authentication);
-        return ResponseEntity.accepted().build();
+        SubscriptionDto res = subscriptionService.createSubscription(subPlanId, authentication);
+        return ResponseEntity.ok(res);
     }
 
-    @GetMapping("/current/{user-id}")
-    public ResponseEntity<SubscriptionResponse> getCurrentSubscription(
+    // get user
+    @GetMapping("/{user-id}")
+    public ResponseEntity<SubscriptionDto> getUserSubscription(
             @PathVariable("user-id") String userId
     ){
-        var res = subscriptionService.getCurrentSubscription(userId);
+        var res = subscriptionService.getUserSubscription(userId);
         return ResponseEntity.ok(res);
     }
 }

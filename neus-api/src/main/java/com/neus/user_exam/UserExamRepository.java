@@ -1,6 +1,5 @@
 package com.neus.user_exam;
 
-import com.neus.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -14,5 +13,5 @@ public interface UserExamRepository extends JpaRepository<UserExam,Long> {
             WHERE ue.user.externalId = :userId
             AND ue.exam.externalId = :examId
             """)
-    Optional<UserExam> findByUserIdExamIdAndMode(String userId, UUID examId);
+    Optional<UserExam> findByUserIdAndExamId(String userId, UUID examId);
 }

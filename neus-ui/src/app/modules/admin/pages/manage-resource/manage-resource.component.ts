@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CreateResourceDto, ListOfResourcesDto, ResourceDto } from '../../../../services/models';
+import { CreateResourceDto, ResourceDto } from '../../../../services/models';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -8,6 +8,7 @@ import { ResourcesService } from '../../../../services/services';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../../../../components/confirm-dialog/confirm-dialog.component';
 import { debounceTime, throttleTime } from 'rxjs';
+import { SharedStateService } from '../../../../services/shared-state/shared-state.service';
 
 @Component({
   selector: 'app-manage-resource',
@@ -27,7 +28,7 @@ export class ManageResourceComponent implements OnInit{
   errMsgs:Array<string> = [];
   showSubscriptionLevelList:boolean = false;
   subscriptionLevelList:Array<string> = ['NONE','BASIC','ADVANCED','PREMIUM'];
-  typeList:Array<string> = ["READING_MATERIAL", "VIDEO" , "LECTURE_VIDEOS" , "LECTURE_NOTES","BOOK"];
+  typeList:Array<string> = [];
   showTypeList:boolean = false;
   showFileTypeMatchError:boolean = false;
   showPreviewFileTypeMatchError:boolean = false;
@@ -42,7 +43,8 @@ export class ManageResourceComponent implements OnInit{
     private router:Router,
     private activatedRoute: ActivatedRoute,
     private toastrService:ToastrService,
-    private matDialog:MatDialog
+    private matDialog:MatDialog,
+    private sharedStateService:SharedStateService
   ){}
 
   ngOnInit(): void {
@@ -50,6 +52,8 @@ export class ManageResourceComponent implements OnInit{
     if(resourceId){
       this.fetchResourceById(resourceId);
     }
+    // fill resouce list 
+    this.typeList = this.sharedStateService.resouceTypeList;
     // form
     this.parentSearchFormControl();
   }
@@ -90,10 +94,9 @@ export class ManageResourceComponent implements OnInit{
       next: (res:ResourceDto) => {
         this.createResourceDto = {
           id:res.id,
-          type: res.type as "EXAM" | "VIDEO" | "BOOK" | "READING_MATERIAL" | "LECTURE_VIDEOS" | "LECTURE_VIDEOS",
+          type: res.type ? res.type : 'BOOK',
           title: res.title,
           requiredSubLevel: res.requiredSubLevel as "NONE" | "BASIC" | "ADVANCED" | "PREMIUM",
-          department: res.department,
           description: res.description,
           contentPath:res.contentPath,
           previewResourcePath: res.previewContentPath,
@@ -206,6 +209,8 @@ export class ManageResourceComponent implements OnInit{
           if(this.parentResourceName !== text){
             this.searchParentResourceByTitle(text);
           }
+       } else {
+        this.createResourceDto.parentResourceId = undefined;
        }
      })
   }

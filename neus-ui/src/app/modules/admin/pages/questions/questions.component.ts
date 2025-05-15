@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EditDialogComponent } from '../../components/edit-dialog/edit-dialog.component';
-import { CreateQuestionDto, QuestionDto } from '../../../../services/models';
+import { CreateChoiceDto, CreateQuestionDto, QuestionDto } from '../../../../services/models';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AdminUxService } from '../../service/admin-ux/admin-ux.service';
@@ -11,6 +11,7 @@ import { ToastrService } from 'ngx-toastr';
 import { ConfirmDialogComponent } from '../../../../components/confirm-dialog/confirm-dialog.component';
 import { ViewChild, ElementRef } from '@angular/core';
 import { ImageViewerComponent } from '../../components/image-viewer/image-viewer.component';
+import { SharedStateService } from '../../../../services/shared-state/shared-state.service';
 
 @Component({
   selector: 'app-questions',
@@ -21,33 +22,39 @@ import { ImageViewerComponent } from '../../components/image-viewer/image-viewer
 export class QuestionsComponent {
   examId: string | undefined;
   title:string='';
+  examType:string='';
   questionList: QuestionDto[] = []; 
   currentQuestionIndex: number = 0;
   showExplanation:boolean = false;
-  onShowDrawer:boolean =false;
   errMsgs:string[]=[];
+  showBlockList:boolean = false;
+  blockNumberList:String[] = [];
+  showDepartmentList:boolean = false;
+  departmentList:string[] = [];
+  filteredDepartmentList:string[] = [];
 
   constructor(
     private qustionsService:QuestionsService,
     private activatedRoute: ActivatedRoute, 
     private matDialog: MatDialog,
-    private adminUxService:AdminUxService,
+    public adminUxService:AdminUxService,
     private router:Router,
-    private toastrService:ToastrService
+    private toastrService:ToastrService,
+    private sharedStateService:SharedStateService
   ) {}
 
   ngOnInit(): void {
-    this.activatedRoute.params.subscribe((params) => {
+    this.activatedRoute.queryParams.subscribe((params) => {
       this.examId = params['examId']; // Get exam ID from route
       this.title =params['title'];
-      console.log("the exam id " + this.examId)
+      this.examType = params['examType']
       this.fetchQuestionByExamId(); // Replace with API call later
     });
 
-    // on show drawer status
-    this.adminUxService.showDrawer$.subscribe((onShowDrawer:boolean)=>{
-      this.onShowDrawer = onShowDrawer;
-    });
+    // fill lists
+    this.blockNumberList = this.sharedStateService.blockNumberList;
+    this.departmentList = this.sharedStateService.departmentList;
+
   }
 
   @ViewChild('questionContainer') questionContainer!: ElementRef;
@@ -76,11 +83,14 @@ export class QuestionsComponent {
       questionNumber: this.currentQuestion.questionNumber as number,
       questionText: this.currentQuestion.questionText,
       explanation:this.currentQuestion.explanation,
-      choices: this.currentQuestion.choices,
-      imgUrls: this.currentQuestion.imgUrls
+      choices: this.currentQuestion.choices as CreateChoiceDto[],
+      imgUrls: this.currentQuestion.imgUrls,
+      department: this.currentQuestion.department,
+      blockNumber: this.currentQuestion.blockNumber
     }
     if (!this.currentQuestion.choices?.some((c) => c.isCorrect)) {
       this.errMsgs.push('Please mark one choice as correct.')
+      this.toastrService.error('Please mark one choice as correct.');
       return;
     }
     this.updateQuestion(createQuestionDto);
@@ -93,7 +103,7 @@ export class QuestionsComponent {
       body: createQuestionDto
     }).subscribe({
       next:(res)=>{
-          this.toastrService.success('successfully update the question', 'Done')
+          this.toastrService.success('successfully update the question')
       },
       error:(err)=>{
         console.log(err);
@@ -149,7 +159,8 @@ export class QuestionsComponent {
         {queryParams:{
           'examId': this.examId, 
           'title': this.title, 
-          'numberOfQuestions': this.questionList.length
+          'numberOfQuestions': this.questionList.length,
+          'examType': this.examType
         }});
   }
 
@@ -208,7 +219,11 @@ export class QuestionsComponent {
     dialog.afterClosed().subscribe((result) => {
       if (result) {
         const choiceText = result.content;
-        this.currentQuestion.choices?.push({ text: choiceText, isCorrect: false });
+        const choices = this.currentQuestion.choices || [];
+        this.currentQuestion.choices?.push({id: String(choices.length),  text: choiceText, isCorrect: false });
+        if(result.imageUrls.length > 0){
+          this.currentQuestion.imgUrls?.push(...result.imageUrls);
+        }
       }
     });    
   }
@@ -245,6 +260,10 @@ export class QuestionsComponent {
     });
     dialog.afterClosed().subscribe((result) => {
       if (result) {
+        // delete all images in the question
+        this.currentQuestion.imgUrls?.forEach(img => {
+          this.deleteImage(img);
+        })
         this.deleteQuestion(this.currentQuestion.id as string);
       }
     });
@@ -327,7 +346,6 @@ export class QuestionsComponent {
     }).subscribe({
       next:()=>{
         this.toastrService.success('Image deleted','Done');
-        
       },
       error:(err)=>{
         console.log(err);
@@ -351,15 +369,10 @@ export class QuestionsComponent {
     }
   }
 
-  // update showDrawer status
-  updateShowDrawerStatus(){
-    this.adminUxService.updateShowDrawerStatus(this.onShowDrawer);
-  }
 
   // toogle showdrawer
   toggleShowDrawer(){
-    this.onShowDrawer = !this.onShowDrawer;
-    this.updateShowDrawerStatus();
+    this.adminUxService.toggleShowDrawerStatus();
   }
 
   // scroll top
@@ -367,5 +380,23 @@ export class QuestionsComponent {
     if (this.questionContainer) {
       this.questionContainer.nativeElement.scrollTop = 0;
     }
+  }
+
+  // on Block number selected
+  onBlockNumberSelected(block:any){
+    this.currentQuestion.blockNumber = block;
+    this.showBlockList = false;
+  }
+
+  // on department selected
+  onDepartmentSelected(department:any){
+    this.currentQuestion.department = department;
+    this.showDepartmentList = false;
+  }
+
+  // on department search
+  onDepartmentSearch(text:string){
+    this.filteredDepartmentList = this.departmentList
+    .filter(dep => dep.toLocaleLowerCase().startsWith(text.toLocaleLowerCase()));
   }
 }

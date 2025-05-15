@@ -1,70 +1,81 @@
-import { Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular/core';
-import { ListOfResourcesDto, ResourceDto } from '../../../../services/models';
+import { Component, effect, ElementRef, EventEmitter, Output, ViewChild } from '@angular/core';
+import { ResourceDto, ResourceInfoDto } from '../../../../services/models';
 import { ResourcesService } from '../../../../services/services';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { KeycloakService } from '../../../../services/keycloak/keycloak.service';
 import { CommonModule } from '@angular/common';
+import { UserSharedStateService } from '../../services/user-shared-state.service';
+import { ResourceBoxComponent } from "../resource-box/resource-box.component";
 
 @Component({
   selector: 'app-resources',
-  imports: [CommonModule],
+  imports: [CommonModule, ResourceBoxComponent],
   templateUrl: './resources.component.html',
   styleUrl: './resources.component.css'
 })
 export class ResourcesComponent {
-  resources: ListOfResourcesDto[] = [];
-  filteredResources: ListOfResourcesDto[] = [];
-  examResources: ListOfResourcesDto[] = [];
-  noteResources: ListOfResourcesDto[] = [];
-  videoResources: ListOfResourcesDto[] = [];
-  bookResources: ListOfResourcesDto[] = [];
+  resources: ResourceInfoDto[] = [];
+  filteredResources: ResourceInfoDto[] = [];
+  examResources: ResourceInfoDto[] = [];
+  lectureResources:ResourceInfoDto[] = [];
+  noteResources: ResourceInfoDto[] = [];
+  videoResources: ResourceInfoDto[] = [];
+  bookResources: ResourceInfoDto[] = [];
   activeFilter: string = 'FREE';
   savedFilter:string = '';
   isLoggedIn = false;
-  subscriptionLevel: string | null = null;
+  subscriptionLevel: "NONE" | "BASIC" | "ADVANCED" | "PREMIUM" | undefined = undefined;
   showSearchInput:boolean = false;
 
-  @Output() onFilterChanged = new EventEmitter<string>();
+  @Output() scrollToSection = new EventEmitter<string>();
 
   @ViewChild('searchInput') searchInputRef!:ElementRef<HTMLInputElement>;
 
   constructor(
     private resourcesService: ResourcesService,
     private keyclaokService:KeycloakService,
-    private router: Router
-  ) {}
+    private userSharedStateService:UserSharedStateService,
+    private activatedRoute:ActivatedRoute
+  ) {
+    // watch singal change
+    effect(()=>{
+      this.subscriptionLevel = this.userSharedStateService.subscriptionLevel();
+      if(this.subscriptionLevel){
+        this.applyFilter(this.subscriptionLevel)
+      }
+    })
+  }
 
   ngOnInit(): void {
     // Check login status
     this.isLoggedIn = this.keyclaokService.isAuthenticated;
-    if (this.isLoggedIn) {
-      const subscriptionType = this.keyclaokService.subscriptionLevel as string;
-      if(subscriptionType){
-        this.subscriptionLevel = subscriptionType.replace('_subscriber','').toUpperCase();
-      }
-    }
+
+    // back to current sub level category
+    const isFromResDetail = this.activatedRoute.snapshot.queryParams['from-resource-detail'];
+
     // fetch resources
-    this.fetchResource();
+    this.fetchResource(isFromResDetail);
+    
   }
 
   // fetch resources
-  fetchResource(){
+  fetchResource(isFromResDetail:boolean | undefined){
      this.resourcesService.getListOfResources().subscribe({
       next:(res:ResourceDto[])=>{
         this.resources = res;
-        if(this.subscriptionLevel){
+        if(this.subscriptionLevel && !isFromResDetail){
           this.applyFilter(this.subscriptionLevel);
-        } else {
+        } else if(isFromResDetail){
+          this.applyFilter(this.userSharedStateService.currentSubLevelCat());
+        } else{
           this.applyFilter('FREE');
         }
-        console.log(res);
       },
       error:(err)=>{
         console.log(err);
       }
      })
   }
-
 
   // apply filter
   applyFilter(filter: string): void {
@@ -80,7 +91,9 @@ export class ResourcesComponent {
     }
 
     // Group resources by type
-    this.examResources = this.filteredResources.filter(r => r.type === 'EXAM');
+    this.examResources = this.filteredResources.filter(r => 
+       ['EXAM','ERMP','USMLE_STEP_1','USMLE_STEP_2'].includes(r.type ? r.type : 'none') ); 
+    this.lectureResources = this.filteredResources.filter(r => r.type === 'LECTURE' ); 
     this.noteResources = this.filteredResources.filter(r => 
         r.type === 'READING_MATERIAL' || r.type === 'LECTURE_NOTES');
     this.videoResources = this.filteredResources.filter(r => 
@@ -91,26 +104,9 @@ export class ResourcesComponent {
   // on filter selected
   onFilterSelected(filter: string): void {
     this.applyFilter(filter);
-    this.onFilterChanged.emit('resources');
-  }
-
-  navigateToDetail(resource: ListOfResourcesDto): void {
-    const routeMap: { [key: string]: string } = {
-      EXAM: 'exams',
-      VIDEO: 'videos',
-      NOTE: 'notes',
-      LECTURE_VIDEOS: 'lectures',
-      LECTURE_NOTES: 'lectures'
-    };
-    const route = routeMap[resource.type as string];
-    this.router.navigate([`user/${route}/${resource.resourceId}`]);
-  }
-
-  isEqualOrHigherTier(requiredSubLevel: any): boolean {
-    const tiers = ['BASIC', 'ADVANCED', 'PREMIUM'];
-    const userIndex = this.subscriptionLevel ? tiers.indexOf(this.subscriptionLevel) : -1;
-    const resourceIndex = tiers.indexOf(requiredSubLevel);
-    return userIndex >= resourceIndex;
+    this.scrollToSection.emit('resources');
+    this.showSearchInput = false;
+    this.userSharedStateService.updateCurrentSubLevelCat(filter as 'FREE' | 'BASIC' | 'ADVANCED' | 'PREMIUM');
   }
 
   // on seach btn click
@@ -132,14 +128,18 @@ export class ResourcesComponent {
         resource => resource.title?.toLocaleLowerCase().includes(text.toLocaleLowerCase())
       );
 
-    // Group resources by type
-    this.examResources = this.filteredResources.filter(r => r.type === 'EXAM');
-    this.noteResources = this.filteredResources.filter(r => 
-        r.type === 'READING_MATERIAL' || r.type === 'LECTURE_NOTES');
-    this.videoResources = this.filteredResources.filter(r => 
-        r.type === 'VIDEO' || r.type === 'LECTURE_VIDEOS');
-    this.bookResources = this.filteredResources.filter(r => r.type === 'BOOK');
-    
+      this.scrollToSection.emit('resources');
+
+      // Group resources by type
+      this.examResources = this.filteredResources.filter(r => 
+        ['EXAM','ERMP','USMLE_STEP_1','USMLE_STEP_2'].includes(r.type ? r.type : 'none') );
+      this.lectureResources = this.filteredResources.filter(r => r.type === 'LECTURE' ); 
+      this.noteResources = this.filteredResources.filter(r => 
+          r.type === 'READING_MATERIAL' || r.type === 'LECTURE_NOTES');
+      this.videoResources = this.filteredResources.filter(r => 
+          r.type === 'VIDEO' || r.type === 'LECTURE_VIDEOS');
+      this.bookResources = this.filteredResources.filter(r => r.type === 'BOOK');
+        
     }
   }
   /// clear search area
@@ -149,5 +149,21 @@ export class ResourcesComponent {
     this.applyFilter(this.activeFilter);
   }
 
+  // scroll to resources type
+  scrollToResouceType(typeId:string){
+    setTimeout(() => {
+      const element = document.getElementById(typeId);
+      if (element) {
+        const headerOffset = 200;
+        const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+        const offsetPosition = elementPosition - headerOffset;
+    
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+      }
+    }, 150); // slight delay lets rendering settle 
+  }
   
 }

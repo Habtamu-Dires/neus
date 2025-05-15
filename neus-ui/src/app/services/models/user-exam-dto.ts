@@ -8,6 +8,7 @@ export interface UserExamDto {
   examId?: string;
   lastModifiedDate?: string;
   mode?: string;
+  status?: 'IN_PROGRESS' | 'COMPLETED';
   studyModeCorrectAnswers?: Array<CorrectAnswer>;
   studyModeUserAnswers?: Array<UserAnswer>;
   testModeCorrectAnswers?: Array<CorrectAnswer>;

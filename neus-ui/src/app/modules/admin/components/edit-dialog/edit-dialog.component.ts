@@ -49,7 +49,7 @@ export class EditDialogComponent {
 
         ['clean'],                                         // remove formatting button
 
-        ['link', 'image', 'video']   
+        ['link', 'image']    // 'video'
       ],
       handlers: {
         image: this.imageHandler.bind(this)
@@ -85,7 +85,7 @@ export class EditDialogComponent {
 
 
   // handle image upload
-  imageHandler(image: any) {
+  imageHandler() {
     const input = document.createElement('input');
     input.setAttribute('type', 'file');
     input.setAttribute('accept', 'image/*');
@@ -103,14 +103,13 @@ export class EditDialogComponent {
   uploadImage(file: any) {
     this.isUploading = true; // Show the loading animation
     const formData = new FormData();
-    formData.append('file', file); // Ensure the field name matches your Spring Boot controller
+    formData.append('file', file); 
 
-    this.http.post<TextDto>(`${environment.apiUrl}/questions/upload-image`, formData) // Adjust your API endpoint
+    this.http.post<TextDto>(`${environment.apiUrl}/questions/upload-image`, formData) 
       .subscribe({
         next: (res: TextDto) => {
           this.isUploading = false; // Hide the loading animation
           const imageUrl = res.value;
-          console.log("image url " + imageUrl);
           if(imageUrl){
             const range = this.quillEditorInstance.getSelection();
             if (range) {
@@ -118,27 +117,25 @@ export class EditDialogComponent {
             } else {
               this.quillEditorInstance.insertEmbed(this.quillEditorInstance.getLength(), 'image', imageUrl);
             }
+            // push to image urls list
             this.imageUrls.push(imageUrl);
-            console.log("imager url " + this.imageUrls);
           }
         },
         error: (err) => {
           this.isUploading = false; // Hide loading animation even on error
           console.error('Image upload failed:', err);
-           this.toastrService.error('Image upload failed', 'Error');
+          this.toastrService.error('Image upload failed', 'Error');
         }
       });
   }
 
+  // on content change listener of quill editor
   onContentChanged(event: any) {
-    console.log('Content changed:', event.html);
     this.content = event.html;
-    // console.log('Current content in component:', this.content);
   }
 
   // submit
   submit() {
-    console.log("imageUrl " + this.imageUrls);
     this.dialogRef.close({
       content: this.content,
       imageUrls: this.imageUrls

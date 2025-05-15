@@ -17,6 +17,8 @@ import { deleteResource } from '../fn/resources/delete-resource';
 import { DeleteResource$Params } from '../fn/resources/delete-resource';
 import { deleteResourceContent } from '../fn/resources/delete-resource-content';
 import { DeleteResourceContent$Params } from '../fn/resources/delete-resource-content';
+import { getListOfCollections } from '../fn/resources/get-list-of-collections';
+import { GetListOfCollections$Params } from '../fn/resources/get-list-of-collections';
 import { getListOfResources } from '../fn/resources/get-list-of-resources';
 import { GetListOfResources$Params } from '../fn/resources/get-list-of-resources';
 import { getPageOfResources } from '../fn/resources/get-page-of-resources';
@@ -27,11 +29,11 @@ import { getResourceCollection } from '../fn/resources/get-resource-collection';
 import { GetResourceCollection$Params } from '../fn/resources/get-resource-collection';
 import { getResourceDetail } from '../fn/resources/get-resource-detail';
 import { GetResourceDetail$Params } from '../fn/resources/get-resource-detail';
-import { ListOfResourcesDto } from '../models/list-of-resources-dto';
 import { PageResponseResourceDto } from '../models/page-response-resource-dto';
 import { ResourceCollectionDto } from '../models/resource-collection-dto';
 import { ResourceDetailDto } from '../models/resource-detail-dto';
 import { ResourceDto } from '../models/resource-dto';
+import { ResourceInfoDto } from '../models/resource-info-dto';
 import { searchParentResourceByTitle } from '../fn/resources/search-parent-resource-by-title';
 import { SearchParentResourceByTitle$Params } from '../fn/resources/search-parent-resource-by-title';
 import { updateResource } from '../fn/resources/update-resource';
@@ -274,7 +276,7 @@ export class ResourcesService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getListOfResources$Response(params?: GetListOfResources$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<ListOfResourcesDto>>> {
+  getListOfResources$Response(params?: GetListOfResources$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<ResourceInfoDto>>> {
     return getListOfResources(this.http, this.rootUrl, params, context);
   }
 
@@ -284,9 +286,9 @@ export class ResourcesService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getListOfResources(params?: GetListOfResources$Params, context?: HttpContext): Observable<Array<ListOfResourcesDto>> {
+  getListOfResources(params?: GetListOfResources$Params, context?: HttpContext): Observable<Array<ResourceInfoDto>> {
     return this.getListOfResources$Response(params, context).pipe(
-      map((r: StrictHttpResponse<Array<ListOfResourcesDto>>): Array<ListOfResourcesDto> => r.body)
+      map((r: StrictHttpResponse<Array<ResourceInfoDto>>): Array<ResourceInfoDto> => r.body)
     );
   }
 
@@ -337,6 +339,31 @@ export class ResourcesService extends BaseService {
   getResourceCollection(params: GetResourceCollection$Params, context?: HttpContext): Observable<ResourceCollectionDto> {
     return this.getResourceCollection$Response(params, context).pipe(
       map((r: StrictHttpResponse<ResourceCollectionDto>): ResourceCollectionDto => r.body)
+    );
+  }
+
+  /** Path part for operation `getListOfCollections()` */
+  static readonly GetListOfCollectionsPath = '/resources/collection-list/{lecture-id}';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getListOfCollections()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getListOfCollections$Response(params: GetListOfCollections$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<ResourceInfoDto>>> {
+    return getListOfCollections(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getListOfCollections$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getListOfCollections(params: GetListOfCollections$Params, context?: HttpContext): Observable<Array<ResourceInfoDto>> {
+    return this.getListOfCollections$Response(params, context).pipe(
+      map((r: StrictHttpResponse<Array<ResourceInfoDto>>): Array<ResourceInfoDto> => r.body)
     );
   }
 

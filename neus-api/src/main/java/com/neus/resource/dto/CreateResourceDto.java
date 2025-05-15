@@ -17,7 +17,6 @@ public record CreateResourceDto(
         String title,
         @NotNull(message = "Subscription Level is Mandatory")
         SubscriptionLevel requiredSubLevel,
-        String department,
         @NotEmpty(message = "Description is Mandatory")
         String description,
         String contentPath,

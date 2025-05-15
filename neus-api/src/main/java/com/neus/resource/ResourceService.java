@@ -5,13 +5,11 @@ import com.neus.common.SubscriptionLevel;
 import com.neus.exceptions.ResourceNotFoundException;
 import com.neus.file.FileStorageService;
 import com.neus.resource.dto.*;
-import com.neus.subscription_plan.SubscriptionPlanService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -21,8 +19,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.UUID;
 
-import static com.neus.common.ExtractUserRole.getUserRoleFromJwt;
-import static com.neus.common.ExtractUserRole.mapRoleToSubscriptionLevel;
+import static com.neus.common.ExtractRoleFromJwt.getUserRoleFromJwt;
+import static com.neus.common.ExtractRoleFromJwt.mapRoleToSubscriptionLevel;
 
 @Service
 @RequiredArgsConstructor
@@ -50,10 +48,10 @@ public class ResourceService {
                 .externalId(UUID.randomUUID())
                 .type(dto.type())
                 .title(dto.title())
-                .department(dto.department())
                 .description(dto.description())
                 .requiredSubLevel(parentResource != null
-                        ? parentResource.getRequiredSubLevel() : SubscriptionLevel.NONE
+                        ? parentResource.getRequiredSubLevel()
+                        : dto.requiredSubLevel()
                 )
                 .parentResource(parentResource)
                 .build();
@@ -73,7 +71,7 @@ public class ResourceService {
     // update resource
     @PreAuthorize("hasRole('ADMIN')")
     @Transactional
-    public void updateResource(CreateResourceDto dto, String externalId){
+    public void updateResource(CreateResourceDto dto, String externalId) {
         Resource resource = this.findResourceByExternalId(externalId);
         SubscriptionLevel oldRequiredSubLevel = resource.getRequiredSubLevel();
 
@@ -85,13 +83,12 @@ public class ResourceService {
 
         resource.setTitle(dto.title());
         resource.setType(dto.type());
-        resource.setDepartment(dto.department());
         resource.setDescription(dto.description());
         resource.setRequiredSubLevel(dto.requiredSubLevel());
         resource.setParentResource(parentResource);
 
         resourceRepository.save(resource);
-        
+
         //  is parent resource ? && required sub level changed ?
         if(oldRequiredSubLevel != dto.requiredSubLevel()
                 && resource.getChildResources() !=null
@@ -105,11 +102,9 @@ public class ResourceService {
 
     }
 
-    // get resource list
-    public List<ListOfResourcesDto> getListOfResources() {
-        return resourceRepository.findParentResources().stream()
-                .map(ResourceDtoMapper::mapToListOfResourceDto)
-                .toList();
+    // get resources
+    public List<ResourceInfoDto> getListOfResources() {
+        return resourceRepository.findParentResources();
     }
 
     // get resource detail
@@ -141,18 +136,14 @@ public class ResourceService {
     }
 
     // get resource collection
-    public ResourceCollectionDto getResourceCollection(String resourceId, Authentication authentication) {
+    public ResourceCollectionDto getResourceCollection(String resourceId) {
         // Fetch the resource
         Resource resource = resourceRepository.findByExternalId(UUID.fromString(resourceId))
                 .orElseThrow(() -> new ResourceNotFoundException("Resource not found"));
 
-        List<ResourceDto> resourceDtoList = resourceRepository
-                .findByParentResource(resource.getId())
-                .stream()
-                .map(ResourceDtoMapper::mapToResourceDto)
-                .toList();
-        return ResourceDtoMapper.mapToResourceCollectionDto(resource,resourceDtoList);
-
+        List<ResourceInfoDto> resourceListDto = resourceRepository
+                .findByParentResource(resource.getId());
+        return ResourceDtoMapper.mapToResourceCollectionDto(resource,resourceListDto);
     }
 
     // save file
@@ -255,4 +246,8 @@ public class ResourceService {
                 .toList();
     }
 
+    // list of collections
+    public List<ResourceInfoDto> getListOfCollections(String lectureId) {
+        return resourceRepository.findByParentResourceExternalId(UUID.fromString(lectureId));
+    }
 }

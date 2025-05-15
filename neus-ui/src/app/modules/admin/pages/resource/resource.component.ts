@@ -24,7 +24,7 @@ export class ResourceComponent implements OnInit{
   showActions:boolean = false;
   // pagination
   page:number = 0;
-  size:number = 5;
+  size:number = 10;
   isEmptyPage: boolean = true;
   isFirstPage: boolean |undefined; 
   isLastPage: boolean |undefined;

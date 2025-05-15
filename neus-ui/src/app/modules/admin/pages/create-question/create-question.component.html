@@ -1,25 +1,27 @@
 <main class="admin-container flex gap-2 w-full h-full">
   <!--toggle side bar-->
   <div class="py-1">
-    <svg *ngIf="onShowDrawer" (click)="toggleShowDrawer()" 
-        class="cursor-pointer "
+    <svg *ngIf="adminUxService.showDrawer()" (click)="toggleShowDrawer()" 
+        class="cursor-pointer sticky top-2"
         xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 14 14"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="M13.5 2H.5m13 5H.5m13 5H.5"/>
     </svg>
   </div>
 
-  <div class="flex flex-col w-full h-full p-6 bg-gray-100 rounded-lg">
-    <h2 class="text-xl font-semibold text-gray-800 mb-4">{{ title }}</h2>
-    <!--err msg-->
-    <div *ngIf="errMsgs" class="text-center space-y-1">
-        <p *ngFor="let msg of errMsgs" class="text-red-500 text-sm">
-          {{ msg }}
-        </p>
-    </div>
-    <!--question number-->
-    <div class="py-2 flex gap-2 items-center justify-start">
-      <label class="text-gray-700">Question number</label>
-      <input class="form-input" [(ngModel)]="createQuestionDto.questionNumber" type="number" placeholder="question-number"/>
-    </div>
+  <div class="flex flex-col w-full h-full p-4 bg-gray-100 rounded-lg">
+    <section class="flex flex-col w-full py-2 sticky top-0 bg-gray-100 z-10">
+      <h2 class="text-xl font-semibold text-gray-800 mb-2">{{ title }}</h2>
+      <!--err msg-->
+      <div *ngIf="errMsgs" class="text-center space-y-1">
+          <p *ngFor="let msg of errMsgs" class="text-red-500 text-sm">
+            {{ msg }}
+          </p>
+      </div>
+      <!--question number-->
+      <div class="py-2 flex gap-2 items-center justify-start">
+        <label class="text-gray-700">Question number</label>
+        <input class="form-input" [(ngModel)]="createQuestionDto.questionNumber" type="number" placeholder="question-number"/>
+      </div>
+    </section>
     <!-- Question Text -->
     <div class="mb-4">
       <label class="block text-gray-700 mb-2">Question</label>
@@ -77,7 +79,55 @@
         </div>
       </div>
     </div>
-  
+
+    <!--Department-->
+    <div *ngIf="['ERMP','USMLE_STEP_1','USMLE_STEP_2'].includes(this.examType)"
+      class="py-4 flex gap-8 items-center justify-start">
+      <label class="form-label">Department</label>
+      <div class="relative w-1/4 col-span-12 md:col-span-10 z-10">
+          <input #departmentSearchInput [(ngModel)]="createQuestionDto.department" 
+            (input)="onDepartmentSearch(departmentSearchInput.value)"
+            (click)="showDepartmentList = true"
+            class="w-full form-input"  type="text" placeholder="search department" />
+          <div *ngIf="showDepartmentList" 
+              class="absolute w-full flex flex-col items-center ">
+              <div *ngFor="let department of filteredDepartmentList; let idx=index" 
+                  class="w-2/3 flex bg-white shadow-md hover:bg-gray-400" 
+                  [ngClass]="{'rounded-t-md' : idx==0, 
+                      'rounded-b-md' : idx == (filteredDepartmentList.length - 1)
+                  }"
+                  >
+                  <p (click)="onDepartmentSelected(department)" 
+                      class="cursor-pointer p-2 w-full ">
+                      {{department}}
+                  </p>
+              </div>
+          </div>
+      </div>
+    </div>
+
+    <!--Block-->
+    <div *ngIf="['USMLE_STEP_1','USMLE_STEP_2'].includes(this.examType)"  
+      class="py-4 flex gap-4 items-center justify-start">
+      <label class="form-label">Block Number</label>
+      <div class="relative w-1/4 col-span-12 md:col-span-10">
+        <input [(ngModel)]="createQuestionDto.blockNumber" class="form-input w-full cursor-pointer" type="text"
+          placeholder="Exam Type" (click)="showBlockList = true"
+          (focus)="showBlockList = true" />
+        <div *ngIf="showBlockList" class="absolute z-10 w-full mt-1">
+          <div *ngFor="let block of blockNumberList; let idx=index"
+            class="w-full bg-white shadow hover:bg-gray-200 p-2 cursor-pointer"
+            [ngClass]="{
+              'rounded-t-md': idx == 0,
+              'rounded-b-md': idx == blockNumberList.length - 1
+            }"
+            (click)="onBlockNumberSelected(block)">
+            {{ block }}
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Buttons -->
     <div class="flex flex-col md:flex-row justify-between p-4">
       <section class="flex flex-col py-2 w-full md:w-5/6 md:flex-row items-center justify gap-2  overflow-x-scroll">

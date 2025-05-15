@@ -1,10 +1,35 @@
-<section class="flex items-center justify-center min-h-[400px] bg-gradient-to-br from-gray-100 to-blue-200 py-24 px-4 text-center">
-    <div class="max-w-2xl">
-      <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-6">{{ headline }}</h1>
-      <p class="text-lg md:text-xl text-gray-600 mb-8">{{ subtext }}</p>
-      <p (click)="gotoAction()"  
-        class="cursor-pointer inline-block bg-primary text-white py-3 px-6 rounded-lg text-base font-medium hover:bg-btnHover transition-colors">
-        {{ ctaText }}
-      </p>
+<section class="max-container relative min-h-[500px] py-24 px-4 text-center bg-gradient-to-br overflow-hidden">
+
+  <!-- Left background image (desktop only) -->
+  <img src="/pic1.jpg" 
+       class="hidden md:block absolute left-20 top-1/2 transform -translate-y-1/2 w-40 opacity-20 pointer-events-none" 
+       alt="Medical Symbol">
+
+  <!-- Right background image (desktop only) -->
+  <img src="/pic1.jpg" 
+       class="hidden md:block absolute right-20 top-1/2 transform -translate-y-1/2 w-40 opacity-20 pointer-events-none" 
+       alt="Medical Symbol">
+
+  <!-- Center background image (mobile only) -->
+  <img src="/pic1.jpg" 
+       class="block md:hidden absolute inset-0 inset-y-36 mx-auto w-48 opacity-10 pointer-events-none" 
+       alt="Medical Symbol">
+
+  <!-- Hero Content -->
+  <div class="relative z-10 max-w-2xl mx-auto animate-fadeIn">
+    <h1 class="text-4xl font-bold text-gray-800 mb-4">{{ headline }}</h1>
+    <p class="text-lg md:text-xl text-gray-600 mb-6">{{ subtext }}</p>
+
+    <div class="text-sm md:text-base text-gray-600 mb-8 space-y-2">
+      <p>✔ 5 Years of ERMP Questions with UWorld-style Explanations</p>
+      <p>✔ 8000+ UWorld Questions for Step 1 & Step 2</p>
+      <p>✔ Access to Medical Books, Guidelines, Pathoma & Beyond</p>
+      <p>✔ Free UpToDate 2025 Subscription</p>
     </div>
-  </section>
+
+    <p (click)="gotoAction()"  
+       class="cursor-pointer inline-block bg-primary text-white py-3 px-6 rounded-lg text-base font-medium hover:bg-btnHover transition-colors">
+      {{ ctaText }}
+    </p>
+  </div>
+</section>

@@ -1,15 +1,17 @@
 package com.neus.exam;
 
+import com.neus.common.NumberDto;
 import com.neus.common.PageResponse;
 import com.neus.common.SubscriptionLevel;
-import com.neus.exam.dto.CreateExamDto;
-import com.neus.exam.dto.ExamDetailDto;
-import com.neus.exam.dto.ExamDto;
-import com.neus.exam.dto.ExamDtoMapper;
+import com.neus.exam.dto.*;
 import com.neus.exceptions.ResourceNotFoundException;
+import com.neus.question.Question;
 import com.neus.question.QuestionRepository;
-import com.neus.question.dto.QuestionDto;
+import com.neus.question.QuestionService;
+import com.neus.question.dto.QuestionDetailDto;
 import com.neus.question.dto.QuestionDtoMapper;
+import com.neus.question_choice_stats.QuestionChoiceStats;
+import com.neus.question_choice_stats.QuestionChoiceStatsService;
 import com.neus.resource.Resource;
 import com.neus.resource.ResourceRepository;
 import com.neus.resource.ResourceType;
@@ -22,11 +24,14 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
-import static com.neus.common.ExtractUserRole.getUserRoleFromJwt;
-import static com.neus.common.ExtractUserRole.mapRoleToSubscriptionLevel;
+import static com.neus.common.ExtractRoleFromJwt.getUserRoleFromJwt;
+import static com.neus.common.ExtractRoleFromJwt.mapRoleToSubscriptionLevel;
 
 @Service
 @RequiredArgsConstructor
@@ -35,32 +40,61 @@ public class ExamService {
     private final ExamRepository examRepository;
     private final ResourceRepository resourceRepository;
     private final QuestionRepository questionRepository;
+    private final QuestionService questionService;
     private final QuestionDtoMapper questionDtoMapper;
     private final ExamDtoMapper examDtoMapper;
+    private final QuestionChoiceStatsService choiceStatsService;
 
     // create an exam
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
     public void createExam(CreateExamDto dto){
+
+        //get parent resource
+        Resource parentResource = getParentResource(dto.examType());
+
         Resource resource = resourceRepository.save(
             Resource.builder()
                 .externalId(UUID.randomUUID())
                 .title(dto.title())
-                .department(dto.department())
                 .description(dto.description())
                 .type(ResourceType.EXAM)
-                .requiredSubLevel(dto.requiredSubLevel())
+                .requiredSubLevel(parentResource != null
+                        ? parentResource.getRequiredSubLevel()
+                        : dto.requiredSubLevel()
+                )
+                .parentResource(parentResource)
                 .build()
         );
 
         examRepository.save(
             Exam.builder()
-                .resource(resource)
                 .externalId(resource.getExternalId())
+                .resource(resource)
                 .duration(dto.duration())
+                .examType(dto.examType())
+                .year(dto.year())
+                .randomQuestionCount(dto.randomQuestionCount())
                 .build()
         );
     }
+    // get parent resource (exam)
+    private Resource getParentResource(ExamType examType){
+        if(examType.equals(ExamType.TEST)){
+             return null;
+        }
+        return this.findParentExamResource(examType);
+    }
+
+    // find parent exam resource
+    public Resource findParentExamResource(ExamType examType){
+        ResourceType resourceType = ResourceType.valueOf(examType.name());
+        return resourceRepository.findParentExamResource(resourceType)
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("Parent resource not found")
+                );
+    }
+
 
     // find exam by external id
     public Exam findByExternalId(String externalId) {
@@ -100,16 +134,13 @@ public class ExamService {
         return examDtoMapper.mapToExamDto(exam,resource);
     }
 
-    // get exam detail
-    public ExamDetailDto getExamDetail(String examId, Authentication authentication) {
+    // get exam detail by ExamType and Year
+    public ExamDetailDto getExamDetail(
+            String examId, String department, String block, Authentication authentication
+    ) {
         // Fetch the resource
         Resource resource = resourceRepository.findByExternalId(UUID.fromString(examId))
                 .orElseThrow(() -> new ResourceNotFoundException("Resource not found"));
-
-        //  Verify it’s an exam
-        if(!resource.getType().equals(ResourceType.EXAM)){
-            throw new IllegalArgumentException("Resource is not an exam");
-        }
 
         // Get the required subscription level
         SubscriptionLevel requiredLevel = resource.getRequiredSubLevel();
@@ -126,26 +157,150 @@ public class ExamService {
             hasFullAccess = userLevel != null && userLevel.compareTo(requiredLevel) >= 0;
         }
 
-        //  Fetch exam 
+        //  Fetch exam
         Exam exam = examRepository.findByResourceId(resource.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Exam not found"));
 
-
-        List<QuestionDto> questionDtos;
+        List<QuestionDetailDto> questionDetailDtos;
         if(hasFullAccess){
-            questionDtos = questionRepository.findByExamId(exam.getId()).stream()
-                    .map(questionDtoMapper::mapToQuestionDto)
-                    .toList();
-        } else {
-            Pageable page = PageRequest.of(0, 1);
-            questionDtos = questionRepository.findPreviewQuestions(exam.getId(),page).stream()
-                    .map(questionDtoMapper::mapToQuestionDto)
+
+            if(exam.getRandomQuestionCount() != null && exam.getRandomQuestionCount() > 0
+                && (department == null || department.isBlank())
+            ) {
+                Pageable page = PageRequest.ofSize(exam.getRandomQuestionCount());
+
+                List<Question> sampleQuestions = questionRepository.findRandomQuestion(page,exam.getId());
+                //fetch choice stats for sepcific questions
+                List<String> questionIds = sampleQuestions.stream()
+                        .map(q -> q.getExternalId().toString()).toList();
+                var stats = choiceStatsService.getChoiceStatsByQuestionIds(questionIds);
+                Map<String,List<QuestionChoiceStats>> choiceStatsByQuestionId = stats.stream()
+                        .collect(Collectors.groupingBy(
+                                stat -> stat.getId().getQuestionId()
+                        ));
+                questionDetailDtos = sampleQuestions
+                        .stream()
+                        .sorted(Comparator.comparingInt(Question::getQuestionNumber))
+                        .map(question -> questionDtoMapper.mapToQuestionDetailDto(
+                                question,
+                                choiceStatsByQuestionId.get(question.getExternalId().toString()))
+                        )
+                        .toList();
+            } else { // in case of no random sampling
+                List<QuestionChoiceStats> stats = choiceStatsService.getChoiceStatsByExamId(exam.getId());
+                // group by question (externalId)
+                Map<String,List<QuestionChoiceStats>> choiceStatsByQuestionId = stats.stream()
+                        .collect(Collectors.groupingBy(
+                                stat -> stat.getId().getQuestionId()
+                        ));
+
+                questionDetailDtos = questionService
+                        .getQuestionsByExamId(exam.getId(), department, block)
+                        .stream()
+                        .map(question -> questionDtoMapper.mapToQuestionDetailDto(
+                                question,
+                                choiceStatsByQuestionId.get(question.getExternalId().toString()))
+                        )
+                        .toList();
+            }
+        } else { // preview mode
+            List<Question> previewQuestions = questionService
+                    .getPreviewQuestionsByExamId(exam.getId(), department, block);
+
+            //fetch choice stats for sepcific questions
+            List<String> questionIds = previewQuestions.stream()
+                    .map(q -> q.getExternalId().toString()).toList();
+            var stats = choiceStatsService.getChoiceStatsByQuestionIds(questionIds);
+            Map<String,List<QuestionChoiceStats>> choiceStatsByQuestionId = stats.stream()
+                    .collect(Collectors.groupingBy(
+                            stat -> stat.getId().getQuestionId()
+                    ));
+
+            questionDetailDtos = previewQuestions
+                    .stream()
+                    .map(question -> questionDtoMapper.mapToQuestionDetailDto(
+                            question,
+                            choiceStatsByQuestionId.get(question.getExternalId().toString()))
+                    )
                     .toList();
         }
 
         // Build & Return the response DTO
-        return examDtoMapper.mapToExamDetailDto(exam, resource, questionDtos);
+        return examDtoMapper.mapToExamDetailDto(exam, resource, questionDetailDtos);
     }
+
+//    // get exam detail
+//    public ExamDetailDto getExamDetail(String examId, Authentication authentication) {
+//        // Fetch the resource
+//        Resource resource = resourceRepository.findByExternalId(UUID.fromString(examId))
+//                .orElseThrow(() -> new ResourceNotFoundException("Resource not found"));
+//
+//        //  Verify it’s an exam
+//        if(!resource.getType().equals(ResourceType.EXAM)){
+//            throw new IllegalArgumentException("Resource is not an exam");
+//        }
+//
+//        // Get the required subscription level
+//        SubscriptionLevel requiredLevel = resource.getRequiredSubLevel();
+//
+//        // Check user’s subscription level (from JWT roles)
+//        String userRole = getUserRoleFromJwt(authentication);
+//        SubscriptionLevel userLevel = mapRoleToSubscriptionLevel(userRole);
+//
+//        //  Determine access
+//        boolean hasFullAccess = false;
+//        if(requiredLevel == SubscriptionLevel.NONE){
+//            hasFullAccess = true;
+//        } else {
+//            hasFullAccess = userLevel != null && userLevel.compareTo(requiredLevel) >= 0;
+//        }
+//
+//        //  Fetch exam
+//        Exam exam = examRepository.findByResourceId(resource.getId())
+//                .orElseThrow(() -> new ResourceNotFoundException("Exam not found"));
+//
+//        List<QuestionDetailDto> questionDetailDtos;
+//        if(hasFullAccess){
+//            // fetch choice stats
+//            List<QuestionChoiceStats> stats = choiceStatsService.getChoiceStatsByExamId(exam.getId());
+//            // group by question (externalId)
+//            Map<String,List<QuestionChoiceStats>> choiceStatsByQuestionId = stats.stream()
+//                    .collect(Collectors.groupingBy(
+//                            stat -> stat.getId().getQuestionId()
+//                    ));
+//
+//
+//            questionDetailDtos = questionRepository.findByExamId(exam.getId()).stream()
+//                    .map(question -> questionDtoMapper.mapToQuestionDetailDto(
+//                            question,
+//                            choiceStatsByQuestionId.get(question.getExternalId().toString()))
+//                    )
+//                    .toList();
+//
+//        } else {
+//            Pageable page = PageRequest.of(0, 1);
+//            List<Question> previewQuestions = questionRepository.findPreviewQuestions(exam.getId(), page);
+//            //fetch choice stats
+//            List<String> questionIds = previewQuestions.stream()
+//                    .map(q -> q.getExternalId().toString()).toList();
+//            var stats = choiceStatsService.getChoiceStatsByQuestionIds(questionIds);
+//            // group by question
+//            Map<String,List<QuestionChoiceStats>> choiceStatsByQuestionId = stats.stream()
+//                    .collect(Collectors.groupingBy(
+//                            stat -> stat.getId().getQuestionId()
+//                    ));
+//
+//            questionDetailDtos = previewQuestions.stream()
+//                    .map(question -> questionDtoMapper.mapToQuestionDetailDto(
+//                            question,
+//                            choiceStatsByQuestionId.get(question.getExternalId().toString()))
+//                    )
+//                    .toList();
+//        }
+//
+//        // Build & Return the response DTO
+//        return examDtoMapper.mapToExamDetailDto(exam, resource, questionDetailDtos);
+//    }
 
     // find resource by id
     public Resource findResourceById(Long id){
@@ -163,13 +318,18 @@ public class ExamService {
         resource.setTitle(dto.title());
         resource.setDescription(dto.description());
         resource.setRequiredSubLevel(dto.requiredSubLevel());
-        resource.setDepartment(dto.department());
+        // check wheather to update parent resource
+        if(!dto.examType().equals(exam.getExamType())){ // if it not equal
+            Resource parentExamResource = this.findParentExamResource(dto.examType());
+            resource.setParentResource(parentExamResource);
+        }
         resourceRepository.save(resource);
 
         // save exam
         exam.setDuration(dto.duration());
+        exam.setExamType(dto.examType());
+        exam.setYear(dto.year());
         examRepository.save(exam);
-
     }
 
     // delete exam
@@ -182,4 +342,19 @@ public class ExamService {
         resourceRepository.delete(resource);
     }
 
+    // get exam years by exam type
+    public List<NumberDto> getYearsByExamType(ExamType examType) {
+        return examRepository.findYearsByExamType(examType);
+    }
+
+    // get exam names by exam type and years
+    public List<ExamNameDto> getExamNamesByExamTypeAndYear(ExamType examType, int year) {
+        return examRepository.findExamNamesByExamTypeAndYear(examType, year);
+    }
+
+
+    // get exam names by exam type
+    public List<ExamNameDto> getExamNamesByExamType(ExamType examType) {
+        return examRepository.findExamNamesByExamType(examType);
+    }
 }

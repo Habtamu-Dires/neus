@@ -1,7 +1,7 @@
 import { Component, HostListener, OnInit } from '@angular/core';
 import { PaginationComponent } from "../../components/pagination/pagination.component";
 import { HeaderComponent } from "../../components/header/header.component";
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { UserDto } from '../../../../services/models';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../../../../components/confirm-dialog/confirm-dialog.component';
@@ -11,6 +11,7 @@ import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-user',
   imports: [PaginationComponent, HeaderComponent,CommonModule],
+  providers:[DatePipe],
   templateUrl: './user.component.html',
   styleUrl: './user.component.css'
 })
@@ -32,7 +33,8 @@ export class UserComponent implements OnInit {
   constructor(
     private userService:UsersService,
     private matDialog:MatDialog,
-    private toastr:ToastrService
+    private toastr:ToastrService,
+    private datePipe:DatePipe
   ) { }
 
   ngOnInit(): void {
@@ -142,6 +144,15 @@ export class UserComponent implements OnInit {
         this.toastr.error('Error toggling user status', 'Error')
       }
     });
+  }
+
+  // convert date format 
+  formatDate(dateTime:any){
+    if(dateTime){
+      const date = new Date(dateTime as string);
+      return this.datePipe.transform(date, 'MMM dd, yyyy');
+    }
+    return '';
   }
 
   // pagination

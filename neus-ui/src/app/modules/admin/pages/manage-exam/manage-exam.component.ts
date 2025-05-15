@@ -5,7 +5,6 @@ import { CreateExamDto } from '../../../../services/models';
 import { ExamsService } from '../../../../services/services';
 import { ToastrService } from 'ngx-toastr';
 import { ActivatedRoute, Router } from '@angular/router';
-import { EditDialogComponent } from '../../components/edit-dialog/edit-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 
 @Component({
@@ -18,11 +17,15 @@ export class ManageExamComponent implements OnInit{
 
   createExamDto:CreateExamDto = {
     requiredSubLevel: 'NONE',
-    duration: 0
+    examType: 'TEST',
+    duration: 0,
+    year: 0
   }
   errMsgs:Array<string> = [];
   showSubscriptionLevelList:boolean = false;
   subscriptionLevelList:Array<string> = ['NONE','BASIC','ADVANCED','PREMIUM'];
+  exampTeypeList:Array<string> = ["TEST","ERMP", "USMLE_STEP_1","USMLE_STEP_2"]
+  showExamTypeList:boolean = false;
 
   constructor(
     private examsService:ExamsService,
@@ -68,10 +71,12 @@ export class ManageExamComponent implements OnInit{
         this.createExamDto = {
           id:res.id,
           title: res.title,
-          department:res.department,
+          year: res.year as number,
+          examType: res.examType as "ERMP" | "USMLE_STEP_1" | "USMLE_STEP_2",
           requiredSubLevel: res.requiredSubLevel as "BASIC" |  "ADVANCED" | "PREMIUM",
           description: res.description,
-          duration: res.duration as number
+          duration: res.duration as number,
+          randomQuestionCount: res.randomQuestionCount
         }
       },
       error:(err) =>{
@@ -114,6 +119,12 @@ export class ManageExamComponent implements OnInit{
   onSubscriptionLevelSelected(level:any){
     this.createExamDto.requiredSubLevel = level;
     this.showSubscriptionLevelList = false;
+  }
+
+  // on exam type selected
+  onExamTypeSelected(type:any){
+    this.createExamDto.examType = type;
+    this.showExamTypeList = false;
   }
 
   

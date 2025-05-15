@@ -13,9 +13,9 @@ import { StrictHttpResponse } from '../strict-http-response';
 
 import { createSubscription } from '../fn/subscription/create-subscription';
 import { CreateSubscription$Params } from '../fn/subscription/create-subscription';
-import { getCurrentSubscription } from '../fn/subscription/get-current-subscription';
-import { GetCurrentSubscription$Params } from '../fn/subscription/get-current-subscription';
-import { SubscriptionResponse } from '../models/subscription-response';
+import { getUserSubscription } from '../fn/subscription/get-user-subscription';
+import { GetUserSubscription$Params } from '../fn/subscription/get-user-subscription';
+import { SubscriptionDto } from '../models/subscription-dto';
 
 @Injectable({ providedIn: 'root' })
 export class SubscriptionService extends BaseService {
@@ -32,8 +32,7 @@ export class SubscriptionService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  createSubscription$Response(params: CreateSubscription$Params, context?: HttpContext): Observable<StrictHttpResponse<{
-}>> {
+  createSubscription$Response(params: CreateSubscription$Params, context?: HttpContext): Observable<StrictHttpResponse<SubscriptionDto>> {
     return createSubscription(this.http, this.rootUrl, params, context);
   }
 
@@ -43,37 +42,34 @@ export class SubscriptionService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  createSubscription(params: CreateSubscription$Params, context?: HttpContext): Observable<{
-}> {
+  createSubscription(params: CreateSubscription$Params, context?: HttpContext): Observable<SubscriptionDto> {
     return this.createSubscription$Response(params, context).pipe(
-      map((r: StrictHttpResponse<{
-}>): {
-} => r.body)
+      map((r: StrictHttpResponse<SubscriptionDto>): SubscriptionDto => r.body)
     );
   }
 
-  /** Path part for operation `getCurrentSubscription()` */
-  static readonly GetCurrentSubscriptionPath = '/subscription/current/{user-id}';
+  /** Path part for operation `getUserSubscription()` */
+  static readonly GetUserSubscriptionPath = '/subscription/{user-id}';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `getCurrentSubscription()` instead.
+   * To access only the response body, use `getUserSubscription()` instead.
    *
    * This method doesn't expect any request body.
    */
-  getCurrentSubscription$Response(params: GetCurrentSubscription$Params, context?: HttpContext): Observable<StrictHttpResponse<SubscriptionResponse>> {
-    return getCurrentSubscription(this.http, this.rootUrl, params, context);
+  getUserSubscription$Response(params: GetUserSubscription$Params, context?: HttpContext): Observable<StrictHttpResponse<SubscriptionDto>> {
+    return getUserSubscription(this.http, this.rootUrl, params, context);
   }
 
   /**
    * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `getCurrentSubscription$Response()` instead.
+   * To access the full response (for headers, for example), `getUserSubscription$Response()` instead.
    *
    * This method doesn't expect any request body.
    */
-  getCurrentSubscription(params: GetCurrentSubscription$Params, context?: HttpContext): Observable<SubscriptionResponse> {
-    return this.getCurrentSubscription$Response(params, context).pipe(
-      map((r: StrictHttpResponse<SubscriptionResponse>): SubscriptionResponse => r.body)
+  getUserSubscription(params: GetUserSubscription$Params, context?: HttpContext): Observable<SubscriptionDto> {
+    return this.getUserSubscription$Response(params, context).pipe(
+      map((r: StrictHttpResponse<SubscriptionDto>): SubscriptionDto => r.body)
     );
   }
 

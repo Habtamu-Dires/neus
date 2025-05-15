@@ -50,6 +50,6 @@ export class PdfDetailComponent implements OnInit{
   }
 
   onClose(){
-    this.router.navigate(['user']);
+    this.router.navigate(['user'], {queryParams: {'from-resource-detail': true}});
   }
 }

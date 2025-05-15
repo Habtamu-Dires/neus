@@ -1,0 +1,56 @@
+<div class="h-screen w-full flex items-center justify-center px-2 md:px-4 bg-gradient-to-b from-primary to-blue-200">
+  <!--loading .... section-->
+  <div *ngIf="isLoading" class="w-full flex h-full justify-center items-center">
+    <svg xmlns="http://www.w3.org/2000/svg" width="42" height="42" viewBox="0 0 24 24"><circle cx="12" cy="2" r="0" fill="#2979FF"><animate attributeName="r" begin="0" calcMode="spline" dur="1s" keySplines="0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8" repeatCount="indefinite" values="0;2;0;0"/></circle><circle cx="12" cy="2" r="0" fill="#2979FF" transform="rotate(45 12 12)"><animate attributeName="r" begin="0.125s" calcMode="spline" dur="1s" keySplines="0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8" repeatCount="indefinite" values="0;2;0;0"/></circle><circle cx="12" cy="2" r="0" fill="#2979FF" transform="rotate(90 12 12)"><animate attributeName="r" begin="0.25s" calcMode="spline" dur="1s" keySplines="0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8" repeatCount="indefinite" values="0;2;0;0"/></circle><circle cx="12" cy="2" r="0" fill="#2979FF" transform="rotate(135 12 12)"><animate attributeName="r" begin="0.375s" calcMode="spline" dur="1s" keySplines="0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8" repeatCount="indefinite" values="0;2;0;0"/></circle><circle cx="12" cy="2" r="0" fill="#2979FF" transform="rotate(180 12 12)"><animate attributeName="r" begin="0.5s" calcMode="spline" dur="1s" keySplines="0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8" repeatCount="indefinite" values="0;2;0;0"/></circle><circle cx="12" cy="2" r="0" fill="#2979FF" transform="rotate(225 12 12)"><animate attributeName="r" begin="0.625s" calcMode="spline" dur="1s" keySplines="0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8" repeatCount="indefinite" values="0;2;0;0"/></circle><circle cx="12" cy="2" r="0" fill="#2979FF" transform="rotate(270 12 12)"><animate attributeName="r" begin="0.75s" calcMode="spline" dur="1s" keySplines="0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8" repeatCount="indefinite" values="0;2;0;0"/></circle><circle cx="12" cy="2" r="0" fill="#2979FF" transform="rotate(315 12 12)"><animate attributeName="r" begin="0.875s" calcMode="spline" dur="1s" keySplines="0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8" repeatCount="indefinite" values="0;2;0;0"/></circle></svg>
+  </div>
+  <!-- Scrollable container -->
+  <div *ngIf="!isLoading && !resourceNotFound"
+   class="relative w-full max-w-md md:max-w-xl lg:max-w-2xl bg-blue-100 shadow-2xl 
+        rounded-xl md:rounded-3xl">
+    <!--title-->  
+    <div class="w-full flex items-center font-semibold justify-center text-2xl md:text-4xl p-4">
+      <span *ngIf="examType === 'ERMP'">Choose a Year</span>
+      <span *ngIf="examType?.startsWith('USMLE')">Choose an Exam</span>
+    </div>
+    <div class="h-[32rem] overflow-y-auto scrollbar-hide relative px-6 pt-16 pb-10">
+      
+      <!-- Top & bottom fade for scroll effect -->
+      <div class="pointer-events-none absolute top-0 left-0 right-0 h-16 bg-gradient-to-b z-10"></div>
+      <div class="pointer-events-none absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t z-10"></div>
+
+      <!-- Year boxes -->
+      <div *ngIf="yearList.length > 0" class="grid gap-6 z-20 relative">
+        <div
+          *ngFor="let year of yearList"
+          (click)="selectYear(year.value)"
+          class="bg-white text-2xl text-center font-semibold py-4 md:py-6 rounded-2xl shadow-md cursor-pointer transform hover:scale-105 transition duration-200 ease-in-out select-none"
+          [class.bg-primary]="selectedYear === year"
+          [class.text-white]="selectedYear === year"
+          [class.bg-white]="selectedYear !== year"
+          [class.text-gray-700]="selectedYear !== year"
+        >
+          {{ year.value }}
+        </div>
+      </div>
+
+      <!-- exam boxes -->
+      <div *ngIf="examList.length > 0" class="grid gap-6 z-20 relative">
+        <div
+          *ngFor="let exam of examList"
+          (click)="selectExam(exam)"
+          class="bg-white text-2xl text-center font-semibold py-4 md:py-6 rounded-2xl shadow-md cursor-pointer transform hover:scale-105 transition duration-200 ease-in-out select-none"
+          
+        >
+          {{ exam.title }}
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <!-- Resource Not Found -->
+  <div *ngIf="resourceNotFound" class="flex flex-col items-center gap-2">
+    <p>No resouce available</p>
+    <p (click)="onClose()" class="text-blue-500 cursor-pointer">close</p>
+  </div>
+</div>
+

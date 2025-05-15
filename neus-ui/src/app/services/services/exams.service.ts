@@ -17,12 +17,20 @@ import { deleteExam } from '../fn/exams/delete-exam';
 import { DeleteExam$Params } from '../fn/exams/delete-exam';
 import { ExamDetailDto } from '../models/exam-detail-dto';
 import { ExamDto } from '../models/exam-dto';
+import { ExamNameDto } from '../models/exam-name-dto';
 import { getExamById } from '../fn/exams/get-exam-by-id';
 import { GetExamById$Params } from '../fn/exams/get-exam-by-id';
 import { getExamDetail } from '../fn/exams/get-exam-detail';
 import { GetExamDetail$Params } from '../fn/exams/get-exam-detail';
+import { getExamNamesByExamType } from '../fn/exams/get-exam-names-by-exam-type';
+import { GetExamNamesByExamType$Params } from '../fn/exams/get-exam-names-by-exam-type';
+import { getExamNamesByExamTypeAndYear } from '../fn/exams/get-exam-names-by-exam-type-and-year';
+import { GetExamNamesByExamTypeAndYear$Params } from '../fn/exams/get-exam-names-by-exam-type-and-year';
 import { getPageOfExams } from '../fn/exams/get-page-of-exams';
 import { GetPageOfExams$Params } from '../fn/exams/get-page-of-exams';
+import { getYearsByExamType } from '../fn/exams/get-years-by-exam-type';
+import { GetYearsByExamType$Params } from '../fn/exams/get-years-by-exam-type';
+import { NumberDto } from '../models/number-dto';
 import { PageResponseExamDto } from '../models/page-response-exam-dto';
 import { updateExam } from '../fn/exams/update-exam';
 import { UpdateExam$Params } from '../fn/exams/update-exam';
@@ -167,6 +175,81 @@ export class ExamsService extends BaseService {
       map((r: StrictHttpResponse<{
 }>): {
 } => r.body)
+    );
+  }
+
+  /** Path part for operation `getYearsByExamType()` */
+  static readonly GetYearsByExamTypePath = '/exams/years/{exam-type}';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getYearsByExamType()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getYearsByExamType$Response(params: GetYearsByExamType$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<NumberDto>>> {
+    return getYearsByExamType(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getYearsByExamType$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getYearsByExamType(params: GetYearsByExamType$Params, context?: HttpContext): Observable<Array<NumberDto>> {
+    return this.getYearsByExamType$Response(params, context).pipe(
+      map((r: StrictHttpResponse<Array<NumberDto>>): Array<NumberDto> => r.body)
+    );
+  }
+
+  /** Path part for operation `getExamNamesByExamType()` */
+  static readonly GetExamNamesByExamTypePath = '/exams/list/{exam-type}';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getExamNamesByExamType()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getExamNamesByExamType$Response(params: GetExamNamesByExamType$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<ExamNameDto>>> {
+    return getExamNamesByExamType(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getExamNamesByExamType$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getExamNamesByExamType(params: GetExamNamesByExamType$Params, context?: HttpContext): Observable<Array<ExamNameDto>> {
+    return this.getExamNamesByExamType$Response(params, context).pipe(
+      map((r: StrictHttpResponse<Array<ExamNameDto>>): Array<ExamNameDto> => r.body)
+    );
+  }
+
+  /** Path part for operation `getExamNamesByExamTypeAndYear()` */
+  static readonly GetExamNamesByExamTypeAndYearPath = '/exams/list/{exam-type}/{year}';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getExamNamesByExamTypeAndYear()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getExamNamesByExamTypeAndYear$Response(params: GetExamNamesByExamTypeAndYear$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<ExamNameDto>>> {
+    return getExamNamesByExamTypeAndYear(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getExamNamesByExamTypeAndYear$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getExamNamesByExamTypeAndYear(params: GetExamNamesByExamTypeAndYear$Params, context?: HttpContext): Observable<Array<ExamNameDto>> {
+    return this.getExamNamesByExamTypeAndYear$Response(params, context).pipe(
+      map((r: StrictHttpResponse<Array<ExamNameDto>>): Array<ExamNameDto> => r.body)
     );
   }
 

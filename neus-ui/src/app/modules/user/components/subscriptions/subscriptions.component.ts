@@ -1,42 +1,48 @@
 import { Component } from '@angular/core';
 import { KeycloakService } from '../../../../services/keycloak/keycloak.service';
-import { Router } from '@angular/router';
 import { SbuPlansService, SubscriptionService } from '../../../../services/services';
-import { SubPlanDto } from '../../../../services/models';
+import { SubPlanDto, SubscriptionDto } from '../../../../services/models';
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { ToastrService } from 'ngx-toastr';
+import { UserSharedStateService } from '../../services/user-shared-state.service';
 
 @Component({
   selector: 'app-subscriptions',
   imports: [FormsModule,CommonModule],
+  providers:[DatePipe],
   templateUrl: './subscriptions.component.html',
   styleUrl: './subscriptions.component.css'
 })
 export class SubscriptionsComponent {
   plans: SubPlanDto[] = [];
   isLoggedIn = false;
-  subscriptionLevel: string | null = null;
+  // subscriptionLevel: string | undefined;
+  userId: string | undefined;
+  subscriptionDto: SubscriptionDto | undefined;
 
   constructor(
     private keycloakService: KeycloakService,
     private subscriptionService: SubscriptionService,
-    private router: Router,
+    private datePipe:DatePipe,
     private subPlanService:SbuPlansService,
-    private toastrService:ToastrService
+    private toastrService:ToastrService,
+    public userSharedStateService:UserSharedStateService
   ) {}
 
   ngOnInit(): void {
+    // fetch plans
+    this.fetchSubPlans();
     // Check login status
     this.isLoggedIn = this.keycloakService.isAuthenticated;
     if (this.isLoggedIn) {
-      const subscriptionType = this.keycloakService.subscriptionLevel as string;
-      if(subscriptionType){
-        this.subscriptionLevel = subscriptionType.replace('_subscriber','').toUpperCase();
+      this.userId = this.keycloakService.profile.id;
+      const subscriptionLevel = this.userSharedStateService.subscriptionLevel();
+      if(subscriptionLevel){
+        // fetch user subscription details
+        this.fetchUserSubDetail();
       }
     }
-    // // Fetch plans
-    this.fetchSubPlans();
   }
 
   //fetch subscription plan
@@ -44,7 +50,6 @@ export class SubscriptionsComponent {
     this.subPlanService.getEnabledSubPlans().subscribe({
       next:(res)=>{
         this.plans = res;
-        console.log("plans : == >" +  res)
       },
       error:(err)=>{
         console.log(err);
@@ -52,12 +57,27 @@ export class SubscriptionsComponent {
     })
   }
 
+  // fetch user subscription
+  fetchUserSubDetail(){
+    this.subscriptionService.getUserSubscription({
+      'user-id':this.keycloakService.profile.id
+    }).subscribe({
+      next:(res)=>{
+        this.subscriptionDto = res;
+      },
+      error:(err)=>{
+        console.log(err);
+      }
+    })
+  }
+
+  // handle subscribe
   handleSubscribe(plan: any): void {
     if (!this.isLoggedIn) {
       this.keycloakService.login();
       return;
     }
-    if (this.subscriptionLevel === plan.level) {
+    if (this.userSharedStateService.subscriptionLevel() === plan.level) {
       return; // Already subscribed to this plan
     }
     // subscribe
@@ -69,11 +89,10 @@ export class SubscriptionsComponent {
     this.subscriptionService.createSubscription({
       'sub-plan-id': subPlanId
     }).subscribe({
-      next:()=>{
-        this.fetchSubPlans();
+      next:(res)=>{
+        this.userSharedStateService.updateSubscriptionLevel(res.level);
+        this.subscriptionDto = res;
         this.toastrService.success('Plan upgraded sucessfully', 'Done');
-        this.keycloakService.refreshToken();
-        
       },
       error:(err)=>{
         console.log(err);
@@ -82,28 +101,43 @@ export class SubscriptionsComponent {
     })
   }
 
+  // is current plan
   isCurrentPlan(level: any): boolean {
-    return this.isLoggedIn && this.subscriptionLevel === level;
+    return this.isLoggedIn && this.userSharedStateService.subscriptionLevel() === level;
   }
 
+  // get button text
   getButtonText(level: any): string {
     if (!this.isLoggedIn) return 'Subscribe';
-    if (this.subscriptionLevel === level) return 'Your Plan';
+    if (this.userSharedStateService.subscriptionLevel() === level) return 'Your Plan';
     if (this.isHigherTier(level)) return 'Upgrade';
     return 'Downgrade';
   }
 
+  // is higher tier
   private isHigherTier(level: string): boolean {
     const tiers = ['BASIC', 'ADVANCED', 'PREMIUM'];
-    const currentIndex = this.subscriptionLevel ? tiers.indexOf(this.subscriptionLevel) : -1;
+    const currentLevel = this.userSharedStateService.subscriptionLevel();
+    const currentIndex = currentLevel ? tiers.indexOf(currentLevel) : -1;
     const targetIndex = tiers.indexOf(level);
     return targetIndex > currentIndex;
   }
 
+  // is lower tier
   public isLowerTier(level: any): boolean {
     const tiers = ['BASIC', 'ADVANCED', 'PREMIUM'];
-    const currentIndex = this.subscriptionLevel ? tiers.indexOf(this.subscriptionLevel) : -1;
+    const currentLevel = this.userSharedStateService.subscriptionLevel();
+    const currentIndex = currentLevel ? tiers.indexOf(currentLevel) : -1;
     const targetIndex = tiers.indexOf(level as string);
     return targetIndex < currentIndex;
+  }
+
+  // convert date format 
+  formatDate(dateTime:any){
+    if(dateTime){
+      const date = new Date(dateTime as string);
+      return this.datePipe.transform(date, 'MMM dd, yyyy');
+    }
+    return '';
   }
 }

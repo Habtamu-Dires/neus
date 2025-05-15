@@ -8,6 +8,7 @@ export interface UpdateUserExamDto {
   correctAnswers?: Array<CorrectAnswer>;
   examId?: string;
   mode?: 'STUDY' | 'TEST';
+  status?: 'IN_PROGRESS' | 'COMPLETED';
   timeLeftInMinutes?: number;
   userAnswers?: Array<UserAnswer>;
 }

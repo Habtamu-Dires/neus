@@ -29,20 +29,42 @@
         <input [(ngModel)]="createExamDto.title" class="form-input" type="text" placeholder="Title" />
       </div>
 
+      <!--Exam Type-->
+     <div class="grid grid-cols-12 gap-2 items-start">
+        <label class="form-label">Exam Type<span class="text-red-400">*</span></label>
+        <div class="relative w-full col-span-12 md:col-span-10">
+          <input [(ngModel)]="createExamDto.examType" class="form-input w-full cursor-pointer" type="text"
+            placeholder="Exam Type" (click)="showExamTypeList = true"
+            (focus)="showExamTypeList = true" />
+          <div *ngIf="showExamTypeList" class="absolute z-10 w-full mt-1">
+            <div *ngFor="let type of exampTeypeList; let idx=index"
+              class="w-full bg-white shadow hover:bg-gray-200 p-2 cursor-pointer"
+              [ngClass]="{
+                'rounded-t-md': idx == 0,
+                'rounded-b-md': idx == exampTeypeList.length - 1
+              }"
+              (click)="onExamTypeSelected(type)">
+              {{ type }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+       <!--Year-->
+      <div class="grid grid-cols-12 gap-2 items-center">
+        <label class="form-label">Year<span class="text-red-400">*</span></label>
+        <input [(ngModel)]="createExamDto.year" class="form-input" type="number" placeholder="year" />
+      </div>
+
       <!--Duration-->
       <div class="grid grid-cols-12 gap-2 items-center">
         <label class="form-label">Duration In Minute<span class="text-red-400">*</span></label>
         <input [(ngModel)]="createExamDto.duration" class="form-input" type="number" placeholder="duration in minute" />
       </div>
   
-      <!-- Department -->
-      <div class="grid grid-cols-12 gap-2 items-center">
-        <label class="form-label">Department</label>
-        <input [(ngModel)]="createExamDto.department" class="form-input" type="text" placeholder="Department" />
-      </div>
-  
       <!-- Subscription Level -->
-      <div class="grid grid-cols-12 gap-2 items-start">
+      <div *ngIf="!['ERMP', 'USMLE_STEP_1','USMLE_STEP_2'].includes(createExamDto.examType)"
+        class="grid grid-cols-12 gap-2 items-start">
         <label class="form-label">Subscription Level<span class="text-red-400">*</span></label>
         <div class="relative w-full col-span-12 md:col-span-10">
           <input [(ngModel)]="createExamDto.requiredSubLevel" class="form-input w-full cursor-pointer" type="text"
@@ -60,6 +82,13 @@
             </div>
           </div>
         </div>
+      </div>
+
+      <!-- Random Question Count  -->
+      <div *ngIf="['USMLE_STEP_1','USMLE_STEP_2'].includes(createExamDto.examType)"
+        class="grid grid-cols-12 gap-2 items-start">
+        <label class="form-label">Random Question Count<span class="text-red-400">*</span></label>
+        <input [(ngModel)]="createExamDto.randomQuestionCount" class="form-input" type="number" placeholder="random question count" />
       </div>
   
       <!-- Description -->

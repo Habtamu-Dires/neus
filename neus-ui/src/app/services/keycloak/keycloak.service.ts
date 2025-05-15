@@ -3,6 +3,9 @@ import { environment } from '../../../environments/environment.development';
 import { Router } from '@angular/router';
 import  Keycloak  from 'keycloak-js';
 import { UserProfile } from './userProfile';
+import { UsersService } from '../services';
+import { ToastrService } from 'ngx-toastr';
+import { SharedStateService } from '../shared-state/shared-state.service';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +15,12 @@ export class KeycloakService {
   private _KeyCloak: Keycloak | undefined;
   private _profile: UserProfile | undefined;
 
-  constructor(private router:Router) { }
+  constructor(
+    private router:Router,
+    private userService:UsersService,
+    private toastrService:ToastrService,
+    private sharedStateService:SharedStateService
+  ) { }
 
   get keycloak(){
     if(!this._KeyCloak){
@@ -38,21 +46,61 @@ export class KeycloakService {
 
     if(authenticated){
       this._profile = (await this.keycloak?.loadUserProfile()) as UserProfile;
-      // Start token refresh mechanism
-      // this.startTokenRefresh();
+      const attributes = (((await this.keycloak.loadUserProfile()).attributes));
+      console.log("attributes " + attributes);
+      console.log("syncronized " + this._profile.syncronized);
 
+      // check if the user is syncronized
+      if(attributes){
+        const arr = attributes['synchronized'] as string[];
+        this._profile.syncronized = arr[0] as string;
+        console.log("Syncronized ==> " + this._profile.syncronized);
+
+        if(this._profile.syncronized !== 'true' && this._profile.email){
+          this.syncronizeUser(this._profile.email);
+        }
+      } 
+      // attributes not present
+      else if(!this.profile.synchronized && this._profile.email){
+        this.syncronizeUser(this._profile.email);
+      }
+      
+      // check if the user is admin
       if(this.isAdminUser){
         this.router.navigate(['admin'])
       } else {
         this.router.navigate(['user']);
       }
-    }
+    } 
   }
 
+  // syncronize the user
+  syncronizeUser(email:string){
+    this.sharedStateService.updateIsSyncronizing(true);
+    this.userService.saveUser({
+      'email': email,
+    }).subscribe({
+      next:() => {
+        this.sharedStateService.updateIsSyncronizing(false);
+        console.log("sucess");
+        this.toastrService.success("User Syncronized", "Success");
+      },
+      error:(err) => {
+        console.log(err);
+        this.toastrService.error("User Syncronization Failed", "Try Again");
+        setTimeout(() => {
+          this.logout();
+        }, 2000);
+      }
+    })
+  }
+
+  // login
   login(){
     return this.keycloak?.login();
   }
 
+  // logout
   logout(){
     return this.keycloak?.logout({
       redirectUri: environment.redirectUrl
@@ -89,13 +137,12 @@ export class KeycloakService {
   get subscriptionLevel():any{
     const parsedToken = this.keycloak.tokenParsed;
     const roles:string[] = parsedToken?.realm_access?.roles as string[];
-    console.log("roles " + roles);
-    if(roles.includes('basic_subscriber')){
-      return 'basic_subscriber'
+    if(roles.includes('premium_subscriber')){
+      return 'premium_subscriber'
     } else if(roles.includes('advanced_subscriber')){
       return 'advanced_subscriber'
-    } else if(roles.includes('premium_subscriber')){
-      return 'premium_subscriber'
+    } else if(roles.includes('basic_subscriber')){
+      return 'basic_subscriber'
     } else {
       return undefined;
     }
@@ -120,12 +167,14 @@ export class KeycloakService {
   // Proactive token refresh before expiry
   private startTokenRefresh() {
     setInterval(async () => {
-      if (this.keycloak.isTokenExpired(300)) { // Refresh if token expires in 5 minutes
+      const refreshed = await this.refreshToken();
+      if (this.keycloak.isTokenExpired(300)) { // Refresh if token expires in 5 minutes [ 300]
         const refreshed = await this.refreshToken();
+        console.log('Token refreshed:', refreshed);
         if (!refreshed) {
           this.logout(); // Fallback: logout if refresh fails
         }
       }
-    }, 600000); // Check every 10 minute
+    }, 10000); // Check every 10 minute 600,000
   }
 }

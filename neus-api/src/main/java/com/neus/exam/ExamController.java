@@ -1,16 +1,23 @@
 package com.neus.exam;
 
 
+import com.neus.common.NumberDto;
 import com.neus.common.PageResponse;
+import com.neus.common.TextDto;
 import com.neus.exam.dto.CreateExamDto;
 import com.neus.exam.dto.ExamDetailDto;
 import com.neus.exam.dto.ExamDto;
+import com.neus.exam.dto.ExamNameDto;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Null;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.w3c.dom.Text;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/exams")
@@ -45,14 +52,17 @@ public class ExamController {
     ){
         return ResponseEntity.ok(examService.getExamById(examId));
     }
-    // get exam detail
-    @GetMapping("/detail/{exam-id}")
-    public ResponseEntity<ExamDetailDto> getExamDetail(
-            @PathVariable("exam-id") String examId, Authentication authentication
-    ){
-        var res = examService.getExamDetail(examId, authentication);
-        return ResponseEntity.ok(res);
-    }
+
+//    // get exam detail
+//    @GetMapping("/detail/{exam-id}")
+//    public ResponseEntity<ExamDetailDto> getExamDetail(
+//            @PathVariable("exam-id") String examId,
+//
+//            Authentication authentication
+//    ){
+//        var res = examService.getExamDetail(examId, authentication);
+//        return ResponseEntity.ok(res);
+//    }
 
     // update exam
     @PutMapping
@@ -71,5 +81,44 @@ public class ExamController {
     ){
         examService.deleteExam(examId);
         return ResponseEntity.accepted().build();
+    }
+
+    // get years by examType
+    @GetMapping("/years/{exam-type}")
+    public ResponseEntity<List<NumberDto>> getYearsByExamType(
+            @PathVariable("exam-type") ExamType examType
+    ){
+        return ResponseEntity.ok(examService.getYearsByExamType(examType));
+    }
+
+    // get exam names by examType
+    @GetMapping("/list/{exam-type}")
+    public ResponseEntity<List<ExamNameDto>> getExamNamesByExamType(
+            @PathVariable("exam-type") ExamType examType
+    ){
+        return ResponseEntity.ok(examService.getExamNamesByExamType(examType));
+    }
+
+
+    // get exam names by examType and year
+    @GetMapping("/list/{exam-type}/{year}")
+    public ResponseEntity<List<ExamNameDto>> getExamNamesByExamTypeAndYear(
+            @PathVariable("exam-type") ExamType examType,
+            @PathVariable("year") Integer year
+    ){
+        return ResponseEntity.ok(examService.getExamNamesByExamTypeAndYear(examType,year));
+    }
+
+    // get exam detail by exam Type and year
+    @GetMapping("/detail/{exam-id}")
+    public ResponseEntity<ExamDetailDto> getExamDetail(
+            @PathVariable("exam-id") String examId,
+            @RequestParam(value = "department",required = false,defaultValue = "") String department,
+            @RequestParam(value = "block", required = false, defaultValue = "") String block,
+            Authentication authentication
+    ){
+        return ResponseEntity.ok(examService.getExamDetail(
+                examId,department, block, authentication
+        ));
     }
 }

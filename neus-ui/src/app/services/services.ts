@@ -9,5 +9,4 @@ export { ResourcesService } from './services/resources.service';
 export { QuestionsService } from './services/questions.service';
 export { ExamsService } from './services/exams.service';
 export { SubscriptionService } from './services/subscription.service';
-export { RegisterService } from './services/register.service';
 export { FilesService } from './services/files.service';

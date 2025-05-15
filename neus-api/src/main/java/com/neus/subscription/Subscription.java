@@ -1,17 +1,11 @@
 package com.neus.subscription;
 
 import com.neus.common.SubscriptionLevel;
-import com.neus.payment.Payment;
 import com.neus.user.User;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.annotations.Type;
-import org.hibernate.type.SqlTypes;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -34,7 +28,7 @@ public class Subscription {
     private LocalDateTime endDate;
 
     @OneToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", updatable = true)
     private User user;
 
 //    @OneToOne

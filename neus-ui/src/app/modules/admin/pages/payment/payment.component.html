@@ -1,4 +1,12 @@
 <main class="admin-container">
+    <div class="sticky top-0 w-full z-10 bg-white">
+        <app-header
+          componentName="Payments"
+          (onSearch)="onSearch($event)"
+          [hasCreateNewButton]=false
+        >
+        </app-header>
+    </div>
     <p>Payment comming soon .....</p>   
 
 </main>

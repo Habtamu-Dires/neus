@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
@@ -6,16 +6,15 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class AdminUxService {
 
-  
   //shaw drawer status
-  showDrawerSubjec = new BehaviorSubject<boolean>(false);
-  showDrawer$ = this.showDrawerSubjec.asObservable();
+  readonly showDrawer = signal(false);
 
   constructor() { }
 
-
   // update show drawer
-  updateShowDrawerStatus(value:boolean){
-    this.showDrawerSubjec.next(value);
+  toggleShowDrawerStatus(){
+    this.showDrawer.set(!this.showDrawer());
   }
+
+
 }

@@ -1,4 +1,4 @@
-<main class="flex flex-col w-full p-4 bg-gray-100 rounded-lg shadow-lg h-screen">
+<main class="flex flex-col w-full p-4 bg-gray-100 h-screen rounded-xl">
   <div class="flex justify-between px-4">
     <h2 class="text-xl text-gray-800 mb-4">{{ title }}</h2>
     <button class="cursor-pointer">
@@ -15,7 +15,7 @@
     <vg-overlay-play></vg-overlay-play>
     <vg-buffering></vg-buffering>
 
-    <vg-controls class="flex items-center space-x-2">
+    <vg-controls class="flex items-center space-x-2 rounded-xl">
       <vg-play-pause></vg-play-pause>
       <vg-scrub-bar>
         <vg-scrub-bar-current-time></vg-scrub-bar-current-time>
@@ -40,7 +40,7 @@
     </video>
   </vg-player>
   <!--description-->
-  <div *ngIf="isVideoAvailable" class="p-4 h-40 w-full rounded-md shadow-2xl">
+  <div *ngIf="isVideoAvailable" class="p-4 h-40 w-full rounded-md">
     <p>{{description}}</p>
   </div>
 

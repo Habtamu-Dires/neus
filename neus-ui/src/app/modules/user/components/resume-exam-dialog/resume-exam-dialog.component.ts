@@ -15,6 +15,8 @@ export class ResumeExamDialogComponent {
   total:number;
   lastUpdatedDate:string;
   timeLeft:number;
+  score:number | undefined = undefined;
+  buttonName:string = 'Resume';
 
   constructor(
     private datePipe: DatePipe,
@@ -24,7 +26,9 @@ export class ResumeExamDialogComponent {
       mode:string,
       total:number,
       lastUpdatedDate:string,
-      timeLeft:number
+      timeLeft:number,
+      buttonName:string,
+      score:number
     }
   ){
     this.answeredCount = data.answeredCount
@@ -32,6 +36,8 @@ export class ResumeExamDialogComponent {
     this.total = data.total
     this.lastUpdatedDate = data.lastUpdatedDate
     this.timeLeft = data.timeLeft
+    this.buttonName = data.buttonName,
+    this.score = data.score;
   }
 
   onConfirm(){
@@ -43,7 +49,6 @@ export class ResumeExamDialogComponent {
   }
 
   //format date time
-  //formatted date time
   formattedDateTime(dateTime:any){
     if(dateTime){
       const date = new Date(dateTime as string);

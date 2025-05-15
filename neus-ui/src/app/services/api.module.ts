@@ -13,7 +13,6 @@ import { ResourcesService } from './services/resources.service';
 import { QuestionsService } from './services/questions.service';
 import { ExamsService } from './services/exams.service';
 import { SubscriptionService } from './services/subscription.service';
-import { RegisterService } from './services/register.service';
 import { FilesService } from './services/files.service';
 
 /**
@@ -31,7 +30,6 @@ import { FilesService } from './services/files.service';
     QuestionsService,
     ExamsService,
     SubscriptionService,
-    RegisterService,
     FilesService,
     ApiConfiguration
   ],

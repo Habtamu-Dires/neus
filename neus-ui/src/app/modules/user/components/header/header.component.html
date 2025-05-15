@@ -1,80 +1,79 @@
-<main class="bg-header w-full h-full">
+<main class="bg-primary w-full h-full">
     <!--header-->
-    <div class="max-container flex justify-between items-center rounded-lg"
+    <div class="max-container flex justify-between items-center" 
         [ngClass]="{'bg-black':showDrawer}">
-    <!--logo and company name-->
-    <section class="p-2 md:p-0 text-xl text-white font-semibold font-mono flex items-center gap-4">
-        <!-- <img class="w-16 h-16 rounded-2xl" src="/logo.png"/> -->
-        <div class="flex items-center p-3 gap-2">
-            <p class="hidden md:block">Nitsbin ERMP and USMLE Study Guide (NEUS)</p> 
-            <p class="block md:hidden">NEUS</p>
-            <p class="text-lg md:text-2xl"></p>
-        </div>
-    </section>
-    <!--header items-->
-    <section class="hidden md:block">
-        <div class="flex-1 flex justify-center items-center p-4 gap-10">
-            <app-drawer-item
-                componentName="Home"
-                [isActiveComponent]="selectedComponent==='home'"
-                (click)="selectComponent('home')"
-            >
-            </app-drawer-item>
-            <app-drawer-item
-                componentName="Resources"
-                [isActiveComponent]="selectedComponent === 'resources'"
-                (click)="selectComponent('resources')"
-            >
-            </app-drawer-item>
-            <app-drawer-item
-                componentName={{plan}}
-                [isActiveComponent]="selectedComponent === 'plan'"
-                (click)="selectComponent('plan')"
-            >
-            </app-drawer-item>
-            <app-drawer-item
-                componentName="ContactUS"
-                [isActiveComponent]="selectedComponent === 'contactus'"
-                (click)="selectComponent('contactus')"
-            >
-            </app-drawer-item>
-            <app-drawer-item *ngIf="isLoggedIn"
-                componentName="Profile"
-                [isActiveComponent]="selectedComponent === 'contactus'"
-                (click)="selectComponent('contactus')"
-            >
-            </app-drawer-item>
-            <button *ngIf="!isLoggedIn" (click)="login()"
-                class="text-white border-2 px-3 py-[3px]  border-white hover:border-secondary rounded-xl cursor-pointer">
-                SignIn
-            </button>
-            <button *ngIf="isLoggedIn" (click)="logout()"
-            class="text-white border-2 px-3 py-[3px]  border-white hover:border-secondary rounded-xl cursor-pointer">
-                logout
-            </button>
-        </div>
-    </section>
-    <!--drawer-->
-    <section class="relative block md:hidden">
-        <!--open drawer-->
-        <svg *ngIf="!showDrawer" class="cursor-pointer mx-4 my-5"
-            (click)="toggleDrawer()"
-            xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="#FFFFFF" d="M3.75 5.25a.75.75 0 0 0 0 1.5h16.5a.75.75 0 0 0 0-1.5zm0 6a.75.75 0 0 0 0 1.5h16.5a.75.75 0 0 0 0-1.5zm0 6a.75.75 0 0 0 0 1.5h16.5a.75.75 0 0 0 0-1.5z"/>
-        </svg>
-        <!--close drawer-->
-        <svg *ngIf="showDrawer" class="cursor-pointer mx-4 my-5" [ngClass]="{'text-white': showDrawer}"
-            (click)="toggleDrawer()"
-            xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="#1a4fa3" d="m6.4 18.308l-.708-.708l5.6-5.6l-5.6-5.6l.708-.708l5.6 5.6l5.6-5.6l.708.708l-5.6 5.6l5.6 5.6l-.708.708l-5.6-5.6z"/>
-        </svg>
+        <!--logo and company name-->
+        <section class="text-xl text-white font-semibold font-mono flex items-center gap-4">
+            <!-- <img class="w-16 h-16 rounded-2xl" src="/logo.png"/> -->
+            <div class="flex items-center p-3 gap-2">
+                <img class="w-24 md:h-10 h-8 rounded-2xl" src="neus-logo.svg" alt="logo"/>
+                <p class="hidden md:block">Nitsbin ERMP and USMLE Study Guide</p> 
+            </div>
+        </section>
+        <!--header items-->
+        <section class="hidden md:block">
+            <div class="flex-1 flex justify-center items-center p-4 gap-10">
+                <app-drawer-item
+                    componentName="Home"
+                    [isActiveComponent]="selectedComponent==='home'"
+                    (click)="selectComponent('home')"
+                >
+                </app-drawer-item>
+                <app-drawer-item
+                    componentName="Resources"
+                    [isActiveComponent]="selectedComponent === 'resources'"
+                    (click)="selectComponent('resources')"
+                >
+                </app-drawer-item>
+                <app-drawer-item
+                    componentName={{plan}}
+                    [isActiveComponent]="selectedComponent === 'plan'"
+                    (click)="selectComponent('plan')"
+                >
+                </app-drawer-item>
+                <app-drawer-item
+                    componentName="ContactUS"
+                    [isActiveComponent]="selectedComponent === 'contactus'"
+                    (click)="selectComponent('contactus')"
+                >
+                </app-drawer-item>
+                <app-drawer-item *ngIf="isLoggedIn"
+                    componentName="Profile"
+                    [isActiveComponent]="selectedComponent === 'profile'"
+                    (click)="selectComponent('profile')"
+                >
+                </app-drawer-item>
+                <button *ngIf="!isLoggedIn" (click)="login()"
+                    class="text-white border-1 px-3 py-[3px]  border-white hover:border-secondary rounded-xl cursor-pointer">
+                    SignIn
+                </button>
+                <button *ngIf="isLoggedIn" (click)="logout()"
+                class="md:text-sm text-white border-1 px-3 py-[3px]  border-white hover:border-secondary rounded-xl cursor-pointer">
+                    Sign out
+                </button>
+            </div>
+        </section>
         <!--drawer-->
-        <div *ngIf="showDrawer" class="w-full">
-            <app-drawer
-                [selectedComponent]="selectedComponent"
-                (onComponentSelect)="onSelectComponet($event)"
-            >
-            </app-drawer>
-        </div>
-    </section>
+        <section class="relative block md:hidden">
+            <!--open drawer-->
+            <svg *ngIf="!showDrawer" class="cursor-pointer mx-4 my-2"
+                (click)="toggleDrawer()"
+                xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="#FFFFFF" d="M3.75 5.25a.75.75 0 0 0 0 1.5h16.5a.75.75 0 0 0 0-1.5zm0 6a.75.75 0 0 0 0 1.5h16.5a.75.75 0 0 0 0-1.5zm0 6a.75.75 0 0 0 0 1.5h16.5a.75.75 0 0 0 0-1.5z"/>
+            </svg>
+            <!--close drawer-->
+            <svg *ngIf="showDrawer" class="cursor-pointer mx-4 my-2" [ngClass]="{'text-white': showDrawer}"
+                (click)="toggleDrawer()"
+                xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="#1a4fa3" d="m6.4 18.308l-.708-.708l5.6-5.6l-5.6-5.6l.708-.708l5.6 5.6l5.6-5.6l.708.708l-5.6 5.6l5.6 5.6l-.708.708l-5.6-5.6z"/>
+            </svg>
+            <!--drawer-->
+            <div *ngIf="showDrawer" class="w-full">
+                <app-drawer
+                    [selectedComponent]="selectedComponent"
+                    (onComponentSelect)="onSelectComponet($event)"
+                >
+                </app-drawer>
+            </div>
+        </section>
     </div>
 
 

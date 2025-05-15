@@ -107,52 +107,6 @@
                 }
             }
         },
-        "/user-exam/reset/{user-id}/{exam-id}/{mode}": {
-            "put": {
-                "tags": [
-                    "user-exam"
-                ],
-                "operationId": "restUserAnswers",
-                "parameters": [
-                    {
-                        "name": "user-id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "exam-id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "mode",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/sub-plans": {
             "get": {
                 "tags": [
@@ -556,6 +510,36 @@
                 }
             }
         },
+        "/users/save/{email}": {
+            "post": {
+                "tags": [
+                    "users"
+                ],
+                "operationId": "saveUser",
+                "parameters": [
+                    {
+                        "name": "email",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/subscription/{sub-plan-id}": {
             "post": {
                 "tags": [
@@ -578,7 +562,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object"
+                                    "$ref": "#/components/schemas/SubscriptionDto"
                                 }
                             }
                         }
@@ -616,36 +600,6 @@
                             }
                         }
                     }
-                },
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/register": {
-            "post": {
-                "tags": [
-                    "register"
-                ],
-                "operationId": "register",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/registrationDto"
-                            }
-                        }
-                    },
-                    "required": true
                 },
                 "responses": {
                     "200": {
@@ -794,12 +748,12 @@
                 }
             }
         },
-        "/subscription/current/{user-id}": {
+        "/subscription/{user-id}": {
             "get": {
                 "tags": [
                     "subscription"
                 ],
-                "operationId": "getCurrentSubscription",
+                "operationId": "getUserSubscription",
                 "parameters": [
                     {
                         "name": "user-id",
@@ -816,7 +770,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/SubscriptionResponse"
+                                    "$ref": "#/components/schemas/SubscriptionDto"
                                 }
                             }
                         }
@@ -966,7 +920,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
-                                        "$ref": "#/components/schemas/ListOfResourcesDto"
+                                        "$ref": "#/components/schemas/ResourceInfoDto"
                                     }
                                 }
                             }
@@ -1035,6 +989,39 @@
                 }
             }
         },
+        "/resources/collection-list/{lecture-id}": {
+            "get": {
+                "tags": [
+                    "resources"
+                ],
+                "operationId": "getListOfCollections",
+                "parameters": [
+                    {
+                        "name": "lecture-id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ResourceInfoDto"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/questions/{exam-id}": {
             "get": {
                 "tags": [
@@ -1060,6 +1047,151 @@
                                     "type": "array",
                                     "items": {
                                         "$ref": "#/components/schemas/QuestionDto"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/questions/departments/{exam-type}/{year}": {
+            "get": {
+                "tags": [
+                    "questions"
+                ],
+                "operationId": "getDepartmentsByExamType",
+                "parameters": [
+                    {
+                        "name": "exam-type",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "TEST",
+                                "ERMP",
+                                "USMLE_STEP_1",
+                                "USMLE_STEP_2"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "year",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Anatomy",
+                                                "Internal_Medicine",
+                                                "Pediatrics",
+                                                "OBGYN",
+                                                "Surgery",
+                                                "Medical_Ethics",
+                                                "Dermatology",
+                                                "Ophthalmology",
+                                                "Psychiatry",
+                                                "ENT",
+                                                "Pathology",
+                                                "Medical_Radiology",
+                                                "Anesthesiology",
+                                                "Behavioral_Science",
+                                                "Biochemistry",
+                                                "Biostatics",
+                                                "Embryology",
+                                                "Genetics",
+                                                "Histology",
+                                                "Immunology",
+                                                "Microbiology",
+                                                "Pathophysiology",
+                                                "Pharmacology",
+                                                "Physiology"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/questions/blocks/{exam-type}/{year}/{department}": {
+            "get": {
+                "tags": [
+                    "questions"
+                ],
+                "operationId": "getBlocksByExamTypeAndYearAndDepartment",
+                "parameters": [
+                    {
+                        "name": "exam-type",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "TEST",
+                                "ERMP",
+                                "USMLE_STEP_1",
+                                "USMLE_STEP_2"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "year",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "department",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string",
+                                        "enum": [
+                                            "BLOCK_01",
+                                            "BLOCK_02",
+                                            "BLOCK_03",
+                                            "BLOCK_04",
+                                            "BLOCK_05",
+                                            "BLOCK_06",
+                                            "BLOCK_07",
+                                            "BLOCK_08",
+                                            "BLOCK_09",
+                                            "BLOCK_10"
+                                        ]
                                     }
                                 }
                             }
@@ -1227,6 +1359,132 @@
                 }
             }
         },
+        "/exams/years/{exam-type}": {
+            "get": {
+                "tags": [
+                    "exams"
+                ],
+                "operationId": "getYearsByExamType",
+                "parameters": [
+                    {
+                        "name": "exam-type",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "TEST",
+                                "ERMP",
+                                "USMLE_STEP_1",
+                                "USMLE_STEP_2"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/NumberDto"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/exams/list/{exam-type}": {
+            "get": {
+                "tags": [
+                    "exams"
+                ],
+                "operationId": "getExamNamesByExamType",
+                "parameters": [
+                    {
+                        "name": "exam-type",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "TEST",
+                                "ERMP",
+                                "USMLE_STEP_1",
+                                "USMLE_STEP_2"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ExamNameDto"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/exams/list/{exam-type}/{year}": {
+            "get": {
+                "tags": [
+                    "exams"
+                ],
+                "operationId": "getExamNamesByExamTypeAndYear",
+                "parameters": [
+                    {
+                        "name": "exam-type",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "TEST",
+                                "ERMP",
+                                "USMLE_STEP_1",
+                                "USMLE_STEP_2"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "year",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ExamNameDto"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/exams/detail/{exam-id}": {
             "get": {
                 "tags": [
@@ -1240,6 +1498,24 @@
                         "required": true,
                         "schema": {
                             "type": "string"
+                        }
+                    },
+                    {
+                        "name": "department",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": ""
+                        }
+                    },
+                    {
+                        "name": "block",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": ""
                         }
                     }
                 ],
@@ -1337,6 +1613,13 @@
                             "TEST"
                         ]
                     },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "IN_PROGRESS",
+                            "COMPLETED"
+                        ]
+                    },
                     "timeLeftInMinutes": {
                         "type": "integer",
                         "format": "int32"
@@ -1413,7 +1696,11 @@
                             "VIDEO",
                             "BOOK",
                             "LECTURE_VIDEOS",
-                            "LECTURE_NOTES"
+                            "LECTURE_NOTES",
+                            "ERMP",
+                            "USMLE_STEP_1",
+                            "USMLE_STEP_2",
+                            "LECTURE"
                         ]
                     },
                     "title": {
@@ -1428,9 +1715,6 @@
                             "ADVANCED",
                             "PREMIUM"
                         ]
-                    },
-                    "department": {
-                        "type": "string"
                     },
                     "description": {
                         "type": "string",
@@ -1451,20 +1735,23 @@
                     "type"
                 ]
             },
-            "Choice": {
+            "CreateChoiceDto": {
                 "type": "object",
                 "properties": {
                     "id": {
-                        "type": "string",
-                        "format": "uuid"
+                        "type": "string"
                     },
                     "text": {
-                        "type": "string"
+                        "type": "string",
+                        "minLength": 1
                     },
                     "isCorrect": {
                         "type": "boolean"
                     }
-                }
+                },
+                "required": [
+                    "isCorrect"
+                ]
             },
             "CreateQuestionDto": {
                 "type": "object",
@@ -1487,7 +1774,7 @@
                     "choices": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/Choice"
+                            "$ref": "#/components/schemas/CreateChoiceDto"
                         },
                         "minItems": 1
                     },
@@ -1500,6 +1787,50 @@
                         "items": {
                             "type": "string"
                         }
+                    },
+                    "department": {
+                        "type": "string",
+                        "enum": [
+                            "Anatomy",
+                            "Internal_Medicine",
+                            "Pediatrics",
+                            "OBGYN",
+                            "Surgery",
+                            "Medical_Ethics",
+                            "Dermatology",
+                            "Ophthalmology",
+                            "Psychiatry",
+                            "ENT",
+                            "Pathology",
+                            "Medical_Radiology",
+                            "Anesthesiology",
+                            "Behavioral_Science",
+                            "Biochemistry",
+                            "Biostatics",
+                            "Embryology",
+                            "Genetics",
+                            "Histology",
+                            "Immunology",
+                            "Microbiology",
+                            "Pathophysiology",
+                            "Pharmacology",
+                            "Physiology"
+                        ]
+                    },
+                    "blockNumber": {
+                        "type": "string",
+                        "enum": [
+                            "BLOCK_01",
+                            "BLOCK_02",
+                            "BLOCK_03",
+                            "BLOCK_04",
+                            "BLOCK_05",
+                            "BLOCK_06",
+                            "BLOCK_07",
+                            "BLOCK_08",
+                            "BLOCK_09",
+                            "BLOCK_10"
+                        ]
                     }
                 },
                 "required": [
@@ -1515,9 +1846,6 @@
                     "title": {
                         "type": "string",
                         "minLength": 1
-                    },
-                    "department": {
-                        "type": "string"
                     },
                     "description": {
                         "type": "string",
@@ -1535,28 +1863,55 @@
                     "duration": {
                         "type": "integer",
                         "format": "int32"
+                    },
+                    "examType": {
+                        "type": "string",
+                        "enum": [
+                            "TEST",
+                            "ERMP",
+                            "USMLE_STEP_1",
+                            "USMLE_STEP_2"
+                        ]
+                    },
+                    "year": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "randomQuestionCount": {
+                        "type": "integer",
+                        "format": "int32"
                     }
                 },
                 "required": [
                     "duration",
-                    "requiredSubLevel"
+                    "examType",
+                    "requiredSubLevel",
+                    "year"
                 ]
             },
-            "registrationDto": {
+            "SubscriptionDto": {
                 "type": "object",
                 "properties": {
-                    "username": {
+                    "externalId": {
                         "type": "string",
-                        "minLength": 1
+                        "format": "uuid"
                     },
-                    "email": {
+                    "level": {
                         "type": "string",
-                        "minLength": 1
+                        "enum": [
+                            "NONE",
+                            "BASIC",
+                            "ADVANCED",
+                            "PREMIUM"
+                        ]
                     },
-                    "password": {
+                    "startDate": {
                         "type": "string",
-                        "maxLength": 2147483647,
-                        "minLength": 4
+                        "format": "date-time"
+                    },
+                    "endDate": {
+                        "type": "string",
+                        "format": "date-time"
                     }
                 }
             },
@@ -1572,9 +1927,6 @@
                 "type": "object",
                 "properties": {
                     "id": {
-                        "type": "string"
-                    },
-                    "username": {
                         "type": "string"
                     },
                     "email": {
@@ -1658,6 +2010,13 @@
                     "mode": {
                         "type": "string"
                     },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "IN_PROGRESS",
+                            "COMPLETED"
+                        ]
+                    },
                     "lastModifiedDate": {
                         "type": "string",
                         "format": "date-time"
@@ -1689,32 +2048,6 @@
                         "items": {
                             "$ref": "#/components/schemas/CorrectAnswer"
                         }
-                    }
-                }
-            },
-            "SubscriptionResponse": {
-                "type": "object",
-                "properties": {
-                    "externalId": {
-                        "type": "string",
-                        "format": "uuid"
-                    },
-                    "level": {
-                        "type": "string",
-                        "enum": [
-                            "NONE",
-                            "BASIC",
-                            "ADVANCED",
-                            "PREMIUM"
-                        ]
-                    },
-                    "startDate": {
-                        "type": "string",
-                        "format": "date-time"
-                    },
-                    "endDate": {
-                        "type": "string",
-                        "format": "date-time"
                     }
                 }
             },
@@ -1768,7 +2101,11 @@
                             "VIDEO",
                             "BOOK",
                             "LECTURE_VIDEOS",
-                            "LECTURE_NOTES"
+                            "LECTURE_NOTES",
+                            "ERMP",
+                            "USMLE_STEP_1",
+                            "USMLE_STEP_2",
+                            "LECTURE"
                         ]
                     },
                     "requiredSubLevel": {
@@ -1779,9 +2116,6 @@
                             "ADVANCED",
                             "PREMIUM"
                         ]
-                    },
-                    "department": {
-                        "type": "string"
                     },
                     "description": {
                         "type": "string"
@@ -1840,7 +2174,7 @@
                     }
                 }
             },
-            "ListOfResourcesDto": {
+            "ResourceInfoDto": {
                 "type": "object",
                 "properties": {
                     "resourceId": {
@@ -1855,13 +2189,14 @@
                             "VIDEO",
                             "BOOK",
                             "LECTURE_VIDEOS",
-                            "LECTURE_NOTES"
+                            "LECTURE_NOTES",
+                            "ERMP",
+                            "USMLE_STEP_1",
+                            "USMLE_STEP_2",
+                            "LECTURE"
                         ]
                     },
                     "title": {
-                        "type": "string"
-                    },
-                    "department": {
                         "type": "string"
                     },
                     "description": {
@@ -1895,7 +2230,11 @@
                             "VIDEO",
                             "BOOK",
                             "LECTURE_VIDEOS",
-                            "LECTURE_NOTES"
+                            "LECTURE_NOTES",
+                            "ERMP",
+                            "USMLE_STEP_1",
+                            "USMLE_STEP_2",
+                            "LECTURE"
                         ]
                     },
                     "requiredSubLevel": {
@@ -1906,9 +2245,6 @@
                             "ADVANCED",
                             "PREMIUM"
                         ]
-                    },
-                    "department": {
-                        "type": "string"
                     },
                     "description": {
                         "type": "string"
@@ -1935,7 +2271,11 @@
                             "VIDEO",
                             "BOOK",
                             "LECTURE_VIDEOS",
-                            "LECTURE_NOTES"
+                            "LECTURE_NOTES",
+                            "ERMP",
+                            "USMLE_STEP_1",
+                            "USMLE_STEP_2",
+                            "LECTURE"
                         ]
                     },
                     "title": {
@@ -1950,17 +2290,29 @@
                             "PREMIUM"
                         ]
                     },
-                    "department": {
-                        "type": "string"
-                    },
                     "description": {
                         "type": "string"
                     },
-                    "resources": {
+                    "resourceList": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/ResourceDto"
+                            "$ref": "#/components/schemas/ResourceInfoDto"
                         }
+                    }
+                }
+            },
+            "Choice": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "text": {
+                        "type": "string"
+                    },
+                    "isCorrect": {
+                        "type": "boolean"
                     }
                 }
             },
@@ -1994,6 +2346,50 @@
                         "items": {
                             "type": "string"
                         }
+                    },
+                    "department": {
+                        "type": "string",
+                        "enum": [
+                            "Anatomy",
+                            "Internal_Medicine",
+                            "Pediatrics",
+                            "OBGYN",
+                            "Surgery",
+                            "Medical_Ethics",
+                            "Dermatology",
+                            "Ophthalmology",
+                            "Psychiatry",
+                            "ENT",
+                            "Pathology",
+                            "Medical_Radiology",
+                            "Anesthesiology",
+                            "Behavioral_Science",
+                            "Biochemistry",
+                            "Biostatics",
+                            "Embryology",
+                            "Genetics",
+                            "Histology",
+                            "Immunology",
+                            "Microbiology",
+                            "Pathophysiology",
+                            "Pharmacology",
+                            "Physiology"
+                        ]
+                    },
+                    "blockNumber": {
+                        "type": "string",
+                        "enum": [
+                            "BLOCK_01",
+                            "BLOCK_02",
+                            "BLOCK_03",
+                            "BLOCK_04",
+                            "BLOCK_05",
+                            "BLOCK_06",
+                            "BLOCK_07",
+                            "BLOCK_08",
+                            "BLOCK_09",
+                            "BLOCK_10"
+                        ]
                     }
                 }
             },
@@ -2006,11 +2402,21 @@
                     "title": {
                         "type": "string"
                     },
-                    "department": {
-                        "type": "string"
-                    },
                     "description": {
                         "type": "string"
+                    },
+                    "examType": {
+                        "type": "string",
+                        "enum": [
+                            "TEST",
+                            "ERMP",
+                            "USMLE_STEP_1",
+                            "USMLE_STEP_2"
+                        ]
+                    },
+                    "year": {
+                        "type": "integer",
+                        "format": "int32"
                     },
                     "duration": {
                         "type": "integer",
@@ -2028,6 +2434,10 @@
                             "ADVANCED",
                             "PREMIUM"
                         ]
+                    },
+                    "randomQuestionCount": {
+                        "type": "integer",
+                        "format": "int32"
                     }
                 }
             },
@@ -2071,6 +2481,49 @@
                     }
                 }
             },
+            "NumberDto": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                }
+            },
+            "ExamNameDto": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "year": {
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                }
+            },
+            "ChoiceDto": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "text": {
+                        "type": "string"
+                    },
+                    "isCorrect": {
+                        "type": "boolean"
+                    },
+                    "percentage": {
+                        "type": "number",
+                        "format": "double"
+                    }
+                }
+            },
             "ExamDetailDto": {
                 "type": "object",
                 "properties": {
@@ -2096,14 +2549,89 @@
                     "questions": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/QuestionDto"
+                            "$ref": "#/components/schemas/QuestionDetailDto"
                         }
+                    }
+                }
+            },
+            "QuestionDetailDto": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
                     },
-                    "previewQuestions": {
+                    "examId": {
+                        "type": "string"
+                    },
+                    "questionNumber": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "questionText": {
+                        "type": "string"
+                    },
+                    "choices": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/QuestionDto"
+                            "$ref": "#/components/schemas/ChoiceDto"
                         }
+                    },
+                    "totalResponses": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "explanation": {
+                        "type": "string"
+                    },
+                    "imgUrls": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "department": {
+                        "type": "string",
+                        "enum": [
+                            "Anatomy",
+                            "Internal_Medicine",
+                            "Pediatrics",
+                            "OBGYN",
+                            "Surgery",
+                            "Medical_Ethics",
+                            "Dermatology",
+                            "Ophthalmology",
+                            "Psychiatry",
+                            "ENT",
+                            "Pathology",
+                            "Medical_Radiology",
+                            "Anesthesiology",
+                            "Behavioral_Science",
+                            "Biochemistry",
+                            "Biostatics",
+                            "Embryology",
+                            "Genetics",
+                            "Histology",
+                            "Immunology",
+                            "Microbiology",
+                            "Pathophysiology",
+                            "Pharmacology",
+                            "Physiology"
+                        ]
+                    },
+                    "blockNumber": {
+                        "type": "string",
+                        "enum": [
+                            "BLOCK_01",
+                            "BLOCK_02",
+                            "BLOCK_03",
+                            "BLOCK_04",
+                            "BLOCK_05",
+                            "BLOCK_06",
+                            "BLOCK_07",
+                            "BLOCK_08",
+                            "BLOCK_09",
+                            "BLOCK_10"
+                        ]
                     }
                 }
             }

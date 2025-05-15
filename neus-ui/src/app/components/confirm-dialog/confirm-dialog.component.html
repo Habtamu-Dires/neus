@@ -5,8 +5,8 @@
         <p>{{message}}</p>
         </div>
         <div class="w-full flex justify-evenly">
-            <p  (click)="onConfirm()" class="cursor-pointer font-semibold"
-                [ngClass]="{'text-green-800': !isWarning, 'text-red-400': isWarning}">
+            <p  (click)="onConfirm()" class="cursor-pointer font-mono"
+                [ngClass]="{'text-secondary': !isWarning, 'text-red-400': isWarning}">
                 {{buttonName}}
             </p>
             <p class="text-blue-800 cursor-pointer" (click)="onCancel()">Cancel</p>

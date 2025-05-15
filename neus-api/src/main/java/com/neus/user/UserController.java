@@ -3,6 +3,7 @@ package com.neus.user;
 import com.neus.common.PageResponse;
 import com.neus.user.dto.UserDto;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +17,15 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+
+    // save user
+    @PostMapping("/save/{email}")
+    public ResponseEntity<?> saveUser(
+            @PathVariable("email") String email
+    ){
+        userService.saveUser(email);
+       return ResponseEntity.accepted().build();
+    }
 
     @GetMapping
     public ResponseEntity<List<UserDto>> getAllUsers(){

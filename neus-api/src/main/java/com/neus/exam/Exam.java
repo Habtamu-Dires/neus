@@ -5,7 +5,6 @@ import com.neus.resource.Resource;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,7 +28,12 @@ public class Exam {
     @Column(nullable = false,updatable = false,unique = true)
     private UUID externalId;
 
+    private Integer year;
+    @Enumerated(EnumType.STRING)
+    private ExamType examType;
     private int duration;
+
+    private Integer randomQuestionCount;
 
     @OneToMany(mappedBy = "exam", cascade = {CascadeType.REMOVE, CascadeType.DETACH})
     List<Question> questions;

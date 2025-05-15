@@ -1,6 +1,6 @@
 <main class="w-full h-screen flex relative">
     <!--side bar-->
-    <section *ngIf="!onShawDrawer" class="w-1/3  md:w-1/6 shadow-lg font-mono h-screen">
+    <section *ngIf="!adminUxService.showDrawer()" class="w-1/3  md:w-1/6 shadow-lg font-mono h-screen">
         <div class="flex flex-col h-full justify-between shadow-xl">
             <div class="flex flex-col gap-2">
                 <div class="flex justify-between p-4">
@@ -67,7 +67,7 @@
     </section>
     <!--main-->
     <section class="overflow-auto" 
-        [ngClass]="{'w-full': onShawDrawer, 'w-2/3 md:w-5/6': !onShawDrawer}">
+        [ngClass]="{'w-full': adminUxService.showDrawer(), 'w-2/3 md:w-5/6': !adminUxService.showDrawer()}">
         <!--pages-->
         <div>
             <router-outlet></router-outlet>

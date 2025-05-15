@@ -1,6 +1,7 @@
 package com.neus.question.dto;
 
-import com.neus.question.Choice;
+import com.neus.question.Department;
+import com.neus.question.BlockNumber;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
@@ -19,9 +20,11 @@ public record CreateQuestionDto(
         @NotEmpty(message = "Question Text is mandatory")
         String questionText,
         @NotEmpty(message = "Choice is mandatory")
-        List<Choice> choices,
+        List<CreateChoiceDto> choices,
         @NotEmpty(message = "Explanation is mandatory")
         String explanation,
-        List<String> imgUrls
+        List<String> imgUrls,
+        Department department,
+        BlockNumber blockNumber
 )
 { }

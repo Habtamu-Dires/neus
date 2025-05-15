@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { HeaderComponent } from "../../components/header/header.component";
 
 @Component({
   selector: 'app-dashboard',
@@ -8,4 +9,9 @@ import { Component } from '@angular/core';
 })
 export class DashboardComponent {
 
+
+  // search
+  onSearch(text: any) {
+    console.log(text);
+  }
 }

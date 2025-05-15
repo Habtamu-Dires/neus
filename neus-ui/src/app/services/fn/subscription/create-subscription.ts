@@ -8,13 +8,13 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
+import { SubscriptionDto } from '../../models/subscription-dto';
 
 export interface CreateSubscription$Params {
   'sub-plan-id': string;
 }
 
-export function createSubscription(http: HttpClient, rootUrl: string, params: CreateSubscription$Params, context?: HttpContext): Observable<StrictHttpResponse<{
-}>> {
+export function createSubscription(http: HttpClient, rootUrl: string, params: CreateSubscription$Params, context?: HttpContext): Observable<StrictHttpResponse<SubscriptionDto>> {
   const rb = new RequestBuilder(rootUrl, createSubscription.PATH, 'post');
   if (params) {
     rb.path('sub-plan-id', params['sub-plan-id'], {});
@@ -25,8 +25,7 @@ export function createSubscription(http: HttpClient, rootUrl: string, params: Cr
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<{
-      }>;
+      return r as StrictHttpResponse<SubscriptionDto>;
     })
   );
 }

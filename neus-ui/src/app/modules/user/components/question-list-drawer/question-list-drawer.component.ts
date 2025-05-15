@@ -13,6 +13,8 @@ export class QuestionListDrawerComponent {
   @Input() correctAnswers:Map<string,boolean> = new Map<string,boolean>(); ;
   @Input() currentQuestionIndex: number = 0;
   @Output() onQuestionSelect = new EventEmitter<number>();
+  @Input() mode:'STUDY' | 'TEST' | undefined = undefined;
+  @Input() isSubmitted:boolean = false;
 
 
   // select question

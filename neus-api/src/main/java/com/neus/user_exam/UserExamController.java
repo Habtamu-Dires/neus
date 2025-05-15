@@ -34,15 +34,4 @@ public class UserExamController {
     ){
         return ResponseEntity.ok(userExamService.getUserAnswers(examId, authentication));
     }
-
-    // reset user answers
-    @PutMapping("/reset/{user-id}/{exam-id}/{mode}")
-    private ResponseEntity<?> restUserAnswers(
-            @PathVariable("user-id") String userId,
-            @PathVariable("exam-id") String examId,
-            @PathVariable("mode") String mode
-    ){
-        userExamService.resetUserAnswers(userId, examId, mode);
-        return ResponseEntity.accepted().build();
-    }
 }

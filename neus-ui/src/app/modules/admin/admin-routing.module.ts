@@ -31,7 +31,7 @@ const routes: Routes = [
       {path:'exams', component:ExamComponent},
       {path:'exams/manage',component:ManageExamComponent},
       {path:'exams/manage/:examId',component:ManageExamComponent},
-      {path:'questions/:examId/:title',component:QuestionsComponent},
+      {path:'questions',component:QuestionsComponent},
       {path:'create-question',component:CreateQuestionComponent},
       {path:'sub-plans',component:SubscriptionPlanComponent},
       {path:'sub-plans/manage/:planId',component:ManageSubPlanComponent},

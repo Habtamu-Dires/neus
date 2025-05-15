@@ -15,6 +15,7 @@ export class HeaderComponent {
 
   @Input() componentName: string = '';
   @Input() printSectionId: string = '';
+  @Input() hasCreateNewButton: boolean = true;
   @Output() onCreateNewCliked = new EventEmitter<{}>();
   @Output() onSearch = new EventEmitter<string>();
   @Output() filter = new EventEmitter<string>();
@@ -22,32 +23,22 @@ export class HeaderComponent {
 
   showEkubs:boolean = false;
   dateTime:string | undefined;
-  onShowDrawer:boolean = false;
 
   searchControl= new FormControl();
   ekubSearchControl = new FormControl();
 
   constructor(
-    private adminUxService:AdminUxService
+    public adminUxService:AdminUxService
   ){}
 
   ngOnInit(): void {
     this.searchFormControl();
-    // on show drawer status
-    this.adminUxService.showDrawer$.subscribe((onShowDrawer:boolean)=>{
-      this.onShowDrawer = onShowDrawer;
-    });
   }
 
-  // update showDrawer status
-  updateShowDrawerStatus(){
-    this.adminUxService.updateShowDrawerStatus(this.onShowDrawer);
-  }
 
   // toogle showdrawer
   toggleShowDrawer(){
-    this.onShowDrawer = !this.onShowDrawer;
-    this.updateShowDrawerStatus();
+    this.adminUxService.toggleShowDrawerStatus();
   }
 
   onCreateNew() {

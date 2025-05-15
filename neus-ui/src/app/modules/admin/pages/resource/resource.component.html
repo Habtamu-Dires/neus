@@ -18,35 +18,33 @@
             <table class="min-w-full border border-gray-300 bg-white">
             <thead class="bg-gray-200 sticky top-16">
                 <tr>
+                    <th class="table-head w-2/12">Title</th>
                     <th class="table-head w-1/12">Type</th>
-                    <th class="table-head w-1/12">Title</th>
-                    <th class="table-head w-1/12">Department</th>
                     <th class="table-head w-1/12">Subscription Level</th>
                     <th class="table-head w-1/12">Description</th>
                     <th class="table-head w-1/12">Content</th>
                     <th class="table-head w-1/12">Preview Content</th>
-                    <th class="table-head w-1/12">Parent</th>
+                    <th class="table-head w-2/12">Parent</th>
                     <th class="table-head w-1/12">Actions</th>
                 </tr>
             </thead>
             <tbody>
                 <tr *ngFor="let resource of resourcesList" class="border-b border-gray-300 hover:bg-gray-100">                          
-                    <td class="table-data">{{ resource.type }}</td>
                     <td class="table-data">{{resource.title}}</td>
-                    <td class="table-data">{{ resource.department}}</td>
+                    <td class="table-data">{{ resource.type }}</td>
                     <td class="table-data">{{ resource.requiredSubLevel}}</td>
                     <td class="table-data">
                         <span (click)="readDescription(resource.description, resource.title)" class="text-primary cursor-pointer">read</span>
                     </td>
                     <td class="table-data">
-                        @if (resource.type === 'LECTURE_VIDEOS' || resource.type === 'LECTURE_NOTES') {
+                        @if (['LECTURE','LECTURE_VIDEOS','LECTURE_NOTES'].includes(resource.type ? resource.type : '')) {
                             <span>--</span>
                         } @else {
                             <span (click)="viewContent(resource,false)" class="text-primary cursor-pointer">view</span>
                         }
                     </td>
                     <td class="table-data">
-                        @if (resource.type === 'LECTURE_VIDEOS' || resource.type === 'LECTURE_NOTES') {
+                        @if (['LECTURE','LECTURE_VIDEOS','LECTURE_NOTES'].includes(resource.type ? resource.type : '')) {
                             <span>--</span>
                         } @else {
                             <span (click)="viewContent(resource, true)" class="text-primary cursor-pointer">view</span>
@@ -89,10 +87,6 @@
                 <div class="mb-2">
                     <span class="font-semibold text-gray-600">Title:</span>
                     <span class="ml-2">{{ resource.title}}</span>
-                </div>
-                <div class="mb-2">
-                    <span class="font-semibold text-gray-600">Department:</span>
-                    <span class="ml-2">{{ resource.department}}</span>
                 </div>
                 <div class="mb-2">
                     <span class="font-semibold text-gray-600">Subscription Level:</span>

@@ -17,6 +17,10 @@ import { deleteImage } from '../fn/questions/delete-image';
 import { DeleteImage$Params } from '../fn/questions/delete-image';
 import { deleteQuestion } from '../fn/questions/delete-question';
 import { DeleteQuestion$Params } from '../fn/questions/delete-question';
+import { getBlocksByExamTypeAndYearAndDepartment } from '../fn/questions/get-blocks-by-exam-type-and-year-and-department';
+import { GetBlocksByExamTypeAndYearAndDepartment$Params } from '../fn/questions/get-blocks-by-exam-type-and-year-and-department';
+import { getDepartmentsByExamType } from '../fn/questions/get-departments-by-exam-type';
+import { GetDepartmentsByExamType$Params } from '../fn/questions/get-departments-by-exam-type';
 import { getQuestionsByExamId } from '../fn/questions/get-questions-by-exam-id';
 import { GetQuestionsByExamId$Params } from '../fn/questions/get-questions-by-exam-id';
 import { QuestionDto } from '../models/question-dto';
@@ -137,6 +141,56 @@ export class QuestionsService extends BaseService {
   getQuestionsByExamId(params: GetQuestionsByExamId$Params, context?: HttpContext): Observable<Array<QuestionDto>> {
     return this.getQuestionsByExamId$Response(params, context).pipe(
       map((r: StrictHttpResponse<Array<QuestionDto>>): Array<QuestionDto> => r.body)
+    );
+  }
+
+  /** Path part for operation `getDepartmentsByExamType()` */
+  static readonly GetDepartmentsByExamTypePath = '/questions/departments/{exam-type}/{year}';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getDepartmentsByExamType()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getDepartmentsByExamType$Response(params: GetDepartmentsByExamType$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<Array<'Anatomy' | 'Internal_Medicine' | 'Pediatrics' | 'OBGYN' | 'Surgery' | 'Medical_Ethics' | 'Dermatology' | 'Ophthalmology' | 'Psychiatry' | 'ENT' | 'Pathology' | 'Medical_Radiology' | 'Anesthesiology' | 'Behavioral_Science' | 'Biochemistry' | 'Biostatics' | 'Embryology' | 'Genetics' | 'Histology' | 'Immunology' | 'Microbiology' | 'Pathophysiology' | 'Pharmacology' | 'Physiology'>>>> {
+    return getDepartmentsByExamType(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getDepartmentsByExamType$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getDepartmentsByExamType(params: GetDepartmentsByExamType$Params, context?: HttpContext): Observable<Array<Array<'Anatomy' | 'Internal_Medicine' | 'Pediatrics' | 'OBGYN' | 'Surgery' | 'Medical_Ethics' | 'Dermatology' | 'Ophthalmology' | 'Psychiatry' | 'ENT' | 'Pathology' | 'Medical_Radiology' | 'Anesthesiology' | 'Behavioral_Science' | 'Biochemistry' | 'Biostatics' | 'Embryology' | 'Genetics' | 'Histology' | 'Immunology' | 'Microbiology' | 'Pathophysiology' | 'Pharmacology' | 'Physiology'>>> {
+    return this.getDepartmentsByExamType$Response(params, context).pipe(
+      map((r: StrictHttpResponse<Array<Array<'Anatomy' | 'Internal_Medicine' | 'Pediatrics' | 'OBGYN' | 'Surgery' | 'Medical_Ethics' | 'Dermatology' | 'Ophthalmology' | 'Psychiatry' | 'ENT' | 'Pathology' | 'Medical_Radiology' | 'Anesthesiology' | 'Behavioral_Science' | 'Biochemistry' | 'Biostatics' | 'Embryology' | 'Genetics' | 'Histology' | 'Immunology' | 'Microbiology' | 'Pathophysiology' | 'Pharmacology' | 'Physiology'>>>): Array<Array<'Anatomy' | 'Internal_Medicine' | 'Pediatrics' | 'OBGYN' | 'Surgery' | 'Medical_Ethics' | 'Dermatology' | 'Ophthalmology' | 'Psychiatry' | 'ENT' | 'Pathology' | 'Medical_Radiology' | 'Anesthesiology' | 'Behavioral_Science' | 'Biochemistry' | 'Biostatics' | 'Embryology' | 'Genetics' | 'Histology' | 'Immunology' | 'Microbiology' | 'Pathophysiology' | 'Pharmacology' | 'Physiology'>> => r.body)
+    );
+  }
+
+  /** Path part for operation `getBlocksByExamTypeAndYearAndDepartment()` */
+  static readonly GetBlocksByExamTypeAndYearAndDepartmentPath = '/questions/blocks/{exam-type}/{year}/{department}';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getBlocksByExamTypeAndYearAndDepartment()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getBlocksByExamTypeAndYearAndDepartment$Response(params: GetBlocksByExamTypeAndYearAndDepartment$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<'BLOCK_01' | 'BLOCK_02' | 'BLOCK_03' | 'BLOCK_04' | 'BLOCK_05' | 'BLOCK_06' | 'BLOCK_07' | 'BLOCK_08' | 'BLOCK_09' | 'BLOCK_10'>>> {
+    return getBlocksByExamTypeAndYearAndDepartment(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getBlocksByExamTypeAndYearAndDepartment$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getBlocksByExamTypeAndYearAndDepartment(params: GetBlocksByExamTypeAndYearAndDepartment$Params, context?: HttpContext): Observable<Array<'BLOCK_01' | 'BLOCK_02' | 'BLOCK_03' | 'BLOCK_04' | 'BLOCK_05' | 'BLOCK_06' | 'BLOCK_07' | 'BLOCK_08' | 'BLOCK_09' | 'BLOCK_10'>> {
+    return this.getBlocksByExamTypeAndYearAndDepartment$Response(params, context).pipe(
+      map((r: StrictHttpResponse<Array<'BLOCK_01' | 'BLOCK_02' | 'BLOCK_03' | 'BLOCK_04' | 'BLOCK_05' | 'BLOCK_06' | 'BLOCK_07' | 'BLOCK_08' | 'BLOCK_09' | 'BLOCK_10'>>): Array<'BLOCK_01' | 'BLOCK_02' | 'BLOCK_03' | 'BLOCK_04' | 'BLOCK_05' | 'BLOCK_06' | 'BLOCK_07' | 'BLOCK_08' | 'BLOCK_09' | 'BLOCK_10'> => r.body)
     );
   }
 

@@ -15,22 +15,17 @@ import { SideBarItemComponent } from "../components/side-bar-item/side-bar-item.
 export class HomeComponent {
   
   profile:UserProfile | undefined;
-  onShawDrawer:boolean = false;
   activeComponent:string = 'Exams';
 
   constructor(
     private keycloakService:KeycloakService,
     private router:Router,
-    private adminUxService:AdminUxService
+    public adminUxService:AdminUxService
   ){}
 
   ngOnInit(): void {
     this.setActiveComponent('Exams');
     this.profile = this.keycloakService.profile;
-    // get show drawer 
-    this.adminUxService.showDrawer$.subscribe((onShawDrawer:boolean)=>{
-      this.onShawDrawer = onShawDrawer;
-    });
   }
 
   // logout
@@ -40,19 +35,13 @@ export class HomeComponent {
 
   // toggle side bar
   toggleSideBar() {
-    this.onShawDrawer = !this.onShawDrawer;
-    this.updateShowDrawer(this.onShawDrawer);
+    this.adminUxService.toggleShowDrawerStatus();
   }
 
   // set active component
   setActiveComponent(component:string){
     this.activeComponent = component;
     this.router.navigate(['admin', component.toLocaleLowerCase()])
-  }
-
-  // update show drawer
-  updateShowDrawer(show:boolean){
-    this.adminUxService.updateShowDrawerStatus(show);
   }
 
 }

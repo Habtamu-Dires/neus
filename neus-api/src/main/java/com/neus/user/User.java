@@ -2,6 +2,7 @@ package com.neus.user;
 
 import com.neus.payment.Payment;
 import com.neus.subscription.Subscription;
+import com.neus.user_exam.UserExam;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,17 +24,17 @@ public class User {
     @Column(unique = true)
     private String externalId;
     @Column(unique = true)
-    private String username;
-    @Column(unique = true)
     private String email;
-    private String name;
     private LocalDateTime registrationDate;
     private boolean enabled;
 
-    @OneToOne(mappedBy = "user")
+    @OneToOne(mappedBy = "user", cascade = { CascadeType.REMOVE, CascadeType.DETACH})
     private Subscription subscription;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = {CascadeType.REMOVE, CascadeType.DETACH})
     private List<Payment> paymentList;
+
+    @OneToMany(mappedBy = "user", cascade = {CascadeType.REMOVE, CascadeType.DETACH})
+    private List<UserExam> userExams;
 
 }

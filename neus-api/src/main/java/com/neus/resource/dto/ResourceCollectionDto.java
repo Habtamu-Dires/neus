@@ -11,7 +11,6 @@ public record ResourceCollectionDto(
         ResourceType type,
         String title,
         SubscriptionLevel requiredSubLevel,
-        String department,
         String description,
-        List<ResourceDto> resources
+        List<ResourceInfoDto> resourceList
 ) {}

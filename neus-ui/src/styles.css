@@ -50,6 +50,29 @@ body {
   .input-style {
     @apply w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary;
   }
+
+
+  /* resouce  box */
+  .bg-exam {
+    background-image: linear-gradient(to right top, #f3e8ff, #a78bfa) /* Example green-ish diagonal gradient */
+  }
+
+  .bg-reading-materials {
+    background-image: linear-gradient(to right top, #bfdbfe, #60a5fa); /* Example blue-ish diagonal gradient */
+  }
+
+  .bg-videos {
+    background-image: linear-gradient(to right top, #fef3c7, #fcd34d); /* Example yellow-ish diagonal gradient */
+  }
+  
+  .bg-lecture-videos {
+    background-image: linear-gradient(to right top, #e0f2f7, #22d3ee); /* Example cyan-ish diagonal gradient */
+  }
+  
+  .bg-lecture-notes {
+    background-image: linear-gradient(to right top, #e8faff, #8bdcfa); /* Example purple-ish diagonal gradient */
+  }
+  
 }
 
 @layer base {

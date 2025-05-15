@@ -4,12 +4,11 @@
 
 export interface ResourceDetailDto {
   contentPath?: string;
-  department?: string;
   description?: string;
   id?: string;
   parentResource?: string;
   parentResourceId?: string;
   requiredSubLevel?: 'NONE' | 'BASIC' | 'ADVANCED' | 'PREMIUM';
   title?: string;
-  type?: 'EXAM' | 'READING_MATERIAL' | 'VIDEO' | 'BOOK' | 'LECTURE_VIDEOS' | 'LECTURE_NOTES';
+  type?: 'EXAM' | 'READING_MATERIAL' | 'VIDEO' | 'BOOK' | 'LECTURE_VIDEOS' | 'LECTURE_NOTES' | 'ERMP' | 'USMLE_STEP_1' | 'USMLE_STEP_2' | 'LECTURE';
 }

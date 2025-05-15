@@ -1,68 +1,91 @@
-<section class="py-10 px-4 bg-gray-50">
+<section class="py-10 px-2 bg-blue-100 mb-1">
     <div class="max-w-7xl mx-auto">
       <h2 id="resources" 
-        class="text-3xl font-bold text-gray-800 mb-8 text-center">
+        class="text-3xl font-bold text-gray-800 mb-5 text-center">
         Resources
       </h2>
   
       <!-- Filter Tabs -->
-      <div class="flex justify-center space-x-2 md:space-x-4 mb-4 sticky top-20 z-20 bg-gray-50">
+      <div class="flex justify-center space-x-2 md:space-x-4 pb-4 pt-2 sticky top-16 md:top-18 z-20 bg-blue-100">
         <button
           (click)="onFilterSelected('FREE')"
-          [class.bg-primary]="activeFilter === 'FREE'"
-          [class.text-white]="activeFilter === 'FREE'"
-          [class.bg-gray-200]="activeFilter !== 'FREE'"
-          [class.text-gray-800]="activeFilter !== 'FREE'"
-          class="px-3 md:px-4 py-2 rounded-lg transition-colors cursor-pointer"
+          [class.text-primary]="activeFilter === 'FREE'"
+          [class.border-2]="activeFilter === 'FREE'"
+          [class.border-primary]="activeFilter === 'FREE'"        
+          class="py-1 px-3 md:px-4 text-gray-500 border-1 border-gray-400 rounded-lg transition-colors cursor-pointer"
         >
           Free
         </button>
         <button
           (click)="onFilterSelected('BASIC')"
-          [class.text-white]="activeFilter === 'BASIC'"
-          [class.bg-gray-200]="activeFilter !== 'BASIC'"
-          [class.text-gray-800]="activeFilter !== 'BASIC'"
-          [class.bg-primary]="activeFilter === 'BASIC' && subscriptionLevel !== 'BASIC'"
-          [class.bg-secondary]="activeFilter === 'BASIC' && subscriptionLevel === 'BASIC'"
-          class="px-3 md:px-4 py-2 rounded-lg transition-colors cursor-pointer"
+          [class.text-primary]="activeFilter === 'BASIC'"
+          [class.border-2]="activeFilter === 'BASIC'"
+          [class.border-primary]="activeFilter === 'BASIC'"        
+          [class.border-secondary]="activeFilter === 'BASIC' && subscriptionLevel === 'BASIC'"
+          [class.text-secondary]="activeFilter === 'BASIC' && subscriptionLevel === 'BASIC'"
+          class="py-1 px-3 md:px-4 text-gray-500 border-1 border-gray-400 rounded-lg transition-colors cursor-pointer"
         >
           Basic
         </button>
         <button
           (click)="onFilterSelected('ADVANCED')"
-          [class.text-white]="activeFilter === 'ADVANCED'"
-          [class.bg-gray-200]="activeFilter !== 'ADVANCED'"
-          [class.text-gray-800]="activeFilter !== 'ADVANCED'"
-          [class.bg-primary]="activeFilter === 'ADVANCED' && subscriptionLevel !== 'ADVANCED'"
-          [class.bg-secondary]="activeFilter === 'ADVANCED' && subscriptionLevel === 'ADVANCED'"
-          class="px-3 md:px-4 py-2 rounded-lg transition-colors cursor-pointer"
+          [class.text-primary]="activeFilter === 'ADVANCED'"
+          [class.border-2]="activeFilter === 'ADVANCED'"
+          [class.border-primary]="activeFilter === 'ADVANCED'"        
+          [class.border-secondary]="activeFilter === 'ADVANCED' && subscriptionLevel === 'ADVANCED'"
+          [class.text-secondary]="activeFilter === 'ADVANCED' && subscriptionLevel === 'ADVANCED'"
+          class="py-1 px-3 md:px-4 text-gray-500 border-1 border-gray-400 rounded-lg transition-colors cursor-pointer"
         >
           Advanced
         </button>
         <button
           (click)="onFilterSelected('PREMIUM')"
-          [class.bg-primary]="activeFilter === 'PREMIUM'"
-          [class.text-white]="activeFilter === 'PREMIUM'"
-          [class.bg-gray-200]="activeFilter !== 'PREMIUM'"
-          [class.text-gray-800]="activeFilter !== 'PREMIUM'"
-          [class.bg-secondary]="activeFilter === 'PREMIUM' && subscriptionLevel === 'PREMIUM'"
-          [class.bg-secondary]="activeFilter === 'PREMIUM' && subscriptionLevel === 'PREMIUM'"
-          class="px-3 md:px-4 py-2 rounded-lg transition-colors cursor-pointer"
+          [class.text-primary]="activeFilter === 'PREMIUM'"
+          [class.border-2]="activeFilter === 'PREMIUM'"
+          [class.border-primary]="activeFilter === 'PREMIUM'"        
+          [class.border-secondary]="activeFilter === 'PREMIUM' && subscriptionLevel === 'PREMIUM'"
+          [class.text-secondary]="activeFilter === 'PREMIUM' && subscriptionLevel === 'PREMIUM'"
+          class="py-1 px-3 md:px-4 text-gray-500 border-1 border-gray-400 rounded-lg transition-colors cursor-pointer"
         >
           Premium
         </button>
       </div>
+
+      <!--resouce type buttons-->
+      <div class="flex justify-center space-x-2 md:space-x-4 pb-2 sticky top-30 z-20 bg-blue-100">
+        <button *ngIf="examResources.length > 0"  (click)="scrollToResouceType('exams')" 
+            class="cursor-pointer underline font-mono text-sm hover:text-blue-600">
+           Exams
+        </button>
+        <button *ngIf="lectureResources.length > 0"  (click)="scrollToResouceType('lectures')" 
+            class="cursor-pointer underline font-mono text-sm hover:text-blue-600">
+           Lectures
+        </button>
+        <button *ngIf="noteResources.length > 0"  (click)="scrollToResouceType('Reading_Matrials')" 
+            class="cursor-pointer underline font-mono text-sm hover:text-blue-600">
+          Reading_Matrials
+        </button>
+        <button *ngIf="videoResources.length > 0" (click)="scrollToResouceType('videos')" 
+            class="cursor-pointer underline font-mono text-sm hover:text-blue-600">
+          Videos
+        </button>
+        <button *ngIf="bookResources.length > 0" (click)="scrollToResouceType('exams')" 
+            class="cursor-pointer underline font-mono text-sm hover:text-blue-600">
+          Books
+        </button>
+      </div>
+
       <!--search -->
-      <div class="w-full flex items-center justify-center h-12 mb-6 sticky top-32 bg-gray-50">
+      <div class="w-full flex items-center justify-center h-12 mb-2 sticky top-36 z-20 bg-blue-100">
            @if (!showSearchInput) {
             <button  (click)="onSearchClick()"
-              class="rounded-xl px-4 py-1 border-2 border-primary cursor-pointer">
+              class=" rounded-xl px-4 py-1 border-1 border-primary cursor-pointer">
               search
             </button>
            } @else {
-            <div class="relative w-5/6  md:w-1/4 flex justify-center">
+            <div class="relative w-5/6  md:w-1/4 flex justify-center ">
               <input #searchInput (input)="onSearch(searchInput.value)" type="text" placeholder="serach"  
-                  class="w-full p-2 rounded-lg border-2 border-primary bg-white outline-none"                   
+                  class="w-full p-2 rounded-lg border-1 border-primary bg-blue-50 outline-none"                   
               />
               <button (click)="clearSearchArea()" 
                   class="absolute p-2 top-1/2 -right-1 -translate-y-1/2 bg-transparent text-gray-600 hover:text-black cursor-pointer">
@@ -71,170 +94,64 @@
             </div>
            }
       </div>
-  
+
       <!-- Resource Grid -->
       @if (filteredResources.length === 0) {
-        <div class="flex justify-center items-center mb-8 min-h-32">
+        <div class="flex justify-center items-center mb-12 min-h-32">
             <p>no resource found</p>
         </div>
       }
       <!-- Resource Grid by Type -->
       <!-- Exams Section -->
-      <div *ngIf="examResources.length > 0" class="mb-12">
+      <div *ngIf="examResources.length > 0" class="mb-12" id="exams">
         <div class="flex items-center my-6">
           <div class="flex-grow border-t border-gray-300"></div>
           <span class="mx-4 text-xl font-semibold text-gray-800">Exams</span>
           <div class="flex-grow border-t border-gray-300"></div>
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div *ngFor="let resource of examResources"
-              class="flex flex-col justify-between bg-white rounded-lg shadow-md p-6 w-full">
-            <div class="flex flex-col gap-1">
-              <div class="flex justify-between items-center mb-4">
-                <span class="text-sm font-medium text-blue-600">{{ resource.type }}</span>
-                <span class="text-sm font-medium px-2 py-1 rounded bg-gray-200">
-                  {{ resource.requiredSubLevel }}
-                </span>
-              </div>
-              <h3 class="text-xl font-semibold text-gray-800 mb-2">{{ resource.title }}</h3>
-              <div class="h-28 overflow-scroll mb-3">
-                <p class="text-gray-600">{{ resource.description }}</p>
-              </div>
-            </div>
-            <button
-              (click)="navigateToDetail(resource)"
-              class="w-full text-white py-2 rounded-lg transition-colors cursor-pointer"
-              [ngClass]="{'bg-secondary hover:bg-btnSecHover': isEqualOrHigherTier(resource.requiredSubLevel),
-                'bg-primary hover:bg-btnHover': !isEqualOrHigherTier(resource.requiredSubLevel)
-              }"
-            >
-              <span *ngIf="resource.requiredSubLevel === 'NONE' || isEqualOrHigherTier(resource.requiredSubLevel)">
-                View
-              </span>
-              <span *ngIf="resource.requiredSubLevel !== 'NONE' && !isEqualOrHigherTier(resource.requiredSubLevel)">
-                Preview
-              </span>
-            </button>
-          </div>
-        </div>
+        <app-resource-box [resourceList]="examResources">
+        </app-resource-box>
       </div>
-      <!-- Notes Section -->
-      <div *ngIf="noteResources.length > 0" class="mb-12">
+      <!--Lecture Section-->
+      <div *ngIf="lectureResources.length > 0" class="mb-12" id="lectures">
         <div class="flex items-center my-6">
           <div class="flex-grow border-t border-gray-300"></div>
-          <span class="mx-4 text-xl font-semibold text-gray-800">Notes</span>
+          <span class="mx-4 text-xl font-semibold text-gray-800">Lectures</span>
           <div class="flex-grow border-t border-gray-300"></div>
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div *ngFor="let resource of noteResources"
-              class="flex flex-col justify-between bg-white rounded-lg shadow-md p-6 w-full">
-            <div class="flex flex-col gap-1">
-              <div class="flex justify-between items-center mb-4">
-                <span class="text-sm font-medium text-blue-600">{{ resource.type }}</span>
-                <span class="text-sm font-medium px-2 py-1 rounded bg-gray-200">
-                  {{ resource.requiredSubLevel }}
-                </span>
-              </div>
-              <h3 class="text-xl font-semibold text-gray-800 mb-2">{{ resource.title }}</h3>
-              <div class="h-28 overflow-y-auto mb-3">
-                <p class="text-gray-600">{{ resource.description }}</p>
-              </div>
-            </div>
-            <button
-              (click)="navigateToDetail(resource)"
-              class="w-full text-white py-2 rounded-lg transition-colors cursor-pointer"
-              [ngClass]="{'bg-secondary hover:bg-btnSecHover': isEqualOrHigherTier(resource.requiredSubLevel),
-                'bg-primary hover:bg-btnHover': !isEqualOrHigherTier(resource.requiredSubLevel)
-              }"
-            >
-              <span *ngIf="resource.requiredSubLevel === 'NONE' || isEqualOrHigherTier(resource.requiredSubLevel)">
-                View
-              </span>
-              <span *ngIf="resource.requiredSubLevel !== 'NONE' && !isEqualOrHigherTier(resource.requiredSubLevel)">
-                Preview
-              </span>
-            </button>
-          </div>
+        <app-resource-box [resourceList]="lectureResources">
+        </app-resource-box>
+      </div>
+      <!-- Notes Section -->
+      <div *ngIf="noteResources.length > 0" class="mb-12" id="Reading_Matrials">
+        <div class="flex items-center my-6">
+          <div class="flex-grow border-t border-gray-300"></div>
+          <span class="mx-4 text-xl font-semibold text-gray-800">Reading_Materials</span>
+          <div class="flex-grow border-t border-gray-300"></div>
         </div>
+        <app-resource-box [resourceList]="noteResources">
+        </app-resource-box>
       </div>
 
       <!-- Videos Section -->
-      <div *ngIf="videoResources.length > 0" class="mb-12">
+      <div *ngIf="videoResources.length > 0" class="mb-12" id="videos">
         <div class="flex items-center my-6">
           <div class="flex-grow border-t border-gray-300"></div>
           <span class="mx-4 text-xl font-semibold text-gray-800">Videos</span>
           <div class="flex-grow border-t border-gray-300"></div>
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div *ngFor="let resource of videoResources"
-              class="flex flex-col justify-between bg-white rounded-lg shadow-md p-6 w-full">
-            <div class="flex flex-col gap-1">
-              <div class="flex justify-between items-center mb-4">
-                <span class="text-sm font-medium text-blue-600">{{ resource.type }}</span>
-                <span class="text-sm font-medium px-2 py-1 rounded bg-gray-200">
-                  {{ resource.requiredSubLevel }}
-                </span>
-              </div>
-              <h3 class="text-xl font-semibold text-gray-800 mb-2">{{ resource.title }}</h3>
-              <div class="h-28 overflow-y-auto mb-3">
-                <p class="text-gray-600">{{ resource.description }}</p>
-              </div>
-            </div>
-            <button
-              (click)="navigateToDetail(resource)"
-              class="w-full text-white py-2 rounded-lg transition-colors cursor-pointer"
-              [ngClass]="{'bg-secondary hover:bg-btnSecHover': isEqualOrHigherTier(resource.requiredSubLevel),
-                'bg-primary hover:bg-btnHover': !isEqualOrHigherTier(resource.requiredSubLevel)    
-              }"
-            >
-              <span *ngIf="resource.requiredSubLevel === 'NONE' || isEqualOrHigherTier(resource.requiredSubLevel)">
-                View
-              </span>
-              <span *ngIf="resource.requiredSubLevel !== 'NONE' && !isEqualOrHigherTier(resource.requiredSubLevel)">
-                Preview
-              </span>
-            </button>
-          </div>
-        </div>
+        <app-resource-box [resourceList]="videoResources">
+        </app-resource-box>
       </div>
       <!-- Books Section -->
-      <div *ngIf="bookResources.length > 0" class="mb-12">
+      <div *ngIf="bookResources.length > 0" class="mb-12" id="books">
         <div class="flex items-center my-6">
           <div class="flex-grow border-t border-gray-300"></div>
           <span class="mx-4 text-xl font-semibold text-gray-800">Books</span>
           <div class="flex-grow border-t border-gray-300"></div>
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div *ngFor="let resource of bookResources"
-              class="flex flex-col justify-between bg-white rounded-lg shadow-md p-6 w-full">
-            <div class="flex flex-col gap-1">
-              <div class="flex justify-between items-center mb-4">
-                <span class="text-sm font-medium text-blue-600">{{ resource.type }}</span>
-                <span class="text-sm font-medium px-2 py-1 rounded bg-gray-200">
-                  {{ resource.requiredSubLevel }}
-                </span>
-              </div>
-              <h3 class="text-xl font-semibold text-gray-800 mb-2">{{ resource.title }}</h3>
-              <div class="h-28 overflow-y-auto mb-3">
-                <p class="text-gray-600">{{ resource.description }}</p>
-              </div>
-            </div>
-            <button
-              (click)="navigateToDetail(resource)"
-              class="w-full text-white py-2 rounded-lg transition-colors cursor-pointer"
-              [ngClass]="{'bg-secondary hover:bg-btnSecHover': isEqualOrHigherTier(resource.requiredSubLevel),
-                'bg-primary hover:bg-btnHover': !isEqualOrHigherTier(resource.requiredSubLevel)
-              }"
-            >
-              <span *ngIf="resource.requiredSubLevel === 'NONE' || isEqualOrHigherTier(resource.requiredSubLevel)">
-                View
-              </span>
-              <span *ngIf="resource.requiredSubLevel !== 'NONE' && !isEqualOrHigherTier(resource.requiredSubLevel)">
-                Preview
-              </span>
-            </button>
-          </div>
-        </div>
+        <app-resource-box [resourceList]="bookResources">
+        </app-resource-box>
       </div>
     </div>
 </section>

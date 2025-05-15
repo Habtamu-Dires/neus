@@ -16,7 +16,9 @@ import java.util.UUID;
 @Getter
 @Builder
 @Entity
-@Table(name = "question")
+@Table(name = "question",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"questionNumber", "exam_id"})
+)
 public class Question {
 
     @Id
@@ -25,7 +27,6 @@ public class Question {
     @Column(unique = true)
     private UUID externalId;
 
-    @Column(unique = true)
     private int questionNumber;
 
     @JdbcTypeCode(SqlTypes.JSON)
@@ -37,7 +38,14 @@ public class Question {
     private String explanation;
     private List<String> imageUrls = new ArrayList<>();
 
+    @Enumerated(EnumType.STRING)
+    private BlockNumber blockNumber;
+
+    @Enumerated(EnumType.STRING)
+    private Department department;
+
     @ManyToOne
     @JoinColumn(name = "exam_id")
     private Exam exam;
+
 }

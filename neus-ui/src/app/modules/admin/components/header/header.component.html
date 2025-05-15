@@ -2,14 +2,12 @@
     <section class="w-full md:w-4/5 flex flex-col gap-4 md:flex-row">
         <div class="flex gap-4 items-center">
             <!--toggle side bar-->
-            <svg *ngIf="onShowDrawer" (click)="toggleShowDrawer()" 
+            <svg *ngIf="adminUxService.showDrawer()" (click)="toggleShowDrawer()" 
                 class="cursor-pointer"
                 xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 14 14"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="M13.5 2H.5m13 5H.5m13 5H.5"/>
             </svg>
             <!--Create new button-->
-            @if (componentName.toLocaleLowerCase() !== 'user' 
-                && componentName.toLocaleLowerCase() !== 'subscription' 
-                && componentName.toLocaleLowerCase() !== 'payment') {
+            @if (hasCreateNewButton) {
                 <button class="flex gap-2 px-3 py-2 bg-primary rounded-lg bg-grn items-center text-white 
                                 font-medium cursor-pointer hover:bg-btnHover"
                     (click)="onCreateNew()">
@@ -39,7 +37,7 @@
     <section class="w-full md:w-1/2 lg:w-3/6 flex gap-1 justify-end items-center  md:order-last">
         <div class="relative w-full">
             <input  type="text" #searchInput  placeholder="serach"  
-                class="w-full p-2 rounded-lg border-2 border-primary bg-white outline-none" 
+                class="w-full p-2 rounded-lg border-1 border-primary bg-white outline-none" 
                 [formControl]="searchControl"
             />
             <button (click)="clearSearchArea()" 

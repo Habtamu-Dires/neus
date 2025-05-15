@@ -18,6 +18,8 @@ import { GetAllUsers$Params } from '../fn/users/get-all-users';
 import { getPageOfUsers } from '../fn/users/get-page-of-users';
 import { GetPageOfUsers$Params } from '../fn/users/get-page-of-users';
 import { PageResponseUserDto } from '../models/page-response-user-dto';
+import { saveUser } from '../fn/users/save-user';
+import { SaveUser$Params } from '../fn/users/save-user';
 import { toggleUserStatus } from '../fn/users/toggle-user-status';
 import { ToggleUserStatus$Params } from '../fn/users/toggle-user-status';
 import { UserDto } from '../models/user-dto';
@@ -79,6 +81,35 @@ export class UsersService extends BaseService {
   deleteUser(params: DeleteUser$Params, context?: HttpContext): Observable<void> {
     return this.deleteUser$Response(params, context).pipe(
       map((r: StrictHttpResponse<void>): void => r.body)
+    );
+  }
+
+  /** Path part for operation `saveUser()` */
+  static readonly SaveUserPath = '/users/save/{email}';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `saveUser()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  saveUser$Response(params: SaveUser$Params, context?: HttpContext): Observable<StrictHttpResponse<{
+}>> {
+    return saveUser(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `saveUser$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  saveUser(params: SaveUser$Params, context?: HttpContext): Observable<{
+}> {
+    return this.saveUser$Response(params, context).pipe(
+      map((r: StrictHttpResponse<{
+}>): {
+} => r.body)
     );
   }
 

@@ -3,6 +3,7 @@ package com.neus;
 import com.neus.common.SubscriptionLevel;
 import com.neus.subscription_plan.SubscriptionPlan;
 import com.neus.subscription_plan.SubscriptionPlanRepository;
+import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -10,6 +11,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -19,6 +21,7 @@ import java.util.UUID;
 @EnableConfigurationProperties
 @EnableAsync
 @EnableScheduling
+@EnableTransactionManagement
 public class NeusApiApplication {
 
 	public static void main(String[] args) {
@@ -38,6 +41,7 @@ public class NeusApiApplication {
 							.level(SubscriptionLevel.BASIC)
 							.price(BigDecimal.valueOf(350L))
 							.benefits(List.of("things"))
+							.durationInMonth(12)
 							.enabled(true)
 							.build()
 				);
@@ -50,6 +54,7 @@ public class NeusApiApplication {
 							.level(SubscriptionLevel.ADVANCED)
 							.price(BigDecimal.valueOf(500L))
 							.benefits(List.of("things"))
+							.durationInMonth(12)
 							.enabled(true)
 							.build()
 				);
@@ -62,6 +67,7 @@ public class NeusApiApplication {
 							.level(SubscriptionLevel.PREMIUM)
 							.price(BigDecimal.valueOf(1000L))
 							.benefits(List.of("things"))
+							.durationInMonth(12)
 							.enabled(true)
 							.build()
 				);

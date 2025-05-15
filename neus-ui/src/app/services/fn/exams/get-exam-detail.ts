@@ -12,12 +12,16 @@ import { ExamDetailDto } from '../../models/exam-detail-dto';
 
 export interface GetExamDetail$Params {
   'exam-id': string;
+  department?: string;
+  block?: string;
 }
 
 export function getExamDetail(http: HttpClient, rootUrl: string, params: GetExamDetail$Params, context?: HttpContext): Observable<StrictHttpResponse<ExamDetailDto>> {
   const rb = new RequestBuilder(rootUrl, getExamDetail.PATH, 'get');
   if (params) {
     rb.path('exam-id', params['exam-id'], {});
+    rb.query('department', params.department, {});
+    rb.query('block', params.block, {});
   }
 
   return http.request(

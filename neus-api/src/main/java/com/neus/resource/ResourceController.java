@@ -34,8 +34,17 @@ public class ResourceController {
 
     // get list of resources
     @GetMapping("/list")
-    public ResponseEntity<List<ListOfResourcesDto>> getListOfResources(){
+    public ResponseEntity<List<ResourceInfoDto>> getListOfResources(){
         var  res = resourceService.getListOfResources();
+        return ResponseEntity.ok(res);
+    }
+
+    // get list of collections
+    @GetMapping("/collection-list/{lecture-id}")
+    public ResponseEntity<List<ResourceInfoDto>> getListOfCollections(
+            @PathVariable("lecture-id") String lectureId
+    ){
+        var res = resourceService.getListOfCollections(lectureId);
         return ResponseEntity.ok(res);
     }
 
@@ -70,10 +79,9 @@ public class ResourceController {
     // get resource collection
     @GetMapping("/collection/{resource-id}")
     public ResponseEntity<ResourceCollectionDto> getResourceCollection(
-            @PathVariable("resource-id") String resourceId,
-            Authentication authentication
+            @PathVariable("resource-id") String resourceId
     ){
-        ResourceCollectionDto res = resourceService.getResourceCollection(resourceId, authentication);
+        ResourceCollectionDto res = resourceService.getResourceCollection(resourceId);
         return ResponseEntity.ok(res);
     }
 

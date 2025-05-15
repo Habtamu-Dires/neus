@@ -1,5 +1,5 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
-import { ExamDetailDto, QuestionDto, UpdateUserExamDto, UserExamDto } from '../../../../services/models';
+import { ExamDetailDto, QuestionDetailDto, QuestionDto, UpdateUserExamDto, UserExamDto } from '../../../../services/models';
 import { ExamsService, UserExamService } from '../../../../services/services';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
@@ -23,7 +23,7 @@ export class ExamDetailComponent {
   examId: string | undefined;
   title:string='';
   examDto:ExamDetailDto | undefined;
-  questionList: QuestionDto[] = []; 
+  questionList: QuestionDetailDto[] = []; 
   currentQuestionIndex: number = 0;
   showExplanation:boolean = false;
   mode: 'STUDY' | 'TEST' = 'STUDY'; // Default to STUDY mode
@@ -36,11 +36,9 @@ export class ExamDetailComponent {
   isLoading:boolean = true;
   isSubmitted:boolean = false;
   hasFullAccess:boolean = false;
-  // saved answers
-  userExamData: UserExamDto | undefined;
+  userExamData: UserExamDto | undefined;  // saved answers
   showQuestionsDrawer:boolean = false;
-
-
+  subscriptionLevel:string | null = null;
 
   @ViewChild('questionContainer') questionContainer!: ElementRef;
 
@@ -61,10 +59,18 @@ export class ExamDetailComponent {
         this.fetchExamDetail(this.examId);
       }
     });
+    // Check login status
+     const isLoggedIn = this.keyclaokService.isAuthenticated;
+    if (isLoggedIn) {
+      const subscriptionType = this.keyclaokService.subscriptionLevel as string;
+      if(subscriptionType){
+        this.subscriptionLevel = subscriptionType.replace('_subscriber','').toUpperCase();
+      }
+    }
   }
 
   // current question
-  get currentQuestion():  QuestionDto{
+  get currentQuestion():  QuestionDetailDto{
     return this.questionList[this.currentQuestionIndex];
   }
   
@@ -82,8 +88,9 @@ export class ExamDetailComponent {
         this.examDto = res;
         this.questionList = res.questions as QuestionDto[];
         this.examDuration = res.duration as number;
-        this.checkFullAccess(res.requiredSubLevel as string);
-        if(this.hasFullAccess){
+        // check access status
+        this.hasFullAccess = this.isEqualOrHigherTier(res.requiredSubLevel as string);
+        if(this.hasFullAccess && this.keyclaokService.isAuthenticated){
           this.fetchUserAnswers();
         } else {
           this.isLoading = false;
@@ -97,25 +104,28 @@ export class ExamDetailComponent {
   }
 
   // fetch user answers
-  fetchUserAnswers(){
+  fetchUserAnswers(changeMode:boolean = false){
     this.userExamService.getUserAnswers({
       'exam-id': this.examId as string
     }).subscribe({
-      'next':(res:UserExamDto)=>{
+      next:(res:UserExamDto)=>{
         this.userExamData = res;
         // set loading false
         this.isLoading = false;
+        if(changeMode){
+          this.setMode(this.mode);
+        }
       },
-      'error':(err)=>{
-        console.log(err);
-        this.toastrService.error('Someting went wrong', 'Error');
+      error:(err)=>{
+        console.log("no saved prgress")
+        // this.toastrService.error('Someting went wrong', 'Error');
         this.isLoading = false;
       }
-    })
+    });
   }
 
   // update user answer 
-  saveUserAnswers(){
+  saveUserAnswers(status: 'IN_PROGRESS' | 'COMPLETED'){
     const request:UpdateUserExamDto = {
       examId: this.examId as string,
       mode: this.mode,
@@ -127,7 +137,8 @@ export class ExamDetailComponent {
         questionId,
         isCorrect
       })),
-      timeLeftInMinutes: this.timer / 60,
+      timeLeftInMinutes: this.mode === 'TEST'? this.timer / 60 : undefined,
+      status:status
     };
 
     // save user answers
@@ -147,46 +158,27 @@ export class ExamDetailComponent {
     
   }
 
-  // reset user answers
-  resetUserAnswers(){
-    console.log("resting the mode ----> " + this.mode)
-    this.userExamService.restUserAnswers({
-      'exam-id': this.examId as string,
-      'user-id': this.keyclaokService.profile?.id as string,
-      'mode': this.mode as 'STUDY' | 'TEST'
-    }).subscribe({
-      next:()=>{
-        console.log("success fullly reset");
-      },
-      error:(err)=>{
-        console.log(err);
-        this.toastrService.error('Someting went wrong', 'Error');
-      } 
-    });
-  }
-
   // set exam mode
   setMode(mode: 'STUDY' | 'TEST') {
+    // set mode
     this.mode = mode;
-    this.userAnswers.clear();
-    this.correctAnswers.clear();
 
     if(this.mode === 'TEST' && this.userExamData?.testModeUserAnswers 
-      && this.userExamData.testModeUserAnswers?.length > 0)
+      && Object.entries(this.userExamData.testModeUserAnswers).length > 0)
     {
       this.showResumeExamDialog();
     } else if(this.mode === 'STUDY' && this.userExamData?.studyModeUserAnswers 
-      && this.userExamData.studyModeUserAnswers?.length > 0)
+      && Object.entries(this.userExamData.studyModeUserAnswers).length > 0)
     {
       this.showResumeExamDialog();
-    } else {
-      if (mode === 'TEST' && this.examDuration > 0) {
-        clearInterval
+    } else if (mode === 'TEST' && this.examDuration > 0) {
+        clearInterval(this.interval);
         this.startTimer();
-      }
     }
 
-    // start exam
+    // clear and start exam
+    this.userAnswers.clear();
+    this.correctAnswers.clear();
     this.currentQuestionIndex = 0;
     this.showExplanation = false;
     this.examStarted = true;
@@ -195,9 +187,8 @@ export class ExamDetailComponent {
 
   // resume dialog
   showResumeExamDialog() {
-    console.log("hello show resume dialog")
     const dialog = this.matDialog.open(ResumeExamDialogComponent,{
-      width: '400px',
+      width: '500px',
       data:{
         answeredCount: this.mode === 'STUDY' 
           ? this.userExamData?.studyModeUserAnswers?.length
@@ -205,13 +196,14 @@ export class ExamDetailComponent {
         total: this.questionList.length,
         mode: this.mode,
         lastUpdatedDate: this.userExamData?.lastModifiedDate,
-        timeLeft: this.userExamData?.timeLeftInMinutes
+        timeLeft: this.userExamData?.timeLeftInMinutes,
+        score:this.getOldScore() as number,
+        buttonName: this.getOldScore() === null ? 'Resume' : 'Review'
       }
     });
     dialog.afterClosed().subscribe((result) => {
       if(result){
         if(this.mode === 'TEST'){
-
           this.userExamData?.testModeUserAnswers?.forEach((item) => { 
             this.userAnswers.set(item.questionId as string, item.choiceId as string);
           });
@@ -219,12 +211,14 @@ export class ExamDetailComponent {
             this.correctAnswers.set(item.questionId as string, item.isCorrect as boolean);
           });
 
-          // set time left
-          this.examDuration = this.userExamData?.timeLeftInMinutes as number;
-
-          //set time
-          clearInterval
-          this.startTimer();
+          if(this.getOldScore() !== null){
+            this.isSubmitted = true;
+          } else {
+            // set time left
+            this.examDuration = this.userExamData?.timeLeftInMinutes as number;
+            //set time
+            this.startTimer();
+          }
 
         } else if (this.mode === 'STUDY') {
           this.userExamData?.studyModeUserAnswers?.forEach((item) => {
@@ -233,12 +227,35 @@ export class ExamDetailComponent {
           this.userExamData?.studyModeCorrectAnswers?.forEach((item) => { 
             this.correctAnswers.set(item.questionId as string, item.isCorrect as boolean);
           });
+          if(this.getOldScore() !== null){
+            this.isSubmitted = true;
+          }
         }
-      } else {
-        // reset user answers
-        this.resetUserAnswers();
+      } else {  // retake exam
+        this.userAnswers.clear();
+        this.correctAnswers.clear();
+        if(this.mode === 'TEST'){
+          this.examDuration = this.examDto?.duration as number;
+          this.startTimer();
+        }
       }
     });
+  }
+
+  // calculate score for previous finished exam
+  getOldScore():number | null{
+    if(this.mode === 'TEST' && 
+      this.userExamData?.testModeCorrectAnswers?.length === this.questionList.length
+    ){
+      const score = this.userExamData?.testModeCorrectAnswers.filter(ca => ca.isCorrect).length;
+      return score;
+    } else if(this.mode === 'STUDY' && 
+      this.userExamData?.studyModeCorrectAnswers?.length === this.questionList.length
+    ){
+      const socre = this.userExamData.studyModeCorrectAnswers.filter(ca => ca.isCorrect).length;
+      return socre;
+    }
+    return null;
   }
 
 
@@ -250,9 +267,14 @@ export class ExamDetailComponent {
         this.timer--;
       } else {
         clearInterval(this.interval);
-        this.submitExam();
+        let score = 0;
+        this.correctAnswers.forEach(isCorrect => {
+          if (isCorrect) score++;
+        });
+        this.showResults(score);
+        this.isSubmitted = true;
       }
-    }, 1000);
+    }, 1000); // every second
   }
 
   // format time
@@ -267,11 +289,11 @@ export class ExamDetailComponent {
     // if (this.userAnswers.has(this.currentQuestionIndex)) return; // Prevent changing answers
     this.userAnswers.set(this.currentQuestion.id as string, choiceId);
 
-    if (this.mode === 'STUDY') {
+    // if (this.mode === 'STUDY') {
       const correctChoice = this.currentQuestion.choices?.find(c => c.isCorrect);
       const isCorrect = correctChoice?.id === choiceId;
       this.correctAnswers.set(this.currentQuestion.id as string, isCorrect);
-    }
+    // }
   }
 
   // select question
@@ -308,7 +330,7 @@ export class ExamDetailComponent {
       const dialog = this.matDialog.open(ConfirmDialogComponent,{
         width: '400px',
         data:{
-          message:'you wants to the mode to submit?',
+          message:'you wants to submit the exam?',
           buttonName: 'submit',
           isWarning: false
         }
@@ -317,27 +339,24 @@ export class ExamDetailComponent {
       if(result){
         clearInterval(this.interval);
         let score = 0;
-        this.questionList.forEach((question, index) => {
-          const userAnswer = this.userAnswers.get(question.id as string);
-          const correctChoice = question.choices?.find(c => c.isCorrect);
-          const isCorrect = userAnswer === correctChoice?.id;
-          this.correctAnswers.set(question.id as string, isCorrect);
+        this.correctAnswers.forEach(isCorrect => {
           if (isCorrect) score++;
         });
         this.showResults(score);
         this.isSubmitted = true;
-        // save user answers
-        if(this.hasFullAccess){
-          this.saveUserAnswers();
+        // save user answers if user answers is greater than 3/4 of the questoin
+        if(this.hasFullAccess && this.userAnswers.size >= (this.questionList.length * 3/4)){
+          this.saveUserAnswers('COMPLETED');
         }
       }
       });
-    } else if (this.mode === 'STUDY' && this.userAnswers.size === this.questionList.length) {
+    } else if (this.mode === 'STUDY') { // study mode
       let score = 0;
       this.correctAnswers.forEach(isCorrect => {
         if (isCorrect) score++;
       });
       this.showResults(score);
+      this.isSubmitted = true;
     }
   }
 
@@ -359,7 +378,7 @@ export class ExamDetailComponent {
       width: '400px',  
       data:{
         message:'you wants to retake the exam?',
-        buttonName: 'retake',
+        buttonName: 'Retake',
         isWarning: false
       }
     });
@@ -367,8 +386,8 @@ export class ExamDetailComponent {
       if(result){
         this.userAnswers.clear();
         this.correctAnswers.clear();
+        this.isSubmitted = false;
         if(this.mode === 'TEST'){
-          this.isSubmitted = false;
           clearInterval(this.interval);
           this.examDuration = this.examDto?.duration as number;
           this.startTimer();
@@ -376,90 +395,104 @@ export class ExamDetailComponent {
         this.currentQuestionIndex = 0;
         this.showExplanation = false;
         this.examStarted = true;
-        // reset user answers
-        if(this.hasFullAccess){
-          this.resetUserAnswers();
-        }
       }
     }
     ); 
   }
 
   // on mode change
-  onModeChange(mode:string){
+  onModeChange() {
+    // const mode = event.target.value;
     const dialog = this.matDialog.open(ConfirmDialogComponent,{
         width: '400px',
         data:{
-          message:'you wants to the mode to ' + mode,
+          message:`you wants change to ${this.mode} mode`,
           buttonName: 'change',
           isWarning: false
         }
     });
     dialog.afterClosed().subscribe((result) => {
       if(result){
+        // save user answer if all question answered and the mode was test mode
+        if(this.mode === 'STUDY'  // that is the previous mode was test mode
+          && this.hasFullAccess 
+          && this.userAnswers.size === this.questionList.length 
+          && !this.isSubmitted)
+        {
+            this.saveUserAnswers('COMPLETED');
+        }
+        // clear and change mode
         this.examStarted = false;
         this.isSubmitted = false;
         clearInterval(this.interval);
         this.isLoading = true;
-        // if(this.userAnswers.size > 0){
-        //   this.saveUserAnswers(this.mode === 'STUDY' ? 'TEST' : 'STUDY');
-        // }
-        this.fetchUserAnswers();
-        if(this.isLoading){
-          this.setMode(mode as 'STUDY' | 'TEST');
+        if(this.hasFullAccess){
+          this.fetchUserAnswers(true);
+        } else {
+          this.isLoading = false;
+          this.setMode(this.mode);
         }
+      } else {
+        // back to previous mode
+        this.mode = this.mode === 'STUDY' ? 'TEST' : 'STUDY';
       }
     });
   }
 
   // save progess
-  saveProgess(){
-    if(this.hasFullAccess){
-      if(this.userAnswers.size > 0){
-        this.saveUserAnswers();
-      }
+  saveAndExit(){
+    if(this.hasFullAccess && this.userAnswers.size > 0){
+      this.saveUserAnswers('IN_PROGRESS');
+      clearInterval(this.interval);
+      this.router.navigate(['user'], {queryParams: {'from-resource-detail': true}});
+
     }
   }
 
   // on close
   close(){
-    this.router.navigate(['user']);
+    if(!this.examStarted || this.isSubmitted || this.userAnswers.size === 0){
+      clearInterval(this.interval);
+      this.router.navigate(['user'], {queryParams: {'from-resource-detail': true}});
+      return;
+    }
+    // if exam started ask confirmation
+    const dialog = this.matDialog.open(ConfirmDialogComponent,{
+      width: '400px',
+      data:{
+        message:'you want exit this exam?',
+        buttonName: 'Exit',
+        isWarning: true
+      }
+    });
+    dialog.afterClosed().subscribe(result => {
+      if(result){
+        // if it has full access and answers all questions and in test mode
+        if(this.hasFullAccess
+          && this.mode === 'TEST' 
+          && this.userAnswers.size === this.questionList.length 
+          && !this.isSubmitted){
+          this.saveUserAnswers('COMPLETED');
+        }
+        clearInterval(this.interval);
+        this.router.navigate(['user'], {queryParams: {'from-resource-detail': true}});
+      }
+    })
   }
 
-  // scroll top
+  // scroll top on new question
   scrollToTop() {
     if (this.questionContainer) {
       this.questionContainer.nativeElement.scrollTop = 0;
     }
   }
 
-  // check if user has full access
-  checkFullAccess(requiredSubLevl:string){
-    if(this.keyclaokService.isAuthenticated){
-      const subscriptionLevel = this.keyclaokService.subscriptionLevel as string;
-      if(requiredSubLevl === 'NONE'){
-        this.hasFullAccess = true;
-      }
-      else if(subscriptionLevel && this.mapToRequiredSubLevel(subscriptionLevel) === requiredSubLevl){
-        this.hasFullAccess = true;
-      }
-      else {
-        this.hasFullAccess = false;
-      }
-    }
-  }
-
-  // map subscription level
-  mapToRequiredSubLevel(subscriptionLevel:string){
-    if(subscriptionLevel === 'basic_subscriber'){
-      return 'BASIC';
-    } else if(subscriptionLevel === 'advanced_subscriber'){
-      return 'ADVANCED';
-    } else if(subscriptionLevel === 'premium_subscriber'){
-      return 'PREMIUM';
-    } else {
-      return 'NONE';
-    }
+  // compare subscription level
+  isEqualOrHigherTier(requiredSubLevel: any): boolean {
+    const tiers = ['BASIC', 'ADVANCED', 'PREMIUM'];
+    const userIndex = this.subscriptionLevel ? tiers.indexOf(this.subscriptionLevel) : -1;
+    const resourceIndex = tiers.indexOf(requiredSubLevel);
+    return userIndex >= resourceIndex;
   }
 
   // toggle question lists on mobile view

@@ -3,6 +3,7 @@
       <app-header
         componentName="User"
         (onSearch)="onSearch($event)"
+        [hasCreateNewButton]=false
       >
       </app-header>
     </div>
@@ -29,8 +30,8 @@
                 <tr *ngFor="let user of userList" class="border-b border-gray-300 hover:bg-gray-100">                          
                     <td class="table-data">{{ user.email }}</td>
                     <td class="table-data">{{ user.subscriptionLevel ? user.subscriptionLevel : '--' }}</td>
-                    <td class="table-data">{{ user.startDate ? user.startDate : '--' }}</td>
-                    <td class="table-data">{{ user.endDate ? user.endDate: '--' }}</td>
+                    <td class="table-data">{{ user.startDate ? formatDate(user.startDate) : '--' }}</td>
+                    <td class="table-data">{{ user.endDate ? formatDate(user.endDate): '--' }}</td>
                     <td class="table-data">
                         <span>{{user.enabled ? 'Yes' : 'NO'}}</span>
                     </td>

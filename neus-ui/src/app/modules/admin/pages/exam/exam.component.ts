@@ -82,8 +82,13 @@ export class ExamComponent implements OnInit{
   }
 
   // on view question
-  viewQuestions(examId:any, title:any){
-    this.router.navigate(['admin','questions', examId, title])
+  viewQuestions(exam:ExamDto){
+    this.router.navigate(['admin','questions'],
+      {queryParams:{
+        'examId':exam.id,
+        'title': exam.title,
+        'examType': exam.examType
+      }})
   }
 
   // on search 

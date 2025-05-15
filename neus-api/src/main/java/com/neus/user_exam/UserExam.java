@@ -9,7 +9,6 @@ import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -44,11 +43,15 @@ public class UserExam {
 
     private LocalDateTime lastModifiedDate;
     private Integer timeLeftInMinutes;
+    @Enumerated(EnumType.STRING)
+    private UserExamStatus status;
 
     @ManyToOne
+    @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne
+    @JoinColumn(name = "exam_id")
     private Exam exam;
 
 }

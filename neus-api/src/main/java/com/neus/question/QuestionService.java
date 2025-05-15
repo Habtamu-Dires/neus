@@ -2,14 +2,18 @@ package com.neus.question;
 
 import com.neus.common.TextDto;
 import com.neus.exam.Exam;
-import com.neus.exam.ExamService;
+import com.neus.exam.ExamRepository;
+import com.neus.exam.ExamType;
 import com.neus.exceptions.ResourceNotFoundException;
 import com.neus.file.FileStorageService;
+import com.neus.question.dto.CreateChoiceDto;
 import com.neus.question.dto.CreateQuestionDto;
 import com.neus.question.dto.QuestionDto;
 import com.neus.question.dto.QuestionDtoMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,43 +28,87 @@ import java.util.UUID;
 public class QuestionService {
 
     private final QuestionRepository questionRepository;
-    private final ExamService examService;
+    private final ExamRepository examRepository;
     private final FileStorageService fileStorageService;
     private final QuestionDtoMapper questionDtoMapper;
 
+    // create question
     @PreAuthorize("hasRole('ADMIN')")
     public void createQuestion(CreateQuestionDto dto){
-        Exam exam = examService.findByExternalId(dto.examId());
+        Exam exam = this.findExamByExternalId(dto.examId());
 
         questionRepository.save(
               Question.builder()
-                      .externalId(UUID.randomUUID())
-                      .exam(exam)
-                      .questionNumber(dto.questionNumber())
-                      .questionText(dto.questionText())
-                      .choice(addChoiceId(dto.choices()))
-                      .explanation(dto.explanation())
-                      .imageUrls(dto.imgUrls())
-                      .build()
+                  .externalId(UUID.randomUUID())
+                  .exam(exam)
+                  .questionNumber(dto.questionNumber())
+                  .questionText(dto.questionText())
+                  .choice(addChoiceId(dto.choices()))
+                  .explanation(dto.explanation())
+                  .department(dto.department())
+                  .blockNumber(dto.blockNumber())
+                  .imageUrls(dto.imgUrls())
+                  .build()
             );
     }
 
+    //find exam by external id
+    private Exam findExamByExternalId(String externalId){
+        return examRepository.findExternalId(UUID.fromString(externalId))
+                .orElseThrow(()-> new ResourceNotFoundException("Exam not found"));
+    }
+
     // add choice id
-    private List<Choice> addChoiceId(List<Choice> choiceList){
+    private List<Choice> addChoiceId(List<CreateChoiceDto> choiceList){
         return choiceList.stream()
-                .map(c ->
-                    Choice.builder()
-                        .id(UUID.randomUUID())
-                        .text(c.text())
-                        .isCorrect(c.isCorrect())
-                        .build()
-                ).toList();
+                .map(c -> {
+                   if(isValidUUID(c.id())){
+                       return  Choice.builder()
+                               .id(UUID.fromString(c.id()))
+                               .text(c.text())
+                               .isCorrect(c.isCorrect())
+                               .build();
+                   }   else {
+                       return  Choice.builder()
+                               .id(UUID.randomUUID())
+                               .text(c.text())
+                               .isCorrect(c.isCorrect())
+                               .build();
+                   }
+                })
+                .toList();
+    }
+
+    //  uuid validator
+    private boolean isValidUUID(String uuid){
+        try {
+            UUID.fromString(uuid);
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    // update question
+    @PreAuthorize("hasRole('ADMIN')")
+    public void updateQuestion(@Valid CreateQuestionDto dto) {
+        Question question = this.findByExternalId(dto.id());
+
+        question.setQuestionNumber(dto.questionNumber());
+        question.setQuestionText(dto.questionText());
+        question.setChoice(addChoiceId(dto.choices()));
+        question.setExplanation(dto.explanation());
+        question.setDepartment(dto.department());
+        question.setBlockNumber(dto.blockNumber());
+        question.setImageUrls(dto.imgUrls());
+
+        questionRepository.save(question);
     }
 
     // get questions by exam id
     @PreAuthorize("hasRole('ADMIN')")
     public List<QuestionDto> getQuestionByExamId(String examId) {
-        Exam exam = examService.findByExternalId(examId);
+        Exam exam = this.findExamByExternalId(examId);
         return questionRepository.findByExamId(exam.getId())
                 .stream()
                 .sorted(Comparator.comparing(Question::getQuestionNumber))
@@ -73,20 +121,6 @@ public class QuestionService {
     public Question findByExternalId(String externalId){
         return questionRepository.findByExternalId(UUID.fromString(externalId))
                 .orElseThrow(() -> new ResourceNotFoundException("Question not found"));
-    }
-
-    // update question
-    @PreAuthorize("hasRole('ADMIN')")
-    public void updateQuestion(@Valid CreateQuestionDto dto) {
-        Question question = this.findByExternalId(dto.id());
-
-        question.setQuestionNumber(dto.questionNumber());
-        question.setQuestionText(dto.questionText());
-        question.setChoice(dto.choices());
-        question.setExplanation(dto.explanation());
-        question.setImageUrls(dto.imgUrls());
-
-        questionRepository.save(question);
     }
 
     // delete question
@@ -110,8 +144,64 @@ public class QuestionService {
         return new TextDto(url);
     }
 
+    // delete image
     @PreAuthorize("hasRole('ADMIN')")
     public void deleteImage(String url) {
         fileStorageService.deleteFile(url);
+    }
+
+    // get departments by exam type
+    public List<Department[]> getDepartmentsByExamType(ExamType examType, int year) {
+        return questionRepository.findDepartmentsByExamTypeAndYear(examType, year);
+    }
+
+    // get question by exam id
+    public List<Question> getQuestionsByExamId(
+            Long examId, String department, String block
+    ){
+        Department dept = null;
+        BlockNumber blockNumber = null;
+        try{
+            blockNumber = BlockNumber.valueOf(block);
+        } catch (Exception _){} // ignored
+        try {
+            dept = Department.valueOf(department);
+        }catch (Exception _){} // ignored
+
+        var questionSpec = QuestionSpecification.getQuestionByExamId(examId, dept, blockNumber);
+        return questionRepository.findAll(questionSpec);
+    }
+
+    // get question by exam id
+    public List<Question> getPreviewQuestionsByExamId(
+            Long examId, String department, String block
+    ){
+        Department dept = null;
+        BlockNumber blockNumber = null;
+        try{
+            blockNumber = BlockNumber.valueOf(block);
+        } catch (Exception _){} // ignored
+        try {
+            dept = Department.valueOf(department);
+        }catch (Exception _){} // ignored
+
+        var questionSpec = QuestionSpecification.getQuestionByExamId(examId, dept, blockNumber);
+
+        Pageable pageable = PageRequest.of(0,1);
+
+         return questionRepository.findAll(questionSpec,pageable)
+                 .stream()
+                 .toList();
+    }
+
+    // get Block number exam type, year and department
+    public List<BlockNumber> getBlocksByExamTypeAndYearAndDepartment(
+            ExamType examType, int year, String department
+    ) {
+        Department dept = null;
+        try{
+            dept = Department.valueOf(department);
+        }catch (Exception _){}; // ignore
+        return questionRepository.findBlocksByExamTypeAndYearAndDepartment(examType, year, dept);
     }
 }

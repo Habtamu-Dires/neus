@@ -6,12 +6,12 @@ import com.neus.keycloak.KeycloakService;
 import com.neus.keycloak.KeycloakUserRequest;
 import com.neus.user.dto.UserDto;
 import com.neus.user.dto.UserDtoMapper;
-import com.neus.user.dto.registrationDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,42 +26,34 @@ public class UserService {
     private final KeycloakService keycloakService;
 
     @Transactional
-    public void createUser(registrationDto dto) {
-        String keyCloakUserId = null;
-        try{
-            KeycloakUserRequest keycloakUserRequest = KeycloakUserRequest.builder()
-                    .username(dto.username())
-                    .password(dto.password())
-                    .email(dto.email())
-                    .enabled(true)
-                    .build();
-            //save to keycloak
-            keyCloakUserId = keycloakService.createUser(keycloakUserRequest);
+    public void saveUser(String email){
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByExternalId(userId)
+                .orElse(null);
 
-            User user = User.builder()
-                    .externalId(keyCloakUserId)
-                    .username(dto.username())
-                    .email(dto.email())
-                    .enabled(true)
-                    .registrationDate(LocalDateTime.now())
-                    .build();
-
-            // save to database
-            userRepository.save(user);
-            userRepository.flush();
-
-        } catch (Exception e){
-            // RollBack in keycloak if database operation failed
-            if(keyCloakUserId != null){
-                try{
-                    keycloakService.deleteUser(keyCloakUserId);
-                } catch (Exception ex){
-                    throw new RuntimeException("Failed to rollback Keycloak user creation after database failure", ex);
+        User savedUser = null;
+        if(user == null){
+            try {
+                // save user to database
+                savedUser = userRepository.save(
+                    User.builder()
+                        .externalId(userId)
+                        .email(email)
+                        .enabled(true)
+                        .registrationDate(LocalDateTime.now())
+                        .build()
+                );
+                // update keyclaok synchronized flag
+                keycloakService.updateSynchronizedFlag(userId, email);
+            } catch (Exception e){
+                if(savedUser != null){
+                    userRepository.delete(savedUser);
                 }
+                throw new RuntimeException("Error "
+                        + e.getMessage());
             }
-            throw new RuntimeException("Error "
-                    + e.getMessage());
         }
+
     }
 
     // get all users
@@ -69,8 +61,7 @@ public class UserService {
     public List<UserDto> getAllUsers() {
         return userRepository.findAll().stream()
                 .map(u -> UserDto.builder()
-                        .username(u.getUsername())
-                        .email(u.getUsername())
+                        .email(u.getEmail())
                         .build())
                 .toList();
     }
@@ -111,7 +102,6 @@ public class UserService {
         } catch (Exception e) {
             //roll back the keycloak deletion
             KeycloakUserRequest keycloakUserRequest = KeycloakUserRequest.builder()
-                    .username(user.getUsername())
                     .email(user.getEmail())
                     .enabled(user.isEnabled())
                     .build();

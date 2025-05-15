@@ -13,8 +13,6 @@ import { StrictHttpResponse } from '../strict-http-response';
 
 import { getUserAnswers } from '../fn/user-exam/get-user-answers';
 import { GetUserAnswers$Params } from '../fn/user-exam/get-user-answers';
-import { restUserAnswers } from '../fn/user-exam/rest-user-answers';
-import { RestUserAnswers$Params } from '../fn/user-exam/rest-user-answers';
 import { saveUserAnswers } from '../fn/user-exam/save-user-answers';
 import { SaveUserAnswers$Params } from '../fn/user-exam/save-user-answers';
 import { UserExamDto } from '../models/user-exam-dto';
@@ -48,35 +46,6 @@ export class UserExamService extends BaseService {
   saveUserAnswers(params: SaveUserAnswers$Params, context?: HttpContext): Observable<{
 }> {
     return this.saveUserAnswers$Response(params, context).pipe(
-      map((r: StrictHttpResponse<{
-}>): {
-} => r.body)
-    );
-  }
-
-  /** Path part for operation `restUserAnswers()` */
-  static readonly RestUserAnswersPath = '/user-exam/reset/{user-id}/{exam-id}/{mode}';
-
-  /**
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `restUserAnswers()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  restUserAnswers$Response(params: RestUserAnswers$Params, context?: HttpContext): Observable<StrictHttpResponse<{
-}>> {
-    return restUserAnswers(this.http, this.rootUrl, params, context);
-  }
-
-  /**
-   * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `restUserAnswers$Response()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  restUserAnswers(params: RestUserAnswers$Params, context?: HttpContext): Observable<{
-}> {
-    return this.restUserAnswers$Response(params, context).pipe(
       map((r: StrictHttpResponse<{
 }>): {
 } => r.body)

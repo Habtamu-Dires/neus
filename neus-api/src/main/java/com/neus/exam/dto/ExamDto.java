@@ -1,6 +1,9 @@
 package com.neus.exam.dto;
 
 import com.neus.common.SubscriptionLevel;
+import com.neus.exam.ExamType;
+import com.neus.question.BlockNumber;
+import com.neus.question.Department;
 import com.neus.question.dto.QuestionDto;
 import lombok.Builder;
 
@@ -11,9 +14,11 @@ import java.util.List;
 public record ExamDto(
         String id,
         String title,
-        String department,
         String description,
-        int duration,
-        int numberOfQuestions,
-        SubscriptionLevel requiredSubLevel
+        ExamType examType,
+        Integer year,
+        Integer duration,
+        Integer numberOfQuestions,
+        SubscriptionLevel requiredSubLevel,
+        Integer randomQuestionCount
 ) {}
