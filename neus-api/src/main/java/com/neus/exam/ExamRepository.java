@@ -2,15 +2,15 @@ package com.neus.exam;
 
 import com.neus.common.NumberDto;
 import com.neus.exam.dto.ExamNameDto;
-import com.neus.question.BlockNumber;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface ExamRepository extends JpaRepository<Exam,Long> {
+public interface ExamRepository extends JpaRepository<Exam,Long>, JpaSpecificationExecutor<Exam> {
 
 
     @Query("""

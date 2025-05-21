@@ -12,7 +12,7 @@ spring:
     virtual:
       enabled: true
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/neus_db}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/neus2_db}
     username: ${SPRING_DATASOURCE_USERNAME:hab}
     password: ${SPRING_DATASOURCE_PASSWORD:password}
     driver-class-name: org.postgresql.Driver
@@ -23,7 +23,7 @@ spring:
       leak-detection-threshold: 5000  # enable hikari leak detection
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     properties:
       hibernate:
         format_sql: true

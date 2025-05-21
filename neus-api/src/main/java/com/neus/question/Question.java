@@ -36,13 +36,15 @@ public class Question {
     private String questionText;
     @Column(columnDefinition = "TEXT")
     private String explanation;
-    private List<String> imageUrls = new ArrayList<>();
+    private List<String> mediaUrls = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     private BlockNumber blockNumber;
 
     @Enumerated(EnumType.STRING)
     private Department department;
+
+    private String category;
 
     @ManyToOne
     @JoinColumn(name = "exam_id")

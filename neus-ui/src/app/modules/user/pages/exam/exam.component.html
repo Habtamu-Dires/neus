@@ -1,11 +1,52 @@
-<main class="flex flex-col md:flex-row gap-2 w-full h-screen overflow-hidden items-center justify-center">
+<main class="bg-slate-100 flex flex-col md:flex-row gap-2 w-full h-screen overflow-hidden items-center justify-center">
   <!--loading .... section-->
   <div *ngIf="isLoading" class="w-full flex h-full justify-center items-center bg-gradient-to-b from-primary to-blue-200">
     <svg xmlns="http://www.w3.org/2000/svg" width="42" height="42" viewBox="0 0 24 24"><circle cx="12" cy="2" r="0" fill="#2979FF"><animate attributeName="r" begin="0" calcMode="spline" dur="1s" keySplines="0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8" repeatCount="indefinite" values="0;2;0;0"/></circle><circle cx="12" cy="2" r="0" fill="#2979FF" transform="rotate(45 12 12)"><animate attributeName="r" begin="0.125s" calcMode="spline" dur="1s" keySplines="0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8" repeatCount="indefinite" values="0;2;0;0"/></circle><circle cx="12" cy="2" r="0" fill="#2979FF" transform="rotate(90 12 12)"><animate attributeName="r" begin="0.25s" calcMode="spline" dur="1s" keySplines="0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8" repeatCount="indefinite" values="0;2;0;0"/></circle><circle cx="12" cy="2" r="0" fill="#2979FF" transform="rotate(135 12 12)"><animate attributeName="r" begin="0.375s" calcMode="spline" dur="1s" keySplines="0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8" repeatCount="indefinite" values="0;2;0;0"/></circle><circle cx="12" cy="2" r="0" fill="#2979FF" transform="rotate(180 12 12)"><animate attributeName="r" begin="0.5s" calcMode="spline" dur="1s" keySplines="0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8" repeatCount="indefinite" values="0;2;0;0"/></circle><circle cx="12" cy="2" r="0" fill="#2979FF" transform="rotate(225 12 12)"><animate attributeName="r" begin="0.625s" calcMode="spline" dur="1s" keySplines="0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8" repeatCount="indefinite" values="0;2;0;0"/></circle><circle cx="12" cy="2" r="0" fill="#2979FF" transform="rotate(270 12 12)"><animate attributeName="r" begin="0.75s" calcMode="spline" dur="1s" keySplines="0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8" repeatCount="indefinite" values="0;2;0;0"/></circle><circle cx="12" cy="2" r="0" fill="#2979FF" transform="rotate(315 12 12)"><animate attributeName="r" begin="0.875s" calcMode="spline" dur="1s" keySplines="0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8" repeatCount="indefinite" values="0;2;0;0"/></circle></svg>
   </div>
+
+  <!--exam info-->
+  <section *ngIf="mode === 'TEST' && !isLoading && !resourceNotFound && !examStarted"
+    class="max-w-xl w-full text-center space-y-6 bg-white shadow-lg p-8 rounded-2xl">
+    
+    <!-- Title -->
+    <h2 class="text-2xl md:text-3xl font-bold text-gray-800">
+      {{ title }}
+    </h2>
+
+    <!-- Instruction -->
+    <p class="text-gray-600 text-base md:text-lg">
+      You're about to begin this exam. Please review the following details before starting.
+    </p>
+
+    <!-- Exam Info Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 text-left">
+      <div class="bg-blue-50 rounded-lg p-4 shadow-sm">
+        <p class="text-sm text-gray-500">Question Type</p>
+        <p class="text-base font-medium text-gray-800">Multiple Choice</p>
+      </div>
+
+      <div class="bg-blue-50 rounded-lg p-4 shadow-sm">
+        <p class="text-sm text-gray-500">Number of Questions</p>
+        <p class="text-base font-medium text-gray-800">{{ examDto?.questions?.length }}</p>
+      </div>
+
+      <div class="bg-blue-50 rounded-lg p-4 shadow-sm">
+        <p class="text-sm text-gray-500">Time Allotted</p>
+        <p class="text-base font-medium text-gray-800">{{ examDto?.duration }} minutes</p>
+      </div>
+    </div>
+
+    <!-- Optional: Start Button (if you want one later) -->
+    
+    <button (click)="startExam()"
+        class="mt-6 bg-primary text-white px-6 py-3 rounded-lg hover:bg-btnHover transition">
+      Start Exam
+    </button>
+   
+  </section>
   
   <!-- Sidebar -->
-  <aside *ngIf="examStarted" class="w-full p-2 md:w-[10%] md:h-full flex md:flex-col items-center justify-between md:justify-normal md:items-start bg-gray-100 rounded-lg">
+  <aside *ngIf="examStarted" class="w-full p-2 md:w-[10%] md:h-full flex md:flex-col items-center justify-between md:justify-normal md:items-start rounded-lg">
     <!--question number list-->
     <div class="hidden md:block p-1 w-full">
       <p class="text-lg font-semibold text-gray-800 mb-4">{{title}}</p>
@@ -49,7 +90,7 @@
   </aside>
 
   <!-- Main Content -->
-  <main *ngIf="examStarted" class="h-full w-full md:w-[90%] bg-gray-100 md:p-2 rounded-lg overflow-hidden">
+  <main *ngIf="examStarted" class="h-full w-full md:w-[90%] md:p-2 rounded-lg overflow-hidden">
     <div class="flex justify-between items-center p-2">
       <h2 class="flex gap-1 text-sm md:text-xl font-semibold text-gray-800">
         <span class="hidden md:block">Question</span> {{ questionList.length !== 0 ? currentQuestionIndex + 1 : 0 }} of {{ questionList.length }}
@@ -83,7 +124,7 @@
         </button>
       </div>
       <!--save and exit -->
-      <div *ngIf="mode === 'TEST' && hasFullAccess && this.userAnswers.size > 0 && !isSubmitted" 
+      <div *ngIf="mode === 'TEST' && hasFullAccess && isAuthenticated && this.userAnswers.size > 0 && !isSubmitted" 
           class="flex justify-center">
         <button 
           (click)="saveAndExit()"  
@@ -100,15 +141,29 @@
       </button>
     </div>
     <!--no question available section-->
-    <div *ngIf="questionList.length === 0" class="h-64 flex items-center justify-center text-gray-600 text-lg">
+    <div *ngIf="questionList.length === 0" class="h-64 flex items-center justify-center text-gray-800 text-lg">
       No questions available for this exam.
     </div>
     <!--question display section-->
-    <section #questionContainer *ngIf="questionList.length > 0" class="h-full bg-white p-4 rounded-md border border-gray-200 overflow-y-scroll overflow-x-hidden">
+    <section #questionContainer *ngIf="questionList.length > 0"
+       class="h-full bg-gray-100 text-gray-900  p-4 rounded-md border border-gray-200 overflow-y-scroll overflow-x-hidden">
       <!--qustion text -->
       <div class="flex items-start mb-4 gap-1">
         <span>{{ currentQuestion.questionNumber }}.</span>
-        <div class="break-words whitespace-normal overflow-hidden px-3 w-full max-w-90%" [innerHTML]="currentQuestion.questionText"></div>
+        <!-- <div class="break-words whitespace-normal overflow-hidden px-3 w-full max-w-90%" 
+          [innerHTML]="currentQuestion.questionText"
+          (click)="handleLinkClick($event)"
+        ></div> -->
+        <div [appFirefoxQuillViewPatch]="currentQuestion.questionText" class="w-full">
+          <quill-view 
+            [content]="currentQuestion.questionText"
+            format="html"
+            theme="snow"
+            [sanitize]="true"
+            (click)="handleLinkClick($event)"
+          >
+          </quill-view>
+        </div>
       </div>
       <!--choices-->
       <div class="space-y-2 mb-4">
@@ -128,7 +183,8 @@
             />
           </div>
           <div class="flex gap-2 w-full max-w-90% items-center">
-            <span
+            <!--choice text-->
+            <!-- <span
               class="break-words whitespace-normal overflow-hidden py-2 px-3"
               [ngClass]="[
                 (mode === 'STUDY' && choice.isCorrect && userAnswers.has(currentQuestion.id ?? '')) 
@@ -137,7 +193,27 @@
                     ? 'border-2 rounded-md border-green-300 p-1' : ''
               ]"
               [innerHTML]="choice.text"
-            ></span>
+              (click)="handleLinkClick($event)"
+            ></span> -->
+            <span class="w-full"
+               [ngClass]="[
+                (mode === 'STUDY' && choice.isCorrect && userAnswers.has(currentQuestion.id ?? '')) 
+                    ? 'border-2 rounded-md border-green-300 p-1 ' : '' ,
+                (mode === 'TEST' && isSubmitted && choice.isCorrect) 
+                    ? 'border-2 rounded-md border-green-300 p-1' : ''
+              ]">
+              <span [appFirefoxQuillViewPatch]="choice.text" class="w-[90%]">
+                <quill-view 
+                  class="w-full"
+                  [content]="choice.text"
+                  format="html"
+                  theme="snow"
+                  [sanitize]="true"
+                  (click)="handleLinkClick($event)"
+                >
+                </quill-view>
+              </span>
+            </span>
             <span *ngIf="choice.percentage !== null &&
                 (mode === 'STUDY' && userAnswers.has(currentQuestion.id ?? '') || mode === 'TEST' && isSubmitted)"
                 class="text-gray-500 p-1 text-xs bg-gray-100 rounded-lg">
@@ -152,8 +228,23 @@
         <p (click)="showExplanation = !showExplanation" class="text-primary cursor-pointer hover:text-btnHover">
           {{ showExplanation ? 'Hide' : 'Show' }} Explanation
         </p>
-        <div *ngIf="showExplanation" class="mt-2 p-4 bg-gray-50 rounded-md border border-gray-200">
-          <div class="break-words whitespace-normal overflow-hidden py-2 px-3 w-full max-w-90%" [innerHTML]="currentQuestion.explanation"></div>
+        <!--explanation text-->
+        <div *ngIf="showExplanation" 
+          class="mt-2 p-4 bg-gray-200 rounded-md border border-gray-200">
+          <div [appFirefoxQuillViewPatch]="currentQuestion.explanation">
+            <quill-view 
+              [content]="currentQuestion.explanation"
+              format="html"
+              theme="snow"
+              [sanitize]="true"
+              (click)="handleLinkClick($event)"
+            >
+            </quill-view>
+          </div>
+          <!-- <div class="break-words whitespace-normal overflow-hidden py-2 px-3 w-full max-w-90%" 
+            [innerHTML]="currentQuestion.explanation"
+            (click)="handleLinkClick($event)"
+          ></div> -->
         </div>
       </div>
       <div class="flex flex-col justify-center items-center gap-2 mb-16 mt-4">

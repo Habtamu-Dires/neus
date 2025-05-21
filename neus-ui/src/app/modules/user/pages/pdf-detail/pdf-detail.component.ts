@@ -38,7 +38,6 @@ export class PdfDetailComponent implements OnInit{
       'resource-id': pdfId
     }).subscribe({
       next:(res:ResourceDetailDto)=>{
-        console.log(res);
         this.resourceDetail = res;
         this.pdfSrc = this.resourceDetail.contentPath;
         this.isLoading = false;

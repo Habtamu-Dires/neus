@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, effect, OnInit } from '@angular/core';
 import { HeaderComponent } from "../components/header/header.component";
 import { CommonModule } from '@angular/common';
 import { HeroComponent } from "../components/hero/hero.component";
@@ -21,13 +21,21 @@ export class HomeComponent implements OnInit{
   selectedSection:string = 'Home';
   drawerShown:boolean = false;
   isLoggedIn:boolean = false;
+  subscriptionLevel: "NONE" | "BASIC" | "ADVANCED" | "PREMIUM" | undefined = undefined;
 
   constructor(
     private keycloakService:KeycloakService,
     public sharedStateService:SharedStateService,
     public userSharedStateService:UserSharedStateService,
     private activatedRoute:ActivatedRoute
-  ) {}
+  ) {
+    effect(()=>{
+      this.subscriptionLevel = this.userSharedStateService.subscriptionLevel();
+      if(this.subscriptionLevel){
+        this.userSharedStateService.updateSubscriptionLevel(this.subscriptionLevel);
+      }
+    })
+  }
 
   ngOnInit(): void {
     this.isLoggedIn = this.keycloakService.isAuthenticated;
@@ -35,7 +43,10 @@ export class HomeComponent implements OnInit{
       const subscriptionType = this.keycloakService.subscriptionLevel as string;
       if(subscriptionType){
         const level = subscriptionType.replace('_subscriber','').toUpperCase();
-        this.userSharedStateService.updateSubscriptionLevel(level as 'NONE' | 'BASIC' | 'ADVANCED' | 'PREMIUM' | undefined);
+        this.subscriptionLevel = this.userSharedStateService.subscriptionLevel();
+        if(this.subscriptionLevel !== level){
+          this.userSharedStateService.updateSubscriptionLevel(level as "NONE" | "BASIC" | "ADVANCED" | "PREMIUM");
+        }
       }
     }
     // scroll back to resouces if it from resouce detail.

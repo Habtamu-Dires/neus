@@ -15,8 +15,8 @@ public record QuestionDetailDto(
         List<ChoiceDto> choices,
         Long totalResponses,
         String explanation,
-        List<String> imgUrls,
+        List<String> mediaUrls,
         Department department,
-        BlockNumber blockNumber
-) {
-}
+        BlockNumber blockNumber,
+        String category
+) {}

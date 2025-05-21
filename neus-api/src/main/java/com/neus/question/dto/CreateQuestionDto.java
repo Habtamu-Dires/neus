@@ -23,8 +23,9 @@ public record CreateQuestionDto(
         List<CreateChoiceDto> choices,
         @NotEmpty(message = "Explanation is mandatory")
         String explanation,
-        List<String> imgUrls,
+        List<String> mediaUrls,
         Department department,
-        BlockNumber blockNumber
+        BlockNumber blockNumber,
+        String category
 )
 { }

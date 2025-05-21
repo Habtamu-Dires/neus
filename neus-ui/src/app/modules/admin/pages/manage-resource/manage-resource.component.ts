@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { CreateResourceDto, ResourceDto } from '../../../../services/models';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -38,6 +38,10 @@ export class ManageResourceComponent implements OnInit{
   parentResourceList:ResourceDto[] = [];
   parentResourceName = '';
 
+  @ViewChild('subLevelListElement') subLevelListElement!: ElementRef;
+  @ViewChild('parentListElement') parentListElement!: ElementRef;
+  @ViewChild('typeListElement') typeListElement!: ElementRef;
+
   constructor(
     private resourceService:ResourcesService,
     private router:Router,
@@ -53,8 +57,8 @@ export class ManageResourceComponent implements OnInit{
       this.fetchResourceById(resourceId);
     }
     // fill resouce list 
-    this.typeList = this.sharedStateService.resouceTypeList;
-    // form
+    this.typeList = this.sharedStateService.resouceTypeList.filter(type => type !== 'EXAM');
+    // paretn search form control
     this.parentSearchFormControl();
   }
 
@@ -304,5 +308,23 @@ export class ManageResourceComponent implements OnInit{
   // on cancle btn clicked
   onCancel() {
     this.router.navigate(['admin','resources']);
+  }
+
+  // on file type selected
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (this.showParentResourceList && this.parentListElement && !this.parentListElement.nativeElement.contains(target)) {
+      this.showParentResourceList = false;
+    }
+
+    if (this.showTypeList && this.typeListElement && !this.typeListElement.nativeElement.contains(target)) {
+      this.showTypeList = false;
+    }
+
+    if(this.showSubscriptionLevelList && this.subLevelListElement && !this.subLevelListElement.nativeElement.contains(target)) {
+      this.showSubscriptionLevelList = false;
+    }
+    
   }
 }

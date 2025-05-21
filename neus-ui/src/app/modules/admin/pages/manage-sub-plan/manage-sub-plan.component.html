@@ -55,7 +55,9 @@
             </div>
             @for (benefit of updateSubPlanDto.benefits; track $index; let idx = $index) {
                 <div class="w-full flex justify-between">
-                    <p class="w-full form-input">{{benefit}}</p>
+                    <p (click)="editBenefit(benefit, idx)" class="w-full form-input">
+                      {{benefit}}
+                    </p>
                     <button (click)="removeBenefit(idx)" 
                         class="px-4 cursor-pointer text-red-500 hover:text-red-700" title="Delete">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

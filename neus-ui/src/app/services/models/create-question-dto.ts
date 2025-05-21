@@ -5,12 +5,13 @@
 import { CreateChoiceDto } from '../models/create-choice-dto';
 export interface CreateQuestionDto {
   blockNumber?: 'BLOCK_01' | 'BLOCK_02' | 'BLOCK_03' | 'BLOCK_04' | 'BLOCK_05' | 'BLOCK_06' | 'BLOCK_07' | 'BLOCK_08' | 'BLOCK_09' | 'BLOCK_10';
+  category?: string;
   choices?: Array<CreateChoiceDto>;
   department?: 'Anatomy' | 'Internal_Medicine' | 'Pediatrics' | 'OBGYN' | 'Surgery' | 'Medical_Ethics' | 'Dermatology' | 'Ophthalmology' | 'Psychiatry' | 'ENT' | 'Pathology' | 'Medical_Radiology' | 'Anesthesiology' | 'Behavioral_Science' | 'Biochemistry' | 'Biostatics' | 'Embryology' | 'Genetics' | 'Histology' | 'Immunology' | 'Microbiology' | 'Pathophysiology' | 'Pharmacology' | 'Physiology';
   examId?: string;
   explanation?: string;
   id?: string;
-  imgUrls?: Array<string>;
+  mediaUrls?: Array<string>;
   questionNumber: number;
   questionText?: string;
 }

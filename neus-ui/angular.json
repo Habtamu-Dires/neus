@@ -34,7 +34,9 @@
             ],
             "styles": [
               "src/styles.css",
-              "node_modules/ngx-toastr/toastr.css"
+              "node_modules/ngx-toastr/toastr.css",
+              "https://cdn.jsdelivr.net/npm/@enzedonline/quill-blot-formatter2@2.2/dist/css/quill-blot-formatter2.css"
+
             ],
             "scripts": []
           },
@@ -98,7 +100,9 @@
               }
             ],
             "styles": [
-              "src/styles.css"
+              "src/styles.css",
+              "https://cdn.jsdelivr.net/npm/@enzedonline/quill-blot-formatter2@2.2/dist/css/quill-blot-formatter2.css"
+
             ],
             "scripts": []
           }

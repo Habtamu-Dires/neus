@@ -1,15 +1,18 @@
 package com.neus.user;
 
 import com.neus.common.PageResponse;
+import com.neus.common.SubscriptionLevel;
 import com.neus.exceptions.ResourceNotFoundException;
 import com.neus.keycloak.KeycloakService;
 import com.neus.keycloak.KeycloakUserRequest;
+import com.neus.user.dto.UserAggregateData;
 import com.neus.user.dto.UserDto;
 import com.neus.user.dto.UserDtoMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -124,4 +127,40 @@ public class UserService {
     }
 
 
+    // filter user
+    public PageResponse<UserDto> filterUser(
+            String email, String subLevel, int page, int size
+    ) {
+        SubscriptionLevel userSubLevel = null;
+        try {
+            userSubLevel = SubscriptionLevel.valueOf(subLevel);
+        }catch (Exception _){}
+
+        var spec = UserSpecification.filterUsers(email,userSubLevel);
+
+        Pageable pageable = PageRequest.of(page,size);
+
+        Page<User> res = userRepository.findAll(spec, pageable);
+        List<UserDto> userDtoList = res.map(UserDtoMapper::toUserDto).toList();
+
+        return PageResponse.<UserDto>builder()
+                .content(userDtoList)
+                .totalElements(res.getTotalElements())
+                .numberOfElements(res.getNumberOfElements())
+                .totalPages(res.getTotalPages())
+                .size(res.getSize())
+                .number(res.getNumber())
+                .first(res.isFirst())
+                .last(res.isLast())
+                .empty(res.isEmpty())
+                .build();
+    }
+
+    // get user aggregate data
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public UserAggregateData getUserAggregateData() {
+        return userRepository.getUserAggregateData();
+    }
+
+    //
 }

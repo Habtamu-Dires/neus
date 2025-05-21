@@ -25,10 +25,10 @@
       <!-- Type -->
       <div class="grid grid-cols-12 gap-2 items-start">
         <label class="form-label">Type<span class="text-red-400">*</span></label>
-        <div class="relative w-full col-span-12 md:col-span-10">
+        <div #typeListElement class="relative w-full col-span-12 md:col-span-10">
           <input [(ngModel)]="createResourceDto.type" class="form-input w-full cursor-pointer" type="text" placeholder="Type"
             (click)="showTypeList = true" (focus)="showTypeList = true" />
-          <div *ngIf="showTypeList" class="absolute z-10 w-full mt-1">
+          <div *ngIf="showTypeList"  class="absolute z-10 w-full mt-1">
             <div *ngFor="let type of typeList; let idx=index"
               class="w-full bg-white shadow hover:bg-gray-200 p-2 cursor-pointer"
               [ngClass]="{
@@ -48,24 +48,24 @@
         <input [(ngModel)]="createResourceDto.title" class="form-input" type="text" placeholder="Title" />
       </div>
       <!--search parent Resource-->
-      <div *ngIf="!['LECTURE','ERMP','USMLE_STEP_1','USMLE_STEP_2'].includes(createResourceDto.type)"  
-        class="w-full grid grid-cols-12">
+      <div *ngIf="!['LECTURES','BOOKS','ERMP','USMLE_STEP_1','USMLE_STEP_2'].includes(createResourceDto.type)"  
+            class="w-full grid grid-cols-12">
         <label class="form-label">Parent Resource</label>
-        <div class="relative w-full col-span-12 md:col-span-10">
+        <div #parentListElement class="relative w-full col-span-12 md:col-span-10">
             <input [formControl]="searchControl" class="w-full form-input"  type="text" placeholder="search category" />
-            <div *ngIf="showParentResourceList" 
+            <div *ngIf="showParentResourceList"
                 class="absolute w-full flex flex-col items-center z-20">
-                <div *ngFor="let parentResource of parentResourceList; let idx=index" 
-                    class="w-2/3 flex bg-white shadow-md hover:bg-gray-400" 
-                    [ngClass]="{'rounded-t-md' : idx==0, 
-                        'rounded-b-md' : idx == (parentResourceList.length - 1)
-                    }"
-                    >
-                    <p (click)="onParentResourceSelected(parentResource)" 
-                        class="cursor-pointer p-2 w-full ">
-                        {{parentResource.title}}
-                    </p>
-                </div>
+              <div *ngFor="let parentResource of parentResourceList; let idx=index" 
+                  class="w-2/3 flex bg-white shadow-md hover:bg-gray-400" 
+                  [ngClass]="{'rounded-t-md' : idx==0, 
+                      'rounded-b-md' : idx == (parentResourceList.length - 1)
+                  }"
+                  >
+                  <p (click)="onParentResourceSelected(parentResource)" 
+                      class="cursor-pointer p-2 w-full ">
+                      {{parentResource.title}}
+                  </p>
+              </div>
             </div>
         </div>
       </div>
@@ -73,7 +73,7 @@
       <!-- Subscription Level -->
       <div *ngIf="!createResourceDto.parentResourceId" class="grid grid-cols-12 gap-2 items-start">
         <label class="form-label">Subscription Level<span class="text-red-400">*</span></label>
-        <div class="relative w-full col-span-12 md:col-span-10">
+        <div #subLevelListElement class="relative w-full col-span-12 md:col-span-10">
           <input [(ngModel)]="createResourceDto.requiredSubLevel" class="form-input w-full cursor-pointer" type="text"
             placeholder="Subscription Level" (click)="showSubscriptionLevelList = true"
             (focus)="showSubscriptionLevelList = true" />
@@ -99,7 +99,7 @@
       </div>
   
       <!-- File Selector -->
-      <div *ngIf="!['LECTURE','LECTURE_VIDEOS','LECTURE_NOTES','ERMP','USMLE_STEP_1','USMLE_STEP_2'].includes(createResourceDto.type)"
+      <div *ngIf="!['LECTURES','BOOKS','LECTURE_VIDEOS','LECTURE_NOTES','READING_MATERIALS','ERMP','USMLE_STEP_1','USMLE_STEP_2'].includes(createResourceDto.type)"
        class="grid grid-cols-12 gap-2 items-center">
         <label class="form-label">Content</label>
         <div class="w-full col-span-12 md:col-span-10 flex justify-between gap-2">
@@ -125,7 +125,7 @@
       <p *ngIf="showFileTypeMatchError" class="text-red-500 text-sm">Selected file type doesn't match</p>
 
       <!-- Preview File Selector -->
-      <div *ngIf="!['LECTURE','LECTURE_VIDEOS','LECTURE_NOTES','ERMP','USMLE_STEP_1','USMLE_STEP_2'].includes(createResourceDto.type)"
+      <div *ngIf="!['LECTURES','BOOKS','LECTURE_VIDEOS','LECTURE_NOTES','READING_MATERIALS','ERMP','USMLE_STEP_1','USMLE_STEP_2'].includes(createResourceDto.type)"
         class="grid grid-cols-12 gap-2 items-center">
         <label class="form-label">Preview Content</label>
         <div class="w-full col-span-12 md:col-span-10 flex justify-between gap-2">

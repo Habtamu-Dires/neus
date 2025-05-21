@@ -1,10 +1,11 @@
 import { Component, effect, EventEmitter, Output } from '@angular/core';
 import { KeycloakService } from '../../../../services/keycloak/keycloak.service';
 import { UserSharedStateService } from '../../services/user-shared-state.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-hero',
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './hero.component.html',
   styleUrl: './hero.component.css'
 })
@@ -15,6 +16,15 @@ export class HeroComponent {
   subtext = 'Practice with exams, videos, and notes designed for medical students.';
   ctaText = 'Explore Resources';
   ctaLink = '/resources';
+
+  paragraphs = [
+    '1,200+ ERMP Questions with answers and detailed UWorld-format Explanations',
+    '600+ Licensure Exam (Medical COC) Questions, with answers and detailed UWorld format explanations',
+    '1100+ NGAT Questions, with answers and detailed explanations',
+    '8000+ UWorld Questions for Step 1 & Step 2 with detailed explanation from UWorld 2025',
+    'Access to Medical Books, Guidelines, Pathoma & Beyond'
+  ];
+  isVisible: boolean[] = [];
 
   @Output() navigateToAction = new EventEmitter<string>();
 
@@ -41,7 +51,11 @@ export class HeroComponent {
   }
 
   ngOnInit(): void {
-    
+    this.isVisible = this.paragraphs.map(() => false);
+    // Trigger the visibility change after a short delay to ensure initial render
+    setTimeout(() => {
+      this.isVisible = this.paragraphs.map(() => true);
+    }, 50);
   }
 
   private updateContent(subscriptionLevel:string | undefined): void {

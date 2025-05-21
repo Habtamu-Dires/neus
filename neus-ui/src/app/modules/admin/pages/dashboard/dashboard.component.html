@@ -1,4 +1,27 @@
-<main class="admin-container">
-    
-        <p>Dashboard comming soon .....</p>
+<main class="admin-container h-screen flex flex-col gap-6  bg-gray-200 overflow-hidden">
+   <!--toggle side bar-->
+   <div class="p-2">
+        <svg *ngIf="showDrawer" (click)="toggleShowDrawer()" class="cursor-pointer"
+                xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 14 14"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="M13.5 2H.5m13 5H.5m13 5H.5"/>
+        </svg>
+   </div>
+   <!--title-->
+   <div class="flex w-full p-2 items-center justify-center text-lg md:text-2xl font-semibold text-gray-800">
+        <p class="underline decoration-wavy decoration-primary">
+                Nitsbin ERMP and USMLE Study Guide Dashboard
+        </p>
+   </div>
+   <!--User aggregate data-->
+   <section class="flex ms-4 flex-col md:flex-row w-full items-center justify-center overflow-auto">
+        <ngx-charts-number-card
+            [view]="view"
+            [scheme]="colorScheme"
+            [results]="data"
+            [cardColor]="cardColor"
+           >
+        </ngx-charts-number-card>
+   </section>
+
+
+
 </main>

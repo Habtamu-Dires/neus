@@ -1,5 +1,5 @@
 import { Component, HostListener, OnInit } from '@angular/core';
-import { ResourceDto } from '../../../../services/models';
+import { ResourceDto, UserDto } from '../../../../services/models';
 import { ResourcesService } from '../../../../services/services';
 import { ToastrService } from 'ngx-toastr';
 import { HeaderComponent } from "../../components/header/header.component";
@@ -10,6 +10,8 @@ import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { ReadDialogComponent } from '../../components/read-dialog/read-dialog.component';
 import { ConfirmDialogComponent } from '../../../../components/confirm-dialog/confirm-dialog.component';
+import { AdminUxService } from '../../service/admin-ux/admin-ux.service';
+
 
 @Component({
   selector: 'app-resource',
@@ -22,6 +24,7 @@ export class ResourceComponent implements OnInit{
   resourcesList:ResourceDto[] = [];
   selectedResourceId:string = '';
   showActions:boolean = false;
+  isLoading = true;
   // pagination
   page:number = 0;
   size:number = 10;
@@ -31,16 +34,22 @@ export class ResourceComponent implements OnInit{
   totalPages: number | undefined;
   totalElements: number | undefined;
   numberOfElements: number | undefined;
+  // fiters
+  titleFilter:string | undefined;
+  typeFilter:string | undefined;
+  subLevelFilter:string | undefined;
 
   constructor(
     private resourceService: ResourcesService,
     private toastr:ToastrService,
     private router:Router,
     private matDialog:MatDialog,
-    private toastrService:ToastrService
+    private toastrService:ToastrService,
+    private adminUxService:AdminUxService
   ){}
 
   ngOnInit(): void {
+    this.page = this.adminUxService.resourcePageNo();
     this.fetchPageOfResources();
   }
 
@@ -50,20 +59,47 @@ export class ResourceComponent implements OnInit{
       page: this.page,
       size: this.size
     }).subscribe({
-      next:(response)=>{
-        this.resourcesList = response.content as ResourceDto[];
-        console.log(this.resourcesList);
+      next:(res)=>{
+        this.resourcesList = res.content as ResourceDto[];
+        this.isLoading = false;        
         // pagination
-        this.isFirstPage = response.first;
-        this.isLastPage = response.last;
-        this.totalPages = response.totalPages;
-        this.totalElements = response.totalElements;
-        this.numberOfElements = response.numberOfElements;
-        this.isEmptyPage = response.empty as boolean;
+        this.isFirstPage = res.first;
+        this.isLastPage = res.last;
+        this.totalPages = res.totalPages;
+        this.totalElements = res.totalElements;
+        this.numberOfElements = res.numberOfElements;
+        this.isEmptyPage = res.empty as boolean;
+        // update page
+        this.adminUxService.updateResourcePageNo(this.page);
       },
       error:(err)=>{
         console.log(err);
-        this.toastr.error('Error fetching users', 'Error')
+        this.isLoading=false;
+        this.toastr.error('Error fetching users', 'Error');
+      }
+    })
+  }
+
+  // filter user
+  filterResource(){
+    this.resourceService.filterResources({
+      'title':this.titleFilter,
+      'type': this.typeFilter,
+      'requiredSubLevel': this.subLevelFilter
+    }).subscribe({
+      next:(res)=>{
+        this.resourcesList = res.content as ResourceDto[];
+        console.log(this.resourcesList);
+        // pagination
+        this.isFirstPage = res.first;
+        this.isLastPage = res.last;
+        this.totalPages = res.totalPages;
+        this.totalElements = res.totalElements;
+        this.numberOfElements = res.numberOfElements;
+        this.isEmptyPage = res.empty as boolean;
+      },
+      error:(err)=>{
+        console.log(err);
       }
     })
   }
@@ -71,11 +107,6 @@ export class ResourceComponent implements OnInit{
   // on create new 
   onCreateNew(){
     this.router.navigate(['/admin/resources/manage']);
-  }
-
-  // on search 
-  onSearch(text:any){
-
   }
 
   // on read dialog
@@ -161,6 +192,36 @@ export class ResourceComponent implements OnInit{
       }
     })
   }
+
+  // on search 
+  onSearch(text:any){
+    if(text.length >= 3){
+      this.titleFilter = text;
+      this.filterResource();
+    } else {
+      this.fetchPageOfResources();
+    }
+  }
+
+  // on type filter
+  onTypeFilter(type:string){
+    if(type.length > 0){
+      this.typeFilter = type;
+      this.filterResource();
+    } else {
+      this.fetchPageOfResources();
+    }
+  }
+  // on sub level filter
+  onSubLevelFilter(level:string){
+    if(level.length > 0){
+      this.subLevelFilter = level;
+      this.filterResource();
+    } else {
+      this.fetchPageOfResources();
+    }
+  }
+
 
 
   // pagination

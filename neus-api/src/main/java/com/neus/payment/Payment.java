@@ -22,14 +22,15 @@ public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private UUID externalId;
     private BigDecimal amount;
     private String transactionId;
     private String currency;
     private String paymentMethod;
     private String paymentStatus;
-    private LocalDateTime createdAt;
+    private String remark;
+    private LocalDateTime createdDate;
 
     @ManyToOne
     private User user;

@@ -14,7 +14,8 @@ public record QuestionDto(
         String questionText,
         List<Choice> choices,
         String explanation,
-        List<String> imgUrls,
+        List<String> mediaUrls,
         Department department,
-        BlockNumber blockNumber
+        BlockNumber blockNumber,
+        String category
 ) {}

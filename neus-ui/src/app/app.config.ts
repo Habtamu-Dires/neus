@@ -8,7 +8,6 @@ import {provideToastr} from 'ngx-toastr';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
-
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
@@ -32,5 +31,6 @@ export const appConfig: ApplicationConfig = {
       positionClass: 'toast-top-right',
       timeOut: 2000
     }),
-  ]
+  ],
 };
+

@@ -32,7 +32,7 @@
       <!--Exam Type-->
      <div class="grid grid-cols-12 gap-2 items-start">
         <label class="form-label">Exam Type<span class="text-red-400">*</span></label>
-        <div class="relative w-full col-span-12 md:col-span-10">
+        <div #typeListElement class="relative w-full col-span-12 md:col-span-10">
           <input [(ngModel)]="createExamDto.examType" class="form-input w-full cursor-pointer" type="text"
             placeholder="Exam Type" (click)="showExamTypeList = true"
             (focus)="showExamTypeList = true" />
@@ -66,7 +66,7 @@
       <div *ngIf="!['ERMP', 'USMLE_STEP_1','USMLE_STEP_2'].includes(createExamDto.examType)"
         class="grid grid-cols-12 gap-2 items-start">
         <label class="form-label">Subscription Level<span class="text-red-400">*</span></label>
-        <div class="relative w-full col-span-12 md:col-span-10">
+        <div #subListElement class="relative w-full col-span-12 md:col-span-10">
           <input [(ngModel)]="createExamDto.requiredSubLevel" class="form-input w-full cursor-pointer" type="text"
             placeholder="Subscription Level" (click)="showSubscriptionLevelList = true"
             (focus)="showSubscriptionLevelList = true" />

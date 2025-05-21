@@ -18,6 +18,7 @@ body {
 
 
 @layer components {
+
   .max-container {
       max-width: 1440px;
       margin: 0 auto;
@@ -92,6 +93,7 @@ body {
     @apply text-sm;
   }
 
+
   .ql-align-center {
     @apply flex justify-center items-center;
   }
@@ -106,7 +108,7 @@ body {
     @apply text-justify;
   }
   /* -- ql image to tailwind--*/
-  .ql-image-align-center {
+  /* .ql-image-align-center {
     @apply flex justify-center items-center;
   }
   .ql-image-align-left {
@@ -114,7 +116,33 @@ body {
   }
   .ql-image-align-right {
     @apply flex justify-end items-center;
+  } */
+
+  .ql-container .ql-image-align-center {
+    @apply flex justify-center items-center;
   }
+
+  .ql-container .ql-image-align-left {
+    @apply flex justify-start items-center;
+  }
+
+  .ql-container .ql-image-align-right {
+    @apply flex justify-end items-center;
+  }
+
+  /* * -- quill table --- */
+  /* div.ql-container .ql-table {
+    @apply w-full border border-gray-300;
+  }
+
+  div.ql-container .ql-table td,
+  div.ql-container .ql-table th {
+    @apply border border-gray-300 p-2;
+  }
+
+  div.ql-container .ql-table th {
+    @apply bg-gray-100 font-semibold;
+  } */
 
 
   div.ql-editor {
@@ -123,19 +151,32 @@ body {
     --blot-align-right-margin: 0.5rem 0 0.5rem 1rem;
   }
 
-  /* image wrapper common */
+  image wrapper common 
   div.ql-editor [class^="ql-image-align-"] {
-      display: flex;
-      flex-wrap: wrap;
-      width: var(--resize-width);
-      max-width: 100%;
-  }
+        display: flex;
+        flex-wrap: wrap;
+        width: var(--resize-width);
+        max-width: none;
+    }
   div.ql-editor [class^="ql-image-align-"]>img {
       flex: 1;
   }
+
+  /* image wrapper common
+  .ql-editor [class^="ql-image-align-"] {
+    display: flex;
+    flex-wrap: wrap;
+    width: var(--resize-width);
+    max-width: 100%;
+  }
+
+  .ql-editor [class^="ql-image-align-"]>img {
+    width: 100%;
+    height: auto;
+  } */
   /* left */
-  div.ql-editor .ql-image-align-left,
-  div.ql-editor .ql-iframe-align-left {
+  .ql-editor .ql-image-align-left,
+  .ql-editor .ql-iframe-align-left {
       margin: var(--blot-align-left-margin);
       float: left;
   }
@@ -189,6 +230,7 @@ body {
 
   p:empty {
     @apply min-h-3;
+    @apply flex flex-wrap
   }
 
   ul {

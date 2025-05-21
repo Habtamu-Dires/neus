@@ -1,21 +1,30 @@
 <main class="flex gap-2 w-full h-screen overflow-hidden">
     <div class="flex flex-col md:flex-row  w-full h-screen overflow-hidden">  
       <!-- Sidebar -->
-      <aside  class="w-full p-1 md:p-2 md:w-[15%] md:h-full flex md:flex-col items-center justify-between md:justify-normal md:items-start bg-gray-100 shadow-md">
+      <aside *ngIf="showSideBar" class="w-full p-1 md:p-2 md:w-[15%] md:h-full flex md:flex-col items-center justify-between md:justify-normal md:items-start bg-gray-100 shadow-md">
         <!--title-->
-        <p class="md:py-2">{{collection?.title}}</p>
-        <!--lecture item list-->
+        <div class="flex justify-between items-center w-full">
+          <p class="w-full md:w-11/12 md:py-2">{{collection?.title}}</p>
+          <!--side bar toggler-->
+          <div class="hidden md:block md:w-1/12">
+              <svg class="cursor-pointer"  
+                  (click)="toggleSideBar()"          
+                  xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"><g fill="currentColor"><path d="M11.707 5.293a1 1 0 0 1 0 1.414L6.414 12l5.293 5.293a1 1 0 0 1-1.414 1.414l-6-6a1 1 0 0 1 0-1.414l6-6a1 1 0 0 1 1.414 0z"/><path d="M19.707 5.293a1 1 0 0 1 0 1.414L14.414 12l5.293 5.293a1 1 0 0 1-1.414 1.414l-6-6a1 1 0 0 1 0-1.414l6-6a1 1 0 0 1 1.414 0z"/></g>
+              </svg>   
+          </div> 
+        </div>
+        <!--collection item list-->
         <div class="py-2 hidden md:block">
           <div
             *ngFor="let resource of resourceList; let i = index"
             (click)="selectResource(i)"
-            class="p-2 rounded-md cursor-pointer hover:text-secondary whitespace-nowrap overflow-x-auto"
+            class="p-2 rounded-md cursor-pointer hover:text-secondary "
             [class.bg-blue-100]="i === currentResourceIndex"
           >
             {{resource.title}}
           </div>
         </div>
-        <!--lecture items toggler-->
+        <!--collection items toggler in mobile view-->
         <section class="cursor-pointer block md:hidden">
           <!--open drawer-->
           <svg *ngIf="!showDrawer" class="cursor-pointer mx-2 my-1"
@@ -38,15 +47,29 @@
           </div>
         </section>
       </aside>
+      <!--side bar toggler-->
+      <div *ngIf="!showSideBar" class="px-2 pt-4">
+          <svg (click)="toggleSideBar()" 
+              class="cursor-pointer"
+              xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 14 14"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="M13.5 2H.5m13 5H.5m13 5H.5"/>
+          </svg>
+      </div>
   
       <!-- Main Content -->
-      <main *ngIf="!showDrawer"  class="h-full md:w-[90%] w-full bg-gray-100 md:p-2  overflow-hidden">
+      <main *ngIf="!showDrawer"  class="h-full  bg-gray-100 md:p-2  overflow-hidden"
+      [ngClass]="{'w-[90%]': showSideBar, 'w-full': !showSideBar}">
         @if (selectedResource && selectedResource.type === 'VIDEO') {
             <app-video-detail [videoId]="selectedResource.resourceId">
             </app-video-detail>
-        } @else if (selectedResource && selectedResource.type === 'READING_MATERIAL') {
+        } @else if (selectedResource && ['READING_MATERIAL','BOOK'].includes(selectedResource.type ?? 'none')) {
             <app-pdf-detail [pdfId]="selectedResource.resourceId"></app-pdf-detail>
+        } @else if (hasNoResource) {
+          <div class="h-64 flex flex-col cursor-pointer items-center justify-center text-gray-800 text-lg">
+              No questions available for this exam.
+              <a (click)="close()" class="text-blue-500">close</a>
+          </div>
         }
+
       </main>  
     </div>
 </main>

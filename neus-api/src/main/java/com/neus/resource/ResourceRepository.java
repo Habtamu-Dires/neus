@@ -54,7 +54,7 @@ public interface ResourceRepository extends JpaRepository<Resource,Long>, JpaSpe
             SELECT r FROM Resource r
             WHERE LOWER(r.title) LIKE LOWER(CONCAT('%', :title, '%'))
             AND ( r.parentResource IS NULL 
-                OR r.type IN ('LECTURE_VIDEOS','LECTURE_NOTES'))
+                OR r.type IN ('LECTURE_VIDEOS','READING_MATERIALS','LECTURE_NOTES'))
             """)
     List<Resource> searchParentResourcesByTitle(@Param("title") String title);
 

@@ -20,6 +20,7 @@ export class SubscriptionPlanComponent implements OnInit{
   subPlanList:SubPlanDto[] = [];
   showActions:boolean = false;
   selectedPlanId:string | undefined;
+  isLoading=true;
 
   constructor(
     private SubPlansService:SbuPlansService,
@@ -37,9 +38,12 @@ export class SubscriptionPlanComponent implements OnInit{
     this.SubPlansService.getSubPlans().subscribe({
       next:(res:SubPlanDto[])=>{
         this.subPlanList  = res;
+        this.isLoading=false;
       },
       error:(err)=>{
+        this.isLoading=false;
         console.log();
+        this.toastr.error(err);
       }
     })
   }

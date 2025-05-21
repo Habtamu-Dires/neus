@@ -35,8 +35,7 @@ const routes: Routes = [
       {path:'create-question',component:CreateQuestionComponent},
       {path:'sub-plans',component:SubscriptionPlanComponent},
       {path:'sub-plans/manage/:planId',component:ManageSubPlanComponent},
-      {path:'payments',component:PaymentComponent}
-          
+      {path:'payments',component:PaymentComponent},
     ]},
 ]
 @NgModule({

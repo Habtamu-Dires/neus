@@ -24,6 +24,7 @@ export class ManageSubPlanComponent implements OnInit{
   };
   errMsgs:Array<string> = [];
   benefit:string = '';
+  benefitIndex:number = -1;
 
   constructor(
     private subPlansService:SbuPlansService,
@@ -89,10 +90,22 @@ export class ManageSubPlanComponent implements OnInit{
 
   // on add benefit
   addBenefit(){
-    if(this.benefit.length > 3){
+    if(this.benefit.length > 3 && this.benefitIndex === -1){
       this.updateSubPlanDto.benefits.push(this.benefit);
-      this.benefit = '';
+      
+    } else if(this.benefitIndex !== -1 && this.benefit.length > 3){
+      this.updateSubPlanDto.benefits[this.benefitIndex] = this.benefit;
     }
+
+    // reset
+      this.benefit = '';
+      this.benefitIndex = -1;
+  }
+
+  // edit benefit
+  editBenefit(benefit:string, index:number){
+    this.benefit =benefit;
+    this.benefitIndex = index;
   }
 
   // on remove benefit

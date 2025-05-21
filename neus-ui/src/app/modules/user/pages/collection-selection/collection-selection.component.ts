@@ -61,7 +61,7 @@ export class CollectionSelectionComponent implements OnInit{
 
   // close
   onClose(){
-    window.history.back();
+     this.router.navigate(['user'], {queryParams: {'from-resource-detail': true}});
   }
 
 }

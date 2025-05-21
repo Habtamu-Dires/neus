@@ -1,6 +1,7 @@
 package com.neus.resource;
 
 import com.neus.common.PageResponse;
+import com.neus.common.SubscriptionLevel;
 import com.neus.resource.dto.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -132,6 +133,23 @@ public class ResourceController {
             @PathVariable("title") String title
     ){
         var res = resourceService.searchParentResourcesByTitle(title);
+        return ResponseEntity.ok(res);
+    }
+
+    // search resource by title
+    @GetMapping("/filter")
+    public ResponseEntity<PageResponse<ResourceDto>> filterResources(
+            @RequestParam(value = "title", required = false) String title,
+            @RequestParam(value = "type", required = false) String type,
+            @RequestParam(value = "requiredSubLevel", required = false)String requiredSubLevel,
+            @RequestParam(value = "parent-id", required = false) String parentId,
+            @RequestParam(value = "has-child-resources", required = false) boolean hasChildResources,
+            @RequestParam(value = "page",defaultValue = "0", required = false) int page,
+            @RequestParam(value = "size", defaultValue = "10", required = false) int size
+            ){
+        var res = resourceService.filterResources(
+                title, type, requiredSubLevel, parentId, hasChildResources, page, size
+        );
         return ResponseEntity.ok(res);
     }
 

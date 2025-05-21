@@ -3,18 +3,18 @@
       class="relative flex flex-col justify-between bg-white rounded-lg shadow-primary shadow-lg p-6 w-full"
       [ngClass]="{
         'bg-exam': ['USMLE_STEP_1','USMLE_STEP_2','ERMP','EXAM'].includes(resource.type ? resource.type : ''),
-        'bg-reading-materials':resource.type === 'READING_MATERIAL',
+        'bg-reading-materials':['READING_MATERIAL','READING_MATERIALS','BOOKS'].includes(resource.type ? resource.type : ''),
         'bg-videos': resource.type === 'VIDEO',
-        'bg-lecture-videos': ['LECTURE_VIDEOS','LECTURE'].includes(resource.type ? resource.type : ''),
+        'bg-lecture-videos': ['LECTURE_VIDEOS','LECTURES'].includes(resource.type ? resource.type : ''),
         'bg-lecture-notes': resource.type === 'LECTURE_NOTES',
       }">
     <!-- Background shape -->
     <svg class="absolute top-0 left-0 w-60 h-60 opacity-10 pointer-events-none" 
       [ngClass]="{
         'text-blue-400': ['USMLE_STEP_1','USMLE_STEP_2','EXAM'].includes(resource.type ? resource.type : ''),
-        'text-green-400': resource.type === 'READING_MATERIAL',
+        'text-green-400': ['READING_MATERIAL','READING_MATERIALS','BOOKS'].includes(resource.type ? resource.type : ''),
         'text-orange-400': resource.type === 'VIDEO',
-        'text-purple-400': resource.type === 'LECTURE_VIDEOS',
+        'text-purple-400': ['LECTURE_VIDEOS','LECTURES'].includes(resource.type ? resource.type : ''),
         'text-pink-400': resource.type === 'LECTURE_NOTES'
       }"
         fill="currentColor" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">

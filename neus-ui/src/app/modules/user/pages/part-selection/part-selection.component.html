@@ -1,4 +1,11 @@
-<div class="h-screen w-full flex items-center justify-center bg-gradient-to-br from-yellow-50 to-white px-4">
+<div class="relative h-screen w-full flex items-center justify-center bg-gradient-to-br px-4 from-primary to-blue-200">
+  <!--close / back -->
+  <button class="absolute top-10 right-10 cursor-pointer" (click)="onClose()">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12z"/>
+    </svg>
+  </button>
+  
   <div class="w-full max-w-4xl text-center space-y-10">
     
     <!-- Title -->
@@ -12,7 +19,7 @@
       <div
         *ngFor="let part of examList"
         (click)="selectPart(part)"
-        class="bg-white py-6 rounded-2xl shadow-md text-xl font-medium text-gray-800 cursor-pointer hover:bg-yellow-100 hover:scale-105 transition duration-200"
+        class="bg-white py-6 rounded-2xl shadow-md text-xl font-medium text-gray-800 cursor-pointer hover:bg-indigo-100 hover:scale-105 transition duration-200"
       >
         {{ part.title }}
       </div>

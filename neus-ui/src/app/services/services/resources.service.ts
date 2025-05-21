@@ -17,6 +17,8 @@ import { deleteResource } from '../fn/resources/delete-resource';
 import { DeleteResource$Params } from '../fn/resources/delete-resource';
 import { deleteResourceContent } from '../fn/resources/delete-resource-content';
 import { DeleteResourceContent$Params } from '../fn/resources/delete-resource-content';
+import { filterResources } from '../fn/resources/filter-resources';
+import { FilterResources$Params } from '../fn/resources/filter-resources';
 import { getListOfCollections } from '../fn/resources/get-list-of-collections';
 import { GetListOfCollections$Params } from '../fn/resources/get-list-of-collections';
 import { getListOfResources } from '../fn/resources/get-list-of-resources';
@@ -289,6 +291,31 @@ export class ResourcesService extends BaseService {
   getListOfResources(params?: GetListOfResources$Params, context?: HttpContext): Observable<Array<ResourceInfoDto>> {
     return this.getListOfResources$Response(params, context).pipe(
       map((r: StrictHttpResponse<Array<ResourceInfoDto>>): Array<ResourceInfoDto> => r.body)
+    );
+  }
+
+  /** Path part for operation `filterResources()` */
+  static readonly FilterResourcesPath = '/resources/filter';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `filterResources()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  filterResources$Response(params?: FilterResources$Params, context?: HttpContext): Observable<StrictHttpResponse<PageResponseResourceDto>> {
+    return filterResources(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `filterResources$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  filterResources(params?: FilterResources$Params, context?: HttpContext): Observable<PageResponseResourceDto> {
+    return this.filterResources$Response(params, context).pipe(
+      map((r: StrictHttpResponse<PageResponseResourceDto>): PageResponseResourceDto => r.body)
     );
   }
 

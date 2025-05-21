@@ -3,19 +3,16 @@ package com.neus.exam;
 
 import com.neus.common.NumberDto;
 import com.neus.common.PageResponse;
-import com.neus.common.TextDto;
 import com.neus.exam.dto.CreateExamDto;
 import com.neus.exam.dto.ExamDetailDto;
 import com.neus.exam.dto.ExamDto;
 import com.neus.exam.dto.ExamNameDto;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Null;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import org.w3c.dom.Text;
 
 import java.util.List;
 
@@ -52,17 +49,6 @@ public class ExamController {
     ){
         return ResponseEntity.ok(examService.getExamById(examId));
     }
-
-//    // get exam detail
-//    @GetMapping("/detail/{exam-id}")
-//    public ResponseEntity<ExamDetailDto> getExamDetail(
-//            @PathVariable("exam-id") String examId,
-//
-//            Authentication authentication
-//    ){
-//        var res = examService.getExamDetail(examId, authentication);
-//        return ResponseEntity.ok(res);
-//    }
 
     // update exam
     @PutMapping
@@ -120,5 +106,19 @@ public class ExamController {
         return ResponseEntity.ok(examService.getExamDetail(
                 examId,department, block, authentication
         ));
+    }
+
+    // filter exams
+    @GetMapping("/filter")
+    public ResponseEntity<PageResponse<ExamDto>> filterExams(
+            @RequestParam(value = "title", required = false) String title,
+            @RequestParam(value = "type", required = false) String type,
+            @RequestParam(value = "year", required = false) Integer year,
+            @RequestParam(value="requiredSubLevel",required = false) String requiredSubLevel,
+            @RequestParam(value = "page",defaultValue = "0", required = false) int page,
+            @RequestParam(value = "size", defaultValue = "10", required = false) int size
+    ){
+        var res = examService.filterExams(title, type, year, requiredSubLevel, page, size);
+        return ResponseEntity.ok(res);
     }
 }

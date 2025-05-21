@@ -28,18 +28,18 @@ services:
         - neus-network
 
 #    front-end:
-#      container_name: ekub-ui
-#      image: habtamudires/alem-ekub-ui
+#      container_name: neus-ui
+#      image:
 #      ports:
 #        - "4200:80"
 #      environment:
-#        API_URL: http://localhost:8088/api/v1
+#        API_URL: http://localhost:8088/api
 #        KEYCLOAK_URL: http://host.docker.internal:9090
-#        REALM: alem-ekub
-#        CLIENT_ID: ekub-user-login
+#        REALM: neus
+#        CLIENT_ID: neus-app
 #        REDIRECT_URL: http://localhost:4200
 #      networks:
-#        - alem-ekub
+#        - neus-network
 
 volumes:
   neus_volume:

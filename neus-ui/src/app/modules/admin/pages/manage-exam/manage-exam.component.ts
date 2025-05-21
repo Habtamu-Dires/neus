@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, Host, HostListener, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CreateExamDto } from '../../../../services/models';
 import { ExamsService } from '../../../../services/services';
@@ -26,6 +26,10 @@ export class ManageExamComponent implements OnInit{
   subscriptionLevelList:Array<string> = ['NONE','BASIC','ADVANCED','PREMIUM'];
   exampTeypeList:Array<string> = ["TEST","ERMP", "USMLE_STEP_1","USMLE_STEP_2"]
   showExamTypeList:boolean = false;
+
+  @ViewChild('subListElement') subListElement!:ElementRef;
+  @ViewChild('typeListElement') typeListElement!:ElementRef;
+
 
   constructor(
     private examsService:ExamsService,
@@ -130,5 +134,17 @@ export class ManageExamComponent implements OnInit{
   
   onCancel(){
     this.router.navigate(['/admin/exams']);
+  }
+
+  // on click listener
+  @HostListener('document:click', ['$event'])
+  onClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (this.showSubscriptionLevelList && this.subListElement && !this.subListElement.nativeElement.contains(target)) {
+      this.showSubscriptionLevelList = false;
+    }
+    if (this.showExamTypeList && this.typeListElement && !this.typeListElement.nativeElement.contains(target)) {
+      this.showExamTypeList = false;
+    }
   }
 }

@@ -69,7 +69,7 @@
             class="cursor-pointer underline font-mono text-sm hover:text-blue-600">
           Videos
         </button>
-        <button *ngIf="bookResources.length > 0" (click)="scrollToResouceType('exams')" 
+        <button *ngIf="bookResources.length > 0" (click)="scrollToResouceType('books')" 
             class="cursor-pointer underline font-mono text-sm hover:text-blue-600">
           Books
         </button>
@@ -150,8 +150,7 @@
           <span class="mx-4 text-xl font-semibold text-gray-800">Books</span>
           <div class="flex-grow border-t border-gray-300"></div>
         </div>
-        <app-resource-box [resourceList]="bookResources">
-        </app-resource-box>
+        <app-resource-box [resourceList]="bookResources"></app-resource-box>
       </div>
     </div>
 </section>

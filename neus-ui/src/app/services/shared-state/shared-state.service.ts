@@ -15,18 +15,28 @@ export class SharedStateService {
     this.isSyncronizing.set(isSyncronizing);
   }
 
+  // exma type list
+  examTypeList:string[] = [
+    'TEST',
+    'ERMP',
+    'USMLE_STEP_1',
+    'USMLE_STEP_2'
+  ]
+
   // resouce list
   resouceTypeList:string[] = [
     'EXAM',
     'READING_MATERIAL',
     'VIDEO',
     'BOOK',
+    'READING_MATERIALS',
     'LECTURE_VIDEOS',
     'LECTURE_NOTES',
     'ERMP',
     'USMLE_STEP_1',
     'USMLE_STEP_2',
-    'LECTURE'
+    'LECTURES',
+    'BOOKS'
   ]
   
   // department list

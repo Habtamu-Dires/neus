@@ -26,6 +26,7 @@ export class ResourcesComponent {
   isLoggedIn = false;
   subscriptionLevel: "NONE" | "BASIC" | "ADVANCED" | "PREMIUM" | undefined = undefined;
   showSearchInput:boolean = false;
+  resourcePriorityOrder:ResourceInfoDto[] = [];
 
   @Output() scrollToSection = new EventEmitter<string>();
 
@@ -50,24 +51,37 @@ export class ResourcesComponent {
     // Check login status
     this.isLoggedIn = this.keyclaokService.isAuthenticated;
 
+    this.resources = this.userSharedStateService.resourceList();
+    // fetch resources
+    if(!this.resources || this.resources.length === 0){
+      this.fetchResource();
+    }
+
     // back to current sub level category
     const isFromResDetail = this.activatedRoute.snapshot.queryParams['from-resource-detail'];
 
-    // fetch resources
-    this.fetchResource(isFromResDetail);
+    if(isFromResDetail){
+      this.applyFilter(this.userSharedStateService.currentSubLevelCat());
+    } else{
+      this.applyFilter('FREE');
+    }
+
+    this.resourcePriorityOrder = this.userSharedStateService.resourceList();
     
   }
 
   // fetch resources
-  fetchResource(isFromResDetail:boolean | undefined){
+  fetchResource(){
      this.resourcesService.getListOfResources().subscribe({
       next:(res:ResourceDto[])=>{
         this.resources = res;
-        if(this.subscriptionLevel && !isFromResDetail){
+        this.sortResourcesByType();
+        //update resource list 
+        this.userSharedStateService.updateResourcesList(this.resources);
+        console.log("calling ...API resources.")
+        if(this.subscriptionLevel){
           this.applyFilter(this.subscriptionLevel);
-        } else if(isFromResDetail){
-          this.applyFilter(this.userSharedStateService.currentSubLevelCat());
-        } else{
+        } else {
           this.applyFilter('FREE');
         }
       },
@@ -93,12 +107,12 @@ export class ResourcesComponent {
     // Group resources by type
     this.examResources = this.filteredResources.filter(r => 
        ['EXAM','ERMP','USMLE_STEP_1','USMLE_STEP_2'].includes(r.type ? r.type : 'none') ); 
-    this.lectureResources = this.filteredResources.filter(r => r.type === 'LECTURE' ); 
+    this.lectureResources = this.filteredResources.filter(r => r.type === 'LECTURES' ); 
     this.noteResources = this.filteredResources.filter(r => 
-        r.type === 'READING_MATERIAL' || r.type === 'LECTURE_NOTES');
+        ['READING_MATERIAL','LECTURE_NOTES','READING_MATERIALS'].includes(r.type ? r.type : 'none') );
     this.videoResources = this.filteredResources.filter(r => 
-        r.type === 'VIDEO' || r.type === 'LECTURE_VIDEOS');
-    this.bookResources = this.filteredResources.filter(r => r.type === 'BOOK');
+        ['VIDEO','LECTURE_VIDEOS'].includes(r.type ? r.type : 'none') );
+    this.bookResources = this.filteredResources.filter(r => ['BOOK','BOOKS'].includes(r.type ? r.type : 'none'));
   }
 
   // on filter selected
@@ -133,12 +147,12 @@ export class ResourcesComponent {
       // Group resources by type
       this.examResources = this.filteredResources.filter(r => 
         ['EXAM','ERMP','USMLE_STEP_1','USMLE_STEP_2'].includes(r.type ? r.type : 'none') );
-      this.lectureResources = this.filteredResources.filter(r => r.type === 'LECTURE' ); 
+      this.lectureResources = this.filteredResources.filter(r => r.type === 'LECTURES' ); 
       this.noteResources = this.filteredResources.filter(r => 
-          r.type === 'READING_MATERIAL' || r.type === 'LECTURE_NOTES');
+          ['READING_MATERIAL','LECTURE_NOTES','READING_MATERIALS'].includes(r.type ? r.type : 'none') );
       this.videoResources = this.filteredResources.filter(r => 
-          r.type === 'VIDEO' || r.type === 'LECTURE_VIDEOS');
-      this.bookResources = this.filteredResources.filter(r => r.type === 'BOOK');
+          ['VIDEO','LECTURE_VIDEOS'].includes(r.type ? r.type : 'none') );
+      this.bookResources = this.filteredResources.filter(r => ['BOOK','BOOKS'].includes(r.type ? r.type : 'none'));
         
     }
   }
@@ -163,7 +177,21 @@ export class ResourcesComponent {
           behavior: 'smooth'
         });
       }
-    }, 150); // slight delay lets rendering settle 
+    }, 100); // slight delay lets rendering settle 
   }
+
+  // sort resources by type
+    sortResourcesByType(){
+      this.resources.sort((a, b) => {
+        const indexA = this.resourcePriorityOrder.indexOf(a);
+        const indexB = this.resourcePriorityOrder.indexOf(b);
+        if (indexA !== -1 && indexB !== -1) {
+          return indexA - indexB;
+        }
+        if (indexA !== -1) return -1;
+        if (indexB !== -1) return 1;
+        return (a.type ?? '').localeCompare(b.type ?? '');
+      });
+    }
   
 }

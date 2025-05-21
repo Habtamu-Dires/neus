@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EditDialogComponent } from '../../components/edit-dialog/edit-dialog.component';
-import { CreateChoiceDto, CreateQuestionDto, QuestionDto } from '../../../../services/models';
+import { CreateChoiceDto, CreateQuestionDto, QuestionDto, TextDto } from '../../../../services/models';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AdminUxService } from '../../service/admin-ux/admin-ux.service';
@@ -10,12 +10,18 @@ import { QuestionsService } from '../../../../services/services';
 import { ToastrService } from 'ngx-toastr';
 import { ConfirmDialogComponent } from '../../../../components/confirm-dialog/confirm-dialog.component';
 import { ViewChild, ElementRef } from '@angular/core';
-import { ImageViewerComponent } from '../../components/image-viewer/image-viewer.component';
 import { SharedStateService } from '../../../../services/shared-state/shared-state.service';
+import { ImagePreviewComponent } from '../../../../components/image-preview/image-preview.component';
+import { VideoPreviewComponent } from '../../../../components/video-preview/video-preview.component';
+import { environment } from '../../../../../environments/environment.development';
+import { HttpClient } from '@angular/common/http';
+import { QuillViewComponent } from 'ngx-quill';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { FirefoxQuillViewPatchDirective } from '../../../../firefox-quill-view-patch.directive';
 
 @Component({
   selector: 'app-questions',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule,QuillViewComponent,FirefoxQuillViewPatchDirective],
   templateUrl: './questions.component.html',
   styleUrl: './questions.component.css'
 })
@@ -32,6 +38,10 @@ export class QuestionsComponent {
   showDepartmentList:boolean = false;
   departmentList:string[] = [];
   filteredDepartmentList:string[] = [];
+  isUploading:boolean = false;
+  selectedFile:any;
+  sanitizedContent: SafeHtml | undefined;
+
 
   constructor(
     private qustionsService:QuestionsService,
@@ -40,7 +50,10 @@ export class QuestionsComponent {
     public adminUxService:AdminUxService,
     private router:Router,
     private toastrService:ToastrService,
-    private sharedStateService:SharedStateService
+    private sharedStateService:SharedStateService,
+    private dialog: MatDialog,
+    private http:HttpClient,
+     public sanitizer: DomSanitizer
   ) {}
 
   ngOnInit(): void {
@@ -84,7 +97,7 @@ export class QuestionsComponent {
       questionText: this.currentQuestion.questionText,
       explanation:this.currentQuestion.explanation,
       choices: this.currentQuestion.choices as CreateChoiceDto[],
-      imgUrls: this.currentQuestion.imgUrls,
+      mediaUrls: this.currentQuestion.mediaUrls,
       department: this.currentQuestion.department,
       blockNumber: this.currentQuestion.blockNumber
     }
@@ -125,6 +138,7 @@ export class QuestionsComponent {
   // select question
   selectQuestion(index: number) {
     this.currentQuestionIndex = index;
+    this.showExplanation = false;
     this.scrollToTop();
   }
 
@@ -166,12 +180,10 @@ export class QuestionsComponent {
 
   // edit question
   editQuestion() {
-    console.log("hoha hoha")
-    console.log(this.currentQuestion.questionText);
     const dialog = this.matDialog.open(EditDialogComponent, {
       maxWidth: '90vw',
       maxHeight: '90vh',
-      width: '65%',
+      width: '70%',
       height: 'auto',
       autoFocus: true,
       data: {id:this.currentQuestion.id, title: 'Edit Question', content: this.currentQuestion.questionText },
@@ -179,8 +191,9 @@ export class QuestionsComponent {
     dialog.afterClosed().subscribe((result) => {
       if (result) {
         this.currentQuestion.questionText = result.content;
-        if(result.imageUrls.length > 0){
-          this.currentQuestion.imgUrls?.push(...result.imageUrls);
+        console.log("The content : " + result.content);
+        if(result.mediaUrls.length > 0){
+          this.currentQuestion.mediaUrls?.push(...result.mediaUrls);
         }
       }
     });
@@ -193,15 +206,15 @@ export class QuestionsComponent {
     const dialog = this.matDialog.open(EditDialogComponent, {
       maxWidth: '90vw',
       maxHeight: '90vh',
-      width: '65%',
+      width: '70%',
       height: 'auto',
       data: { title: 'Edit Choice', content: choice.text },
     });
     dialog.afterClosed().subscribe((result) => {
       if (result && choice) {
         choice.text = result.content;
-        if(result.imageUrls.length > 0){
-          this.currentQuestion.imgUrls?.push(...result.imageUrls);
+        if(result.mediaUrls.length > 0){
+          this.currentQuestion.mediaUrls?.push(...result.mediaUrls);
         }
       }
     });
@@ -212,7 +225,7 @@ export class QuestionsComponent {
     const dialog = this.matDialog.open(EditDialogComponent, {
       maxWidth: '90vw',
       maxHeight: '90vh',
-      width: '65%',
+      width: '70%',
       height: 'auto',
       data: { title: 'Add new Choice', content: '' },
     });
@@ -221,8 +234,8 @@ export class QuestionsComponent {
         const choiceText = result.content;
         const choices = this.currentQuestion.choices || [];
         this.currentQuestion.choices?.push({id: String(choices.length),  text: choiceText, isCorrect: false });
-        if(result.imageUrls.length > 0){
-          this.currentQuestion.imgUrls?.push(...result.imageUrls);
+        if(result.mediaUrls.length > 0){
+          this.currentQuestion.mediaUrls?.push(...result.mediaUrls);
         }
       }
     });    
@@ -233,15 +246,15 @@ export class QuestionsComponent {
     const dialog = this.matDialog.open(EditDialogComponent, {
       maxWidth: '90vw',
       maxHeight: '90vh',
-      width: '65%',
+      width: '70%',
       height: 'auto',
       data: {id:this.currentQuestion.id, title: 'Edit Explanation', content: this.currentQuestion.explanation },
     });
     dialog.afterClosed().subscribe((result) => {
       if (result) {
         this.currentQuestion.explanation = result.content;
-        if(result.imageUrls.length > 0){
-          this.currentQuestion.imgUrls?.push(...result.imageUrls);
+        if(result.mediaUrls.length > 0){
+          this.currentQuestion.mediaUrls?.push(...result.mediaUrls);
         }
       }
     });
@@ -261,8 +274,8 @@ export class QuestionsComponent {
     dialog.afterClosed().subscribe((result) => {
       if (result) {
         // delete all images in the question
-        this.currentQuestion.imgUrls?.forEach(img => {
-          this.deleteImage(img);
+        this.currentQuestion.mediaUrls?.forEach(img => {
+          this.deleteMedia(img);
         })
         this.deleteQuestion(this.currentQuestion.id as string);
       }
@@ -308,20 +321,8 @@ export class QuestionsComponent {
     });
   }
 
-  // view image
-  viewImage(url:any){
-    this.matDialog.open(ImageViewerComponent, {
-      width: '400px',
-      height: '150px',
-      data: { 
-        imageUrl:url
-      },
-    });
-    
-  }
-
-  // on delete image
-  onDeleteImage(url:any){
+  // on delete media
+  onDeleteMedia(url:any){
     const dialog = this.matDialog.open(ConfirmDialogComponent, {
       width: '400px',
       height: '150px',
@@ -333,15 +334,15 @@ export class QuestionsComponent {
     });
     dialog.afterClosed().subscribe((result) => {
       if (result) {
-        this.currentQuestion.imgUrls = this.currentQuestion.imgUrls?.filter(imgUrl => imgUrl !== url);
-        this.deleteImage(url);
+        this.currentQuestion.mediaUrls = this.currentQuestion.mediaUrls?.filter(imgUrl => imgUrl !== url);
+        this.deleteMedia(url);
       }
     });
   }
 
   // delete image
-  deleteImage(url:string){
-    this.qustionsService.deleteImage({
+  deleteMedia(url:string){
+    this.qustionsService.deleteMedia({
       'url':url 
     }).subscribe({
       next:()=>{
@@ -398,5 +399,107 @@ export class QuestionsComponent {
   onDepartmentSearch(text:string){
     this.filteredDepartmentList = this.departmentList
     .filter(dep => dep.toLocaleLowerCase().startsWith(text.toLocaleLowerCase()));
+  }
+
+   //file methods
+    onFileSelected(event:any){
+      const file = event.target.files[0];
+      this.selectedFile = file;
+    }
+  
+    uploadFile(){
+      if(this.selectedFile){
+        this.saveMedia(this.selectedFile);
+      }
+    }
+  
+    // upload
+    saveMedia(file: any) {
+        this.isUploading = true; // Show the loading animation
+        const formData = new FormData();
+        formData.append('file', file); 
+    
+        this.http.post<TextDto>(`${environment.apiUrl}/questions/upload-media`, formData) 
+          .subscribe({
+            next: (res: TextDto) => {
+              this.isUploading = false; // Hide the loading animation
+              const mediaUrl = res.value;
+              if(mediaUrl){
+                
+                // push to image urls list
+                this.currentQuestion.mediaUrls?.push(mediaUrl);
+                this.toastrService.success('Image uploaded Sucessfully');
+
+              }
+            },
+            error: (err) => {
+              this.isUploading = false; // Hide loading animation even on error
+              console.error('Image upload failed:', err);
+              this.toastrService.error('Image upload failed', 'Error');
+            }
+          });
+    }
+  // reset file input
+  resetFileInput(element:HTMLInputElement){
+    element.value = '';
+    this.selectedFile = null;
+  }
+  
+  // view image
+  viewMedia(url:any){
+    if (this.isImageUrl(url)) {
+      this.openImageDialog(url);
+    } else if (this.isVideoUrl(url)) {
+      this.openVideoDialog(url);
+    }
+  }
+
+
+  // open image and dialog images
+  handleLinkClick(event: MouseEvent) {
+      const target = event.target as HTMLElement;
+      if (target.tagName === 'A') {
+        const href = target.getAttribute('href');
+        if (href) {
+          if (this.isImageUrl(href)) {
+            event.preventDefault();
+            this.openImageDialog(href);
+          } else if (this.isVideoUrl(href)) {
+            event.preventDefault();
+            this.openVideoDialog(href);
+          }
+        }
+      }
+  }
+  // is image url
+  isImageUrl(url: string): boolean {
+    const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.svg'];
+    const ext = url.split('.').pop()?.toLowerCase();
+    return ext ? imageExtensions.includes('.' + ext) : false;
+  }
+
+  // is video url
+  isVideoUrl(url: string): boolean {
+    const videoExtensions = ['.mp4', '.webm', '.ogg', '.mov'];
+    const ext = url.split('.').pop()?.toLowerCase();
+    return ext ? videoExtensions.includes('.' + ext) : false;
+  }
+  
+  // open image dialog
+  openImageDialog(url: string) {
+    this.dialog.open(ImagePreviewComponent, {
+      data: { url: url },
+      maxWidth: '80vw',
+      maxHeight: '80vh',
+    });
+  }
+  
+  // open video dialog
+  openVideoDialog(url: string) {
+    this.dialog.open(VideoPreviewComponent, {
+      data: { url: url },
+      maxWidth: '70vw',
+      maxHeight: '70vh',
+    });
   }
 }

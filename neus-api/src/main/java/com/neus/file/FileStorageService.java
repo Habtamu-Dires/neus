@@ -86,10 +86,10 @@ public class FileStorageService {
     // get file extension from content type
     public static String getExtensionFromContentType(String contentType) {
         return switch (contentType) {
-            case MediaType.IMAGE_JPEG_VALUE -> ".jpg";
+            case MediaType.IMAGE_JPEG_VALUE -> ".jpeg";
             case MediaType.IMAGE_PNG_VALUE -> ".png";
-            case MediaType.IMAGE_GIF_VALUE -> ".jpeg";
-            case MediaType.APPLICATION_PDF_VALUE -> ".webp";
+            case MediaType.IMAGE_GIF_VALUE -> ".gif";
+            case MediaType.APPLICATION_PDF_VALUE -> ".pdf";
             case "video/mp4"-> ".mp4";
 
             // Add other content types as needed

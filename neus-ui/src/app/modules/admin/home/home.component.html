@@ -1,7 +1,7 @@
-<main class="w-full h-screen flex relative">
+<main class="w-full h-screen flex flex-col md:flex-row relative">
     <!--side bar-->
-    <section *ngIf="!adminUxService.showDrawer()" class="w-1/3  md:w-1/6 shadow-lg font-mono h-screen">
-        <div class="flex flex-col h-full justify-between shadow-xl">
+    <section  *ngIf="!showDrawer" class="w-full md:w-1/6 shadow-lg font-mono h-screen">
+        <div class="w-full flex flex-col h-full justify-between shadow-xl">
             <div class="flex flex-col gap-2">
                 <div class="flex justify-between p-4">
                     <p class="text-lg ">
@@ -10,9 +10,9 @@
                     </p>
                     <div>
                         <svg class="cursor-pointer"  
-                        (click)="toggleSideBar()"          
-                        xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"><g fill="currentColor"><path d="M11.707 5.293a1 1 0 0 1 0 1.414L6.414 12l5.293 5.293a1 1 0 0 1-1.414 1.414l-6-6a1 1 0 0 1 0-1.414l6-6a1 1 0 0 1 1.414 0z"/><path d="M19.707 5.293a1 1 0 0 1 0 1.414L14.414 12l5.293 5.293a1 1 0 0 1-1.414 1.414l-6-6a1 1 0 0 1 0-1.414l6-6a1 1 0 0 1 1.414 0z"/></g>
-                    </svg>   
+                            (click)="toggleSideBar()"          
+                            xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"><g fill="currentColor"><path d="M11.707 5.293a1 1 0 0 1 0 1.414L6.414 12l5.293 5.293a1 1 0 0 1-1.414 1.414l-6-6a1 1 0 0 1 0-1.414l6-6a1 1 0 0 1 1.414 0z"/><path d="M19.707 5.293a1 1 0 0 1 0 1.414L14.414 12l5.293 5.293a1 1 0 0 1-1.414 1.414l-6-6a1 1 0 0 1 0-1.414l6-6a1 1 0 0 1 1.414 0z"/></g>
+                        </svg>   
                     </div> 
                 </div>
                 <!--side Bar Items-->
@@ -67,9 +67,12 @@
     </section>
     <!--main-->
     <section class="overflow-auto" 
-        [ngClass]="{'w-full': adminUxService.showDrawer(), 'w-2/3 md:w-5/6': !adminUxService.showDrawer()}">
+        [ngClass]="{
+        'w-[100%]': showDrawer,
+        'w-full md:w-5/6': !showDrawer,
+        }">
         <!--pages-->
-        <div>
+        <div class="w-full">
             <router-outlet></router-outlet>
         </div>
     </section>

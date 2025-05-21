@@ -7,6 +7,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../../../../components/confirm-dialog/confirm-dialog.component';
 import { UsersService } from '../../../../services/services';
 import { ToastrService } from 'ngx-toastr';
+import { AdminUxService } from '../../service/admin-ux/admin-ux.service';
 
 @Component({
   selector: 'app-user',
@@ -20,6 +21,7 @@ export class UserComponent implements OnInit {
   userList:UserDto[] = [];
   showActions:boolean = false;
   selectedUserId:string | undefined;
+  isLoading:boolean=true;
   // pagination
   page:number = 0;
   size:number = 5;
@@ -29,15 +31,21 @@ export class UserComponent implements OnInit {
   totalPages: number | undefined;
   totalElements: number | undefined;
   numberOfElements: number | undefined;
+  //filter
+  emailFilter:string | undefined;
+  subLevelFilter:string | undefined;
+  
 
   constructor(
     private userService:UsersService,
     private matDialog:MatDialog,
     private toastr:ToastrService,
-    private datePipe:DatePipe
+    private datePipe:DatePipe,
+    private adminUxService:AdminUxService
   ) { }
 
   ngOnInit(): void {
+    this.page = this.adminUxService.userPageNo();
     this.fetchPageOfUsers();
   }
 
@@ -47,34 +55,53 @@ export class UserComponent implements OnInit {
       'page': this.page,
       'size': this.size
     }).subscribe({
-      next: (response) => {
-        this.userList = response.content as UserDto[];
-
+      next: (res) => {
+        this.userList = res.content as UserDto[];
+        this.isLoading=false;
         //pagination
-        this.isFirstPage = response.first;
-        this.isLastPage = response.last;
-        this.totalPages = response.totalPages;
-        this.totalElements = response.totalElements;
-        this.numberOfElements = response.numberOfElements;
-        this.isEmptyPage = response.empty as boolean;
+        this.isFirstPage = res.first;
+        this.isLastPage = res.last;
+        this.totalPages = res.totalPages;
+        this.totalElements = res.totalElements;
+        this.numberOfElements = res.numberOfElements;
+        this.isEmptyPage = res.empty as boolean;
+        // update page number
+        this.adminUxService.updateExamPageNo(this.page);
       },
       error: (error) => {
+        this.isLoading=false;
         console.log(error);
         this.toastr.error('Error fetching users', 'Error')
       }
     });
   }
 
+  // filter user
+  filterUser(){
+    this.userService.filterUser({
+      'email': this.emailFilter,
+      'subLevel': this.subLevelFilter
+    }).subscribe({
+      next:(res)=>{
+        this.userList = res.content as UserDto[];
+        //pagination
+        this.isFirstPage = res.first;
+        this.isLastPage = res.last;
+        this.totalPages = res.totalPages;
+        this.totalElements = res.totalElements;
+        this.numberOfElements = res.numberOfElements;
+        this.isEmptyPage = res.empty as boolean;
+      },
+      error:(err)=>{
+        console.log(err);
+      }
+    })
+  }
+
   // on show action
   onShowActions(userId:any){
     this.selectedUserId =  userId as string;
     this.showActions = true;
-  }
-
-
-  // on search 
-  onSearch(text:any){
-    console.log(text);
   }
 
   // on delete user
@@ -153,6 +180,22 @@ export class UserComponent implements OnInit {
       return this.datePipe.transform(date, 'MMM dd, yyyy');
     }
     return '';
+  }
+
+  // on search 
+  onSearch(text:any){
+    if(text.length >=3){
+      this.emailFilter = text;
+      this.filterUser();
+    } else {
+      this.fetchPageOfUsers();
+    }
+  }
+
+  // on subl level filter
+  onSubLevelFilter(level:string){
+    this.subLevelFilter = level;
+    this.filterUser();
   }
 
   // pagination

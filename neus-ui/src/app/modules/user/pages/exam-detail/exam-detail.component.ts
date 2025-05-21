@@ -11,6 +11,8 @@ import { ConfirmDialogComponent } from '../../../../components/confirm-dialog/co
 import { KeycloakService } from '../../../../services/keycloak/keycloak.service';
 import { ResumeExamDialogComponent } from '../../components/resume-exam-dialog/resume-exam-dialog.component';
 import { QuestionListDrawerComponent } from "../../components/question-list-drawer/question-list-drawer.component";
+import { VideoPreviewComponent } from '../../../../components/video-preview/video-preview.component';
+import { ImagePreviewComponent } from '../../../../components/image-preview/image-preview.component';
 
 @Component({
   selector: 'app-exam-detail',
@@ -36,9 +38,11 @@ export class ExamDetailComponent {
   isLoading:boolean = true;
   isSubmitted:boolean = false;
   hasFullAccess:boolean = false;
+  isAuthenticated:boolean = false;
   userExamData: UserExamDto | undefined;  // saved answers
   showQuestionsDrawer:boolean = false;
   subscriptionLevel:string | null = null;
+  resourceNotFound:boolean = false;
 
   @ViewChild('questionContainer') questionContainer!: ElementRef;
 
@@ -49,7 +53,8 @@ export class ExamDetailComponent {
     private activatedRoute: ActivatedRoute, 
     private matDialog: MatDialog,
     private router:Router,
-    private toastrService:ToastrService
+    private toastrService:ToastrService,
+    private dialog:MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -60,8 +65,8 @@ export class ExamDetailComponent {
       }
     });
     // Check login status
-     const isLoggedIn = this.keyclaokService.isAuthenticated;
-    if (isLoggedIn) {
+    this.isAuthenticated = this.keyclaokService.isAuthenticated;
+    if (this.isAuthenticated) {
       const subscriptionType = this.keyclaokService.subscriptionLevel as string;
       if(subscriptionType){
         this.subscriptionLevel = subscriptionType.replace('_subscriber','').toUpperCase();
@@ -88,13 +93,19 @@ export class ExamDetailComponent {
         this.examDto = res;
         this.questionList = res.questions as QuestionDto[];
         this.examDuration = res.duration as number;
-        // check access status
-        this.hasFullAccess = this.isEqualOrHigherTier(res.requiredSubLevel as string);
-        if(this.hasFullAccess && this.keyclaokService.isAuthenticated){
-          this.fetchUserAnswers();
-        } else {
+        if(this.questionList.length === 0){
+          this.resourceNotFound = true;
           this.isLoading = false;
+        } else {
+          // check access status
+          this.hasFullAccess = this.isEqualOrHigherTier(res.requiredSubLevel as string);
+          if(this.hasFullAccess && this.isAuthenticated){
+            this.fetchUserAnswers();
+          } else {
+            // if(this.mode === )
+          }
         }
+        
       },
       error:(err)=>{
         console.log(err);
@@ -104,7 +115,7 @@ export class ExamDetailComponent {
   }
 
   // fetch user answers
-  fetchUserAnswers(changeMode:boolean = false){
+  fetchUserAnswers(){
     this.userExamService.getUserAnswers({
       'exam-id': this.examId as string
     }).subscribe({
@@ -112,9 +123,6 @@ export class ExamDetailComponent {
         this.userExamData = res;
         // set loading false
         this.isLoading = false;
-        if(changeMode){
-          this.setMode(this.mode);
-        }
       },
       error:(err)=>{
         console.log("no saved prgress")
@@ -122,6 +130,22 @@ export class ExamDetailComponent {
         this.isLoading = false;
       }
     });
+  }
+
+  //start exam
+  startExam(){
+    this.isLoading = false;
+    this.userAnswers.clear();
+    this.correctAnswers.clear();
+    if(this.mode === 'TEST'){
+      clearInterval(this.interval);
+      this.examDuration = this.examDto?.duration as number;
+      this.startTimer();
+    }
+    this.isSubmitted = false;
+    this.currentQuestionIndex = 0;
+    this.showExplanation = false;
+    this.examStarted = true;
   }
 
   // update user answer 
@@ -142,7 +166,7 @@ export class ExamDetailComponent {
     };
 
     // save user answers
-    if(this.hasFullAccess){
+    if(this.isAuthenticated && this.hasFullAccess){
       this.userExamService.saveUserAnswers({
         body: request,
       }).subscribe({
@@ -176,12 +200,12 @@ export class ExamDetailComponent {
         this.startTimer();
     }
 
-    // clear and start exam
-    this.userAnswers.clear();
-    this.correctAnswers.clear();
-    this.currentQuestionIndex = 0;
-    this.showExplanation = false;
-    this.examStarted = true;
+    // // clear and start exam
+    // this.userAnswers.clear();
+    // this.correctAnswers.clear();
+    // this.currentQuestionIndex = 0;
+    // this.showExplanation = false;
+    // this.examStarted = true;
     
   }
 
@@ -345,7 +369,7 @@ export class ExamDetailComponent {
         this.showResults(score);
         this.isSubmitted = true;
         // save user answers if user answers is greater than 3/4 of the questoin
-        if(this.hasFullAccess && this.userAnswers.size >= (this.questionList.length * 3/4)){
+        if(this.isAuthenticated && this.hasFullAccess && this.userAnswers.size >= (this.questionList.length * 3/4)){
           this.saveUserAnswers('COMPLETED');
         }
       }
@@ -400,48 +424,10 @@ export class ExamDetailComponent {
     ); 
   }
 
-  // on mode change
-  onModeChange() {
-    // const mode = event.target.value;
-    const dialog = this.matDialog.open(ConfirmDialogComponent,{
-        width: '400px',
-        data:{
-          message:`you wants change to ${this.mode} mode`,
-          buttonName: 'change',
-          isWarning: false
-        }
-    });
-    dialog.afterClosed().subscribe((result) => {
-      if(result){
-        // save user answer if all question answered and the mode was test mode
-        if(this.mode === 'STUDY'  // that is the previous mode was test mode
-          && this.hasFullAccess 
-          && this.userAnswers.size === this.questionList.length 
-          && !this.isSubmitted)
-        {
-            this.saveUserAnswers('COMPLETED');
-        }
-        // clear and change mode
-        this.examStarted = false;
-        this.isSubmitted = false;
-        clearInterval(this.interval);
-        this.isLoading = true;
-        if(this.hasFullAccess){
-          this.fetchUserAnswers(true);
-        } else {
-          this.isLoading = false;
-          this.setMode(this.mode);
-        }
-      } else {
-        // back to previous mode
-        this.mode = this.mode === 'STUDY' ? 'TEST' : 'STUDY';
-      }
-    });
-  }
 
   // save progess
   saveAndExit(){
-    if(this.hasFullAccess && this.userAnswers.size > 0){
+    if(this.isAuthenticated && this.hasFullAccess && this.userAnswers.size > 0){
       this.saveUserAnswers('IN_PROGRESS');
       clearInterval(this.interval);
       this.router.navigate(['user'], {queryParams: {'from-resource-detail': true}});
@@ -468,7 +454,7 @@ export class ExamDetailComponent {
     dialog.afterClosed().subscribe(result => {
       if(result){
         // if it has full access and answers all questions and in test mode
-        if(this.hasFullAccess
+        if(this.isAuthenticated && this.hasFullAccess
           && this.mode === 'TEST' 
           && this.userAnswers.size === this.questionList.length 
           && !this.isSubmitted){
@@ -499,4 +485,53 @@ export class ExamDetailComponent {
   toggleQuestionsDrawer() {
     this.showQuestionsDrawer = !this.showQuestionsDrawer;
   }
+
+  //
+  // open image and dialog images
+  handleLinkClick(event: MouseEvent) {
+      const target = event.target as HTMLElement;
+      if (target.tagName === 'A') {
+        const href = target.getAttribute('href');
+        if (href) {
+          if (this.isImageUrl(href)) {
+            event.preventDefault();
+            this.openImageDialog(href);
+          } else if (this.isVideoUrl(href)) {
+            event.preventDefault();
+            this.openVideoDialog(href);
+          }
+        }
+      }
+    }
+    // is image url
+    isImageUrl(url: string): boolean {
+      const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.svg'];
+      const ext = url.split('.').pop()?.toLowerCase();
+      return ext ? imageExtensions.includes('.' + ext) : false;
+    }
+
+    // is video url
+    isVideoUrl(url: string): boolean {
+      const videoExtensions = ['.mp4', '.webm', '.ogg', '.mov'];
+      const ext = url.split('.').pop()?.toLowerCase();
+      return ext ? videoExtensions.includes('.' + ext) : false;
+    }
+    
+    // open image dialog
+    openImageDialog(url: string) {
+      this.dialog.open(ImagePreviewComponent, {
+        data: { url: url },
+        maxWidth: '80vw',
+        maxHeight: '80vh',
+      });
+    }
+    
+    // open video dialog
+    openVideoDialog(url: string) {
+      this.dialog.open(VideoPreviewComponent, {
+        data: { url: url },
+        maxWidth: '70vw',
+        maxHeight: '70vh',
+      });
+    }
 }

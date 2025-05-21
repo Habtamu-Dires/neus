@@ -2,7 +2,7 @@ import { Component, HostListener, OnInit } from '@angular/core';
 import { PaginationComponent } from "../../components/pagination/pagination.component";
 import { HeaderComponent } from "../../components/header/header.component";
 import { ToastrService } from 'ngx-toastr';
-import { ExamDto } from '../../../../services/models';
+import { ExamDto, UserDto } from '../../../../services/models';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ReadDialogComponent } from '../../components/read-dialog/read-dialog.component';
@@ -11,6 +11,7 @@ import { ExamsService } from '../../../../services/services';
 import { Router } from '@angular/router';
 import { ConfirmDialogComponent } from '../../../../components/confirm-dialog/confirm-dialog.component';
 import { intervalToDuration } from 'date-fns';
+import { AdminUxService } from '../../service/admin-ux/admin-ux.service';
 
 @Component({
   selector: 'app-exam',
@@ -23,39 +24,82 @@ export class ExamComponent implements OnInit{
   examList:ExamDto[] = [];
   selectedExamId:string = '';
   showActions:boolean = false;
+  isLoading:boolean = true;
   // pagination
   page:number = 0;
-  size:number = 5;
+  size:number = 10;
   isEmptyPage: boolean = true;
   isFirstPage: boolean |undefined; 
   isLastPage: boolean |undefined;
   totalPages: number | undefined;
   totalElements: number | undefined;
   numberOfElements: number | undefined;
+  //filter
+  titleFilter:string | undefined;
+  typeFilter:string | undefined;
+  subLevelFilter:string | undefined;
+  yearFilter:number | undefined;
 
   constructor(
     private examsService:ExamsService,
     private router:Router,
     private toastrService:ToastrService,
-    private matDialog:MatDialog
+    private matDialog:MatDialog,
+    private adminUxService:AdminUxService
   ){}
 
   ngOnInit(): void {
+    this.page = this.adminUxService.examPageNo();
     this.fetchPageOfExams();
   }
 
   // fetch page of exams
   fetchPageOfExams(){
-    this.examsService.getPageOfExams().subscribe({
-      next:(response)=>{
-        this.examList = response.content as ExamDto[];
+    this.examsService.getPageOfExams({
+        page: this.page,
+        size: this.size
+      }).subscribe({
+      next:(res)=>{
+        this.examList = res.content as ExamDto[];
+        this.isLoading = false;
         // pagination
-        this.isFirstPage = response.first;
-        this.isLastPage = response.last;
-        this.totalPages = response.totalPages;
-        this.totalElements = response.totalElements;
-        this.numberOfElements = response.numberOfElements;
-        this.isEmptyPage = response.empty as boolean;
+        this.isFirstPage = res.first;
+        this.isLastPage = res.last;
+        this.totalPages = res.totalPages;
+        this.totalElements = res.totalElements;
+        this.numberOfElements = res.numberOfElements;
+        this.isEmptyPage = res.empty as boolean;
+        // update page no
+        this.adminUxService.updateExamPageNo(this.page);
+      },
+      error:(err)=>{
+        this.isLoading = false;
+        console.log(err);
+        this.toastrService.error(err);
+      }
+    })
+  }
+
+  // filter exam
+  filterExam(){
+    this.examsService.filterExams({
+      'title': this.titleFilter,
+      'type': this.typeFilter,
+      'requiredSubLevel': this.subLevelFilter,
+      'year': this.yearFilter
+    }).subscribe({
+      next:(res)=>{
+        this.examList = res.content as ExamDto[];
+        // pagination
+        this.isFirstPage = res.first;
+        this.isLastPage = res.last;
+        this.totalPages = res.totalPages;
+        this.totalElements = res.totalElements;
+        this.numberOfElements = res.numberOfElements;
+        this.isEmptyPage = res.empty as boolean;
+      },
+      error:(err)=>{
+        console.log(err);
       }
     })
   }
@@ -90,10 +134,6 @@ export class ExamComponent implements OnInit{
         'examType': exam.examType
       }})
   }
-
-  // on search 
-  onSearch(text:any){}
-
 
   // on show actions
   onShowActions(examId:any){
@@ -143,6 +183,46 @@ export class ExamComponent implements OnInit{
       }
     })
   }
+
+  // on search 
+  onSearch(text:any){
+    if(text.length >= 3){
+      this.titleFilter = text;
+      this.filterExam();
+    } else {
+      this.fetchPageOfExams();
+    }
+  }
+  
+  // on type filter
+  onTypeFilter(type:string){
+    if(type.length > 0){
+      this.typeFilter = type;
+      this.filterExam();
+    } else {
+      this.fetchPageOfExams();
+    }
+  }
+  // on required sub level filter
+  onSubLevelFilter(level:string){
+    if(level.length > 0){
+        this.subLevelFilter = level;
+        this.filterExam();
+    } else {
+      this.fetchPageOfExams();
+    }
+  }
+
+  // on year filter
+  onYearFilter(year:number){
+    if(year){
+      this.yearFilter = year;
+      this.filterExam();
+    } else {
+      this.fetchPageOfExams();
+    }
+  }
+
 
   // pagination
   onSizeChanged(size:number){

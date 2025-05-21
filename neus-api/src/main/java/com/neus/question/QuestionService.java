@@ -47,7 +47,7 @@ public class QuestionService {
                   .explanation(dto.explanation())
                   .department(dto.department())
                   .blockNumber(dto.blockNumber())
-                  .imageUrls(dto.imgUrls())
+                  .mediaUrls(dto.mediaUrls())
                   .build()
             );
     }
@@ -100,7 +100,7 @@ public class QuestionService {
         question.setExplanation(dto.explanation());
         question.setDepartment(dto.department());
         question.setBlockNumber(dto.blockNumber());
-        question.setImageUrls(dto.imgUrls());
+        question.setMediaUrls(dto.mediaUrls());
 
         questionRepository.save(question);
     }
@@ -127,11 +127,11 @@ public class QuestionService {
     @PreAuthorize("hasRole('ADMIN')")
     public void deleteQuestion(String questionId) {
         Question question = this.findByExternalId(questionId);
-        List<String> images = question.getImageUrls();
+        List<String> mediaUrls = question.getMediaUrls();
         questionRepository.delete(question);
-        // delete images
-        if(images != null){
-            for(String url: images){
+        // delete mediaUrls
+        if(mediaUrls != null){
+            for(String url: mediaUrls){
                 fileStorageService.deleteFile(url);
             }
         }
@@ -139,14 +139,14 @@ public class QuestionService {
 
     // upload image
     @PreAuthorize("hasRole('ADMIN')")
-    public TextDto uploadImage(MultipartFile file) {
+    public TextDto uploadMedia(MultipartFile file) {
         String url = fileStorageService.saveFile(file, "Image");
         return new TextDto(url);
     }
 
     // delete image
     @PreAuthorize("hasRole('ADMIN')")
-    public void deleteImage(String url) {
+    public void deleteMedia(String url) {
         fileStorageService.deleteFile(url);
     }
 

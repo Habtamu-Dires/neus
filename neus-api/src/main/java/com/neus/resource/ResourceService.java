@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -249,5 +250,46 @@ public class ResourceService {
     // list of collections
     public List<ResourceInfoDto> getListOfCollections(String lectureId) {
         return resourceRepository.findByParentResourceExternalId(UUID.fromString(lectureId));
+    }
+
+    // filter resources
+    public PageResponse<ResourceDto> filterResources(
+            String title,
+            String type,
+            String requiredSubLevel,
+            String parentId,
+            boolean hasChildResources,
+            int page,
+            int size
+    ) {
+        SubscriptionLevel requiredLevel = null;
+        try{
+            requiredLevel = SubscriptionLevel.valueOf(requiredSubLevel);
+        }catch (Exception _){}
+        ResourceType resourceType= null;
+        try {
+            resourceType = ResourceType.valueOf(type);
+        } catch (Exception _){}
+
+        Specification<Resource> spec = ResourceSpecification.filterResources(
+                title,resourceType,requiredLevel,parentId,hasChildResources
+        );
+
+        Pageable pageable = PageRequest.of(page,size);
+
+        Page<Resource> res = resourceRepository.findAll(spec, pageable);
+        List<ResourceDto> resourceDtoList = res.map(ResourceDtoMapper::mapToResourceDto).toList();
+
+        return PageResponse.<ResourceDto>builder()
+                .content(resourceDtoList)
+                .totalElements(res.getTotalElements())
+                .numberOfElements(res.getNumberOfElements())
+                .totalPages(res.getTotalPages())
+                .size(res.getSize())
+                .number(res.getNumber())
+                .first(res.isFirst())
+                .last(res.isLast())
+                .empty(res.isEmpty())
+                .build();
     }
 }

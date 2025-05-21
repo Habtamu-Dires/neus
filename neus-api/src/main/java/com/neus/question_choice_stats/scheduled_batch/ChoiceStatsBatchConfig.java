@@ -95,17 +95,17 @@ public class ChoiceStatsBatchConfig {
                 )
                 INSERT INTO question_choice_stats (exam_id, question_id, choice_id, selection_count, total_responses, percentage, last_updated)
                 SELECT
-                    t.exam_id,
-                    t.question_id,
-                    t.choice_id,
-                    SUM(t.selection_count) AS selection_count,
+                    tcs.exam_id,
+                    tcs.question_id,
+                    tcs.choice_id,
+                    SUM(tcs.selection_count) AS selection_count,
                     qr.total_responses,
-                    (SUM(t.selection_count)::FLOAT / NULLIF(qr.total_responses, 0) * 100) AS percentage,
+                    (SUM(tcs.selection_count)::FLOAT / NULLIF(qr.total_responses, 0) * 100) AS percentage,
                     CURRENT_TIMESTAMP
-                FROM temp_choice_stats t
+                FROM temp_choice_stats tcs
                 JOIN question_responses qr
-                    ON t.exam_id = qr.exam_id AND t.question_id = qr.question_id
-                GROUP BY t.exam_id, t.question_id, t.choice_id, qr.total_responses
+                    ON tcs.exam_id = qr.exam_id AND tcs.question_id = qr.question_id
+                GROUP BY tcs.exam_id, tcs.question_id, tcs.choice_id, qr.total_responses
                 ON CONFLICT (exam_id, question_id, choice_id)
                 DO UPDATE SET
                     selection_count = EXCLUDED.selection_count,
@@ -140,16 +140,18 @@ public class ChoiceStatsBatchConfig {
     public ItemProcessor<UserExam, List<TempChoiceStat>> choiceStatsProcessor() {
         return userExam -> {
             List<TempChoiceStat> stats = new ArrayList<>();
-            for (UserAnswer answer : userExam.getTestModeUserAnswers()) {
-                stats.add(
-                    TempChoiceStat.builder()
-                        .examId(userExam.getExam().getId())
-                        .questionId(answer.questionId())
-                        .choiceId(answer.choiceId())
-                        .userId(userExam.getUser().getId())
-                        .selectionCount(1)
-                        .build()
-                    );
+            if(userExam.getTestModeUserAnswers() != null) { //TODO: check if this is necessary
+                for (UserAnswer answer : userExam.getTestModeUserAnswers()) {
+                    stats.add(
+                        TempChoiceStat.builder()
+                            .examId(userExam.getExam().getId())
+                            .questionId(answer.questionId())
+                            .choiceId(answer.choiceId())
+                            .userId(userExam.getUser().getId())
+                            .selectionCount(1)
+                            .build()
+                        );
+                }
             }
             return stats;
         };

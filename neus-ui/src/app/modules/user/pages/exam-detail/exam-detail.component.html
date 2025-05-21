@@ -8,55 +8,80 @@
       class="w-full h-full p-4 bg-gradient-to-b from-primary to-blue-200">
     <!-- Card -->
     <div class="flex justify-center items-center h-full">
-      <div class="relative w-full max-w-2xl bg-blue-50 rounded-xl shadow-md p-6 md:p-10 border border-blue-300 overflow-hidden">
-        <!-- Close button -->
+      <div class="relative p-12 shadow-xl rounded-xl">
+        <!--close / back -->
         <button class="absolute top-4 right-4 cursor-pointer" (click)="close()">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
             <path fill="currentColor" d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12z"/>
           </svg>
         </button>
-        <!-- Exam Title -->
-        <div class="text-center mb-6">
-          <h2 class="text-2xl md:text-3xl font-semibold text-gray-800">{{ examDto?.title }}</h2>
-        </div>
+        <div class="text-center max-w-xl w-full space-y-10">
+          <!-- Title -->
+          <h1 class="text-4xl md:text-4xl font-bold text-gray-800">{{title}}</h1>
+          <h1 class="text-4xl md:text-4xl font-bold text-gray-800">Choose Your Mode</h1>
+          
+          <!-- Instruction -->
+          <p class="text-lg md:text-xl text-gray-800">Select how you want to proceed: Test Mode or Study Mode</p>
 
-        <!-- Exam Info (scrollable if long) -->
-        <div class="max-h-52 overflow-y-auto px-2 space-y-2 text-gray-700 text-lg">
-          <p>{{ examDto?.description }}</p>
-          <p>The exam has {{ examDto?.questions?.length }} questions.</p>
-          <p>The exam takes {{ examDto?.duration }} minutes.</p>
-          <p class="font-medium text-blue-600">Choose an exam mode to start:</p>
-        </div>
+          <!-- Mode Buttons -->
+          <div class="flex flex-col md:flex-row gap-6 justify-center items-center">
+            <button
+              (click)="setMode('TEST')"
+              class="w-64 py-5 text-xl font-semibold bg-primary text-white rounded-2xl shadow-lg hover:bg-btnHover hover:scale-105 transition-all duration-200"
+            >
+              Test Mode
+            </button>
 
-        <!-- Buttons -->
-        <div class="flex justify-center gap-6 mt-8">
-          <button 
-            (click)="setMode('TEST')"
-            class="px-6 py-2 bg-primary hover:bg-btnHover text-white cursor-pointer font-medium rounded-lg transition">
-            TEST Mode
-          </button>
-          <button 
-            (click)="setMode('STUDY')"
-            class="px-6 py-2 bg-primary hover:bg-btnHover text-white cursor-pointer font-medium rounded-lg transition">
-            STUDY Mode
-          </button>
+            <button
+              (click)="setMode('STUDY')"
+              class="w-64 py-5 text-xl font-semibold bg-secondary text-white rounded-2xl shadow-lg hover:bg-btnSecHover hover:scale-105 transition-all duration-200"
+            >
+              Study Mode
+            </button>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
+  <!--exam info-->
+  <section *ngIf="mode === 'TEST' && !isLoading && !resourceNotFound && !examStarted"
+    class="max-w-xl w-full text-center space-y-6 bg-white shadow-lg p-8 rounded-2xl">
+    <!-- Title -->
+    <h2 class="text-2xl md:text-3xl font-bold text-gray-800">
+      {{ title }}
+    </h2>
+    <!-- Instruction -->
+    <p class="text-gray-600 text-base md:text-lg">
+      You're about to begin this exam. Please review the following details before starting.
+    </p>
+    <!-- Exam Info Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 text-left">
+      <div class="bg-blue-50 rounded-lg p-4 shadow-sm">
+        <p class="text-sm text-gray-500">Question Type</p>
+        <p class="text-base font-medium text-gray-800">Multiple Choice</p>
+      </div>
+
+      <div class="bg-blue-50 rounded-lg p-4 shadow-sm">
+        <p class="text-sm text-gray-500">Number of Questions</p>
+        <p class="text-base font-medium text-gray-800">{{ examDto?.questions?.length }}</p>
+      </div>
+
+      <div class="bg-blue-50 rounded-lg p-4 shadow-sm">
+        <p class="text-sm text-gray-500">Time Allotted</p>
+        <p class="text-base font-medium text-gray-800">{{ examDto?.duration }} minutes</p>
+      </div>
+    </div>
+    <!-- Optional: Start Button (if you want one later) -->
+    <button (click)="startExam()"
+        class="mt-6 bg-primary text-white px-6 py-3 rounded-lg hover:bg-btnHover transition">
+      Start Exam
+    </button>
+  </section>
+
 
   <!-- Sidebar -->
   <aside *ngIf="examStarted" class="w-full p-2 md:w-[10%] md:h-full flex md:flex-col items-center justify-between md:justify-normal md:items-start bg-gray-100 rounded-lg">
-    <!--mode changer-->
-    <div class="flex justify-start md:justify-center py-3 gap-2 w-full">
-      <select [(ngModel)]="mode" (ngModelChange)="onModeChange()" class="cursor-pointer">
-        <option [value]="mode">{{mode}} Mode</option>
-        <option [value]="mode === 'STUDY' ? 'TEST' : 'STUDY'">
-          {{mode === 'STUDY' ? 'TEST Mode' : 'STUDY Mode'}}
-        </option>
-      </select>
-    </div>
     <!--question number list-->
     <div class="hidden md:block p-1 w-full">
       <p class="text-lg font-semibold text-gray-800 mb-4">Questions</p>
@@ -134,7 +159,7 @@
         </button>
       </div>
       <!--save and exit -->
-      <div *ngIf="hasFullAccess && this.userAnswers.size > 0 || (mode === 'TEST' && !isSubmitted)" 
+      <div *ngIf="isAuthenticated && hasFullAccess && this.userAnswers.size > 0 || (mode === 'TEST' && !isSubmitted)" 
           class="flex justify-center">
         <button 
           (click)="saveAndExit()"  
@@ -150,6 +175,7 @@
         </svg>
       </button>
     </div>
+
     <!--no question available section-->
     <div *ngIf="questionList.length === 0" class="h-64 flex items-center justify-center text-gray-600 text-lg">
       No questions available for this exam.
@@ -159,7 +185,10 @@
       <!--qustion text -->
       <div class="flex items-start mb-4 gap-1">
         <span>{{ currentQuestion.questionNumber }}.</span>
-        <div class="break-words whitespace-normal overflow-hidden px-3 w-full max-w-90%" [innerHTML]="currentQuestion.questionText"></div>
+        <div class="break-words whitespace-normal overflow-hidden px-3 w-full max-w-90%" 
+          [innerHTML]="currentQuestion.questionText"
+          (click)="handleLinkClick($event)"
+        ></div>
       </div>
       <!--choices-->
       <div class="space-y-2 mb-4">
@@ -179,6 +208,7 @@
             />
           </div>
           <div class="flex gap-2 w-full max-w-90% items-center">
+            <!--choice text-->
             <span
               class="break-words whitespace-normal overflow-hidden py-2 px-3"
               [ngClass]="[
@@ -187,7 +217,8 @@
                 (mode === 'TEST' && isSubmitted && choice.isCorrect) 
                     ? 'border-2 rounded-md border-green-300 p-1' : ''
               ]"
-              [innerHTML]="choice.text"
+              [innerHTML]="choice.text" 
+              (click)="handleLinkClick($event)"
             ></span>
             <span *ngIf="choice.percentage !== null &&
                 (mode === 'STUDY' && userAnswers.has(currentQuestion.id ?? '') || mode === 'TEST' && isSubmitted)"
@@ -203,8 +234,12 @@
         <p (click)="showExplanation = !showExplanation" class="text-primary cursor-pointer hover:text-btnHover">
           {{ showExplanation ? 'Hide' : 'Show' }} Explanation
         </p>
+        <!--expalantion text-->
         <div *ngIf="showExplanation" class="mt-2 p-4 bg-gray-50 rounded-md border border-gray-200">
-          <div class="break-words whitespace-normal overflow-hidden py-2 px-3 w-full max-w-90%" [innerHTML]="currentQuestion.explanation"></div>
+          <div class="break-words whitespace-normal overflow-hidden py-2 px-3 w-full max-w-90%" 
+            [innerHTML]="currentQuestion.explanation"
+            (click)="handleLinkClick($event)"
+          ></div>
         </div>
       </div>
       <div class="flex flex-col justify-center items-center gap-2 mb-16 mt-4">

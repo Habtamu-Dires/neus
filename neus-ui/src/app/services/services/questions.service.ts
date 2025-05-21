@@ -13,8 +13,8 @@ import { StrictHttpResponse } from '../strict-http-response';
 
 import { createQuestions } from '../fn/questions/create-questions';
 import { CreateQuestions$Params } from '../fn/questions/create-questions';
-import { deleteImage } from '../fn/questions/delete-image';
-import { DeleteImage$Params } from '../fn/questions/delete-image';
+import { deleteMedia } from '../fn/questions/delete-media';
+import { DeleteMedia$Params } from '../fn/questions/delete-media';
 import { deleteQuestion } from '../fn/questions/delete-question';
 import { DeleteQuestion$Params } from '../fn/questions/delete-question';
 import { getBlocksByExamTypeAndYearAndDepartment } from '../fn/questions/get-blocks-by-exam-type-and-year-and-department';
@@ -27,8 +27,8 @@ import { QuestionDto } from '../models/question-dto';
 import { TextDto } from '../models/text-dto';
 import { updateQuestion } from '../fn/questions/update-question';
 import { UpdateQuestion$Params } from '../fn/questions/update-question';
-import { uploadImage } from '../fn/questions/upload-image';
-import { UploadImage$Params } from '../fn/questions/upload-image';
+import { uploadMedia } from '../fn/questions/upload-media';
+import { UploadMedia$Params } from '../fn/questions/upload-media';
 
 @Injectable({ providedIn: 'root' })
 export class QuestionsService extends BaseService {
@@ -94,27 +94,27 @@ export class QuestionsService extends BaseService {
     );
   }
 
-  /** Path part for operation `uploadImage()` */
-  static readonly UploadImagePath = '/questions/upload-image';
+  /** Path part for operation `uploadMedia()` */
+  static readonly UploadMediaPath = '/questions/upload-media';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `uploadImage()` instead.
+   * To access only the response body, use `uploadMedia()` instead.
    *
    * This method sends `multipart/form-data` and handles request body of type `multipart/form-data`.
    */
-  uploadImage$Response(params?: UploadImage$Params, context?: HttpContext): Observable<StrictHttpResponse<TextDto>> {
-    return uploadImage(this.http, this.rootUrl, params, context);
+  uploadMedia$Response(params?: UploadMedia$Params, context?: HttpContext): Observable<StrictHttpResponse<TextDto>> {
+    return uploadMedia(this.http, this.rootUrl, params, context);
   }
 
   /**
    * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `uploadImage$Response()` instead.
+   * To access the full response (for headers, for example), `uploadMedia$Response()` instead.
    *
    * This method sends `multipart/form-data` and handles request body of type `multipart/form-data`.
    */
-  uploadImage(params?: UploadImage$Params, context?: HttpContext): Observable<TextDto> {
-    return this.uploadImage$Response(params, context).pipe(
+  uploadMedia(params?: UploadMedia$Params, context?: HttpContext): Observable<TextDto> {
+    return this.uploadMedia$Response(params, context).pipe(
       map((r: StrictHttpResponse<TextDto>): TextDto => r.body)
     );
   }
@@ -219,29 +219,29 @@ export class QuestionsService extends BaseService {
     );
   }
 
-  /** Path part for operation `deleteImage()` */
-  static readonly DeleteImagePath = '/questions/image';
+  /** Path part for operation `deleteMedia()` */
+  static readonly DeleteMediaPath = '/questions/meida';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `deleteImage()` instead.
+   * To access only the response body, use `deleteMedia()` instead.
    *
    * This method doesn't expect any request body.
    */
-  deleteImage$Response(params: DeleteImage$Params, context?: HttpContext): Observable<StrictHttpResponse<{
+  deleteMedia$Response(params: DeleteMedia$Params, context?: HttpContext): Observable<StrictHttpResponse<{
 }>> {
-    return deleteImage(this.http, this.rootUrl, params, context);
+    return deleteMedia(this.http, this.rootUrl, params, context);
   }
 
   /**
    * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `deleteImage$Response()` instead.
+   * To access the full response (for headers, for example), `deleteMedia$Response()` instead.
    *
    * This method doesn't expect any request body.
    */
-  deleteImage(params: DeleteImage$Params, context?: HttpContext): Observable<{
+  deleteMedia(params: DeleteMedia$Params, context?: HttpContext): Observable<{
 }> {
-    return this.deleteImage$Response(params, context).pipe(
+    return this.deleteMedia$Response(params, context).pipe(
       map((r: StrictHttpResponse<{
 }>): {
 } => r.body)

@@ -5,8 +5,13 @@
   </div>
   <!-- Scrollable container -->
   <div *ngIf="!isLoading && !resourceNotFound"
-   class="relative w-full max-w-md md:max-w-xl lg:max-w-2xl bg-blue-100 shadow-2xl 
-        rounded-xl md:rounded-3xl">
+   class="relative w-full max-w-md md:max-w-xl lg:max-w-2xl bg-blue-200 shadow-2xl rounded-xl md:rounded-3xl">
+    <!--close / back -->
+    <button class="absolute top-4 right-4 cursor-pointer" (click)="onClose()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12z"/>
+      </svg>
+    </button>
     <!--title-->  
     <div class="w-full flex items-center font-semibold justify-center text-2xl md:text-4xl p-4">
       <span *ngIf="examType === 'ERMP'">Choose a Year</span>
@@ -23,7 +28,7 @@
         <div
           *ngFor="let year of yearList"
           (click)="selectYear(year.value)"
-          class="bg-white text-2xl text-center font-semibold py-4 md:py-6 rounded-2xl shadow-md cursor-pointer transform hover:scale-105 transition duration-200 ease-in-out select-none"
+          class="bg-white hover:bg-indigo-100 text-2xl text-center font-semibold py-4 md:py-6 rounded-2xl shadow-md cursor-pointer transform hover:scale-105 transition duration-200 ease-in-out select-none"
           [class.bg-primary]="selectedYear === year"
           [class.text-white]="selectedYear === year"
           [class.bg-white]="selectedYear !== year"
@@ -38,7 +43,7 @@
         <div
           *ngFor="let exam of examList"
           (click)="selectExam(exam)"
-          class="bg-white text-2xl text-center font-semibold py-4 md:py-6 rounded-2xl shadow-md cursor-pointer transform hover:scale-105 transition duration-200 ease-in-out select-none"
+          class="bg-white hover:bg-indigo-100 text-2xl text-center font-semibold py-4 md:py-6 rounded-2xl shadow-md cursor-pointer transform hover:scale-105 transition duration-200 ease-in-out select-none"
           
         >
           {{ exam.title }}

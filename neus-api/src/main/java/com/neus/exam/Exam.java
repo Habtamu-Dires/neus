@@ -2,6 +2,7 @@ package com.neus.exam;
 
 import com.neus.question.Question;
 import com.neus.resource.Resource;
+import com.neus.user_exam.UserExam;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -37,5 +38,8 @@ public class Exam {
 
     @OneToMany(mappedBy = "exam", cascade = {CascadeType.REMOVE, CascadeType.DETACH})
     List<Question> questions;
+
+    @OneToMany(mappedBy = "exam", cascade = {CascadeType.REMOVE, CascadeType.DETACH})
+    List<UserExam> userExamList;
 
 }

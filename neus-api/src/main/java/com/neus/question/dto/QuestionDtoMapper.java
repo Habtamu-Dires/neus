@@ -23,7 +23,7 @@ public class QuestionDtoMapper {
             .questionText(question.getQuestionText())
             .choices(question.getChoice())
             .explanation(question.getExplanation())
-            .imgUrls(question.getImageUrls())
+            .mediaUrls(question.getMediaUrls())
             .department(question.getDepartment())
             .blockNumber(question.getBlockNumber())
             .build();
@@ -41,7 +41,7 @@ public class QuestionDtoMapper {
                 .choices(addChoiceStats(question.getChoice(), choiceStatsByQuestionId))
                 .totalResponses(this.totalResponses)
                 .explanation(question.getExplanation())
-                .imgUrls(question.getImageUrls())
+                .mediaUrls(question.getMediaUrls())
                 .build();
     }
 

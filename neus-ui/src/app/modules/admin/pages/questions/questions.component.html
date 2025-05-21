@@ -1,4 +1,4 @@
-<main class="flex gap-2 w-full h-screen overflow-hidden mx-2">
+<main class="flex gap-2 w-full h-screen mx-2">
     <!--toggle side bar-->
     <div class="px-1 py-3">
         <svg *ngIf="adminUxService.showDrawer()" (click)="toggleShowDrawer()" 
@@ -7,10 +7,10 @@
         </svg>
     </div>
   
-    <div class="flex flex-col md:flex-row gap-2 w-full h-screen overflow-hidden">
+    <div class="flex flex-col md:flex-row gap-2 w-full h-screen">
       <!-- Sidebar (Drawer on Mobile) -->
       <aside class="md:w-[10%] w-full md:h-full flex flex-row justify-between md:justify-normal md:flex-col bg-gray-100 p-4 rounded-lg">
-        <p class="text-lg font-semibold text-gray-800 mb-4">Questions</p>
+        <p class="font-semibold text-gray-800 mb-4">{{title}}</p>
         <div class="space-y-2 hidden md:block">
           <div
             *ngFor="let question of questionList; let i = index"
@@ -31,8 +31,8 @@
       <!-- Main Content -->
       <main class="h-full md:w-[90%] w-full bg-gray-100 p-4 rounded-lg overflow-hidden">
          
-        <div class="flex justify-between items-center mb-3">
-          <h2 class="text-xl font-semibold text-gray-800">
+        <div class="flex justify-between items-center mb-3 mx-3">
+          <h2 class="font-semibold text-gray-800">
             Question {{ questionList.length !==0 ? currentQuestionIndex + 1 : 0}} of {{ questionList.length }}
           </h2>
           <button
@@ -66,9 +66,25 @@
           <div>
               <input class="form-input" [(ngModel)]="currentQuestion.questionNumber" type="number"/>
           </div>
-          <div class="flex justify-between items-start mb-4">
+          <div class="flex w-full justify-between items-start mb-4">
             <!--question text-->
-            <div class="break-words whitespace-normal overflow-hidden py-2 px-3 w-full max-w-90%" [innerHTML]="currentQuestion.questionText"></div>
+            <!-- <div class="break-words whitespace-normal overflow-hidden py-2 px-3 w-full max-w-90%" 
+              [innerHTML]="currentQuestion.questionText"
+              (click)="handleLinkClick($event)">
+            </div> -->
+            <div [appFirefoxQuillViewPatch]="currentQuestion.questionText" 
+                class="w-full max-w-[90%]">
+              <quill-view 
+                [content]="currentQuestion.questionText"
+                format="html"
+                theme="snow"
+                [sanitize]="true"
+                (click)="handleLinkClick($event)"
+                class="w-full"
+                >
+              </quill-view>
+            </div>
+            <!--edit question-->
             <div class="flex space-x-2 py-2">
               <button (click)="editQuestion()" 
                 class="cursor-pointer text-blue-500 hover:text-blue-700" title="Edit">
@@ -76,6 +92,7 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                 </svg>
               </button>
+              <!--delete question-->
               <button (click)="onDeleteQuestion()" 
                 class="cursor-pointer text-red-500 hover:text-red-700" title="Delete">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -89,7 +106,7 @@
           <div class="space-y-2 mb-4">
             <div
               *ngFor="let choice of currentQuestion.choices; let i = index;"
-              class="flex items-start  space-x-2"
+              class="flex items-start w-full  space-x-2"
             >
               <div class="flex items-center py-2">
                 <span class="w-6 font-bold">{{ getChoiceLetter(i) }}.</span>
@@ -101,9 +118,22 @@
                 />
               </div>
               <!--choice text -->
-              <span class="break-words whitespace-normal overflow-hidden py-2 px-3 w-full max-w-90%"
-                 [class.text-green-600]="choice.isCorrect" [innerHTML]="choice.text">
-                </span>
+              <!-- <span class="break-words whitespace-normal overflow-hidden py-2 px-3 w-full max-w-90%"
+                 [class.text-green-600]="choice.isCorrect" [innerHTML]="choice.text"
+                 (click)="handleLinkClick($event)">
+              </span> -->
+              <div [appFirefoxQuillViewPatch]="currentQuestion.questionText" 
+                class="w-full max-w-[90%]">
+                <quill-view 
+                  [content]="choice.text"
+                  format="html"
+                  theme="snow"
+                  [sanitize]="true"
+                  (click)="handleLinkClick($event)"
+                  class="w-full"
+                >
+                </quill-view>
+              </div>
               <div class="flex space-x-2 py-2">
                 <button (click)="editChoice(choice.id)" 
                   class="cursor-pointer text-blue-500 hover:text-blue-700" title="Edit">
@@ -140,9 +170,24 @@
               *ngIf="showExplanation"
               class="mt-2 p-4 bg-gray-50 rounded-md border border-gray-200"
             >
-              <div class="flex justify-between items-start">
-                <div class="break-words whitespace-normal overflow-hidden py-2 px-3 w-full max-w-90%" 
-                  [innerHTML]="currentQuestion.explanation"></div>
+              <div class="flex items-start justify-between w-full">
+                <!-- <div class="break-words whitespace-normal overflow-hidden py-2 px-3 w-full max-w-90%" 
+                  [innerHTML]="currentQuestion.explanation"
+                  (click)="handleLinkClick($event)">
+                </div> -->
+                <div [appFirefoxQuillViewPatch]="currentQuestion.questionText" 
+                   class="w-full max-w-[90%]">
+                  <quill-view               
+                    [content]="currentQuestion.explanation"
+                    format="html"
+                    theme="snow"
+                    [sanitize]="true"
+                    (click)="handleLinkClick($event)"
+                    class="w-full"
+                  >
+                  </quill-view>
+                </div>
+                
                 <div class="flex space-x-2 py-2">
                   <button (click)="editExplanation()" 
                     class="cursor-pointer text-blue-500 hover:text-blue-700" title="Edit">
@@ -203,19 +248,45 @@
             </div>
           </div>
 
+          <!-- File Selector -->
+          <div class="flex gap-6 items-center py-4">
+            <label class="form-label">Content</label>
+            <div class=" col-span-12 md:col-span-10 flex justify-between gap-2">
+              <input #fileInput class="w-full form-input cursor-pointer" type="file" 
+                  (change)="onFileSelected($event)" />
+              <button [disabled]="isUploading" (click)="uploadFile()" 
+                class="px-3 py-1 bg-primary hover:bg-btnHover rounded-lg cursor-pointer">
+                <ng-container *ngIf="!isUploading; else loading">
+                  <p>
+                    upload 
+                  </p>
+                </ng-container>
+                <ng-template #loading>
+                  <div class="w-6 h-6 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+                </ng-template>
+              </button>
+              <button (click)="resetFileInput(fileInput)" 
+                  class="px-4 cursor-pointer text-red-500 hover:text-red-700" title="Delete">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4m-4 4v12m-4-12v12" />
+                  </svg>
+              </button>
+            </div>
+          </div>
 
           <!--image list and save button-->
           <div class="flex justify-between p-4">
             <!--images list-->
             <section class="flex flex-col py-2 w-full md:w-5/6 md:flex-row items-center justify gap-2  overflow-x-scroll">
-              @for (url of currentQuestion.imgUrls; track $index) {
+              @for (url of currentQuestion.mediaUrls; track $index) {
                 <div class="flex flex-col min-w-24 h-18 items-center justify-center">
-                  <img (click)="viewImage(url)" src={{url}} class="min-w-24 h-14"/>
+                  <img (click)="viewMedia(url)" src={{url}} class="min-w-24 h-14"/>
                   <div class="flex justify-evenly w-full ">
                     <p (click)="onCopyUrl(url)"
                      class="text-primary cursor-pointer hover:underline">copy</p>
-                    <p (click)="onDeleteImage(url)" 
-                      class="text-red-500 cursor-pointer font-bold">X</p>
+                    <button (click)="onDeleteMedia(url)" class="text-red-500 cursor-pointer">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"> <path fill="currentColor" d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12z"/></svg>
+                    </button>
                   </div>
                 </div>
               }

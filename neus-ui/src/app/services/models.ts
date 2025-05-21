@@ -27,6 +27,7 @@ export type { SubscriptionDto } from './models/subscription-dto';
 export type { TextDto } from './models/text-dto';
 export type { UpdateSubPlanDto } from './models/update-sub-plan-dto';
 export type { UpdateUserExamDto } from './models/update-user-exam-dto';
+export type { UserAggregateData } from './models/user-aggregate-data';
 export type { UserAnswer } from './models/user-answer';
 export type { UserDto } from './models/user-dto';
 export type { UserExamDto } from './models/user-exam-dto';

@@ -17,11 +17,6 @@ public interface QuestionRepository extends JpaRepository<Question,Long>, JpaSpe
             """)
     List<Question> findByExamId(Long examId);
 
-//    @Query("""
-//            SELECT q FROM Question q WHERE q.exam.id = :examId ORDER BY q.questionNumber
-//            """)
-//    List<Question> findPreviewQuestions(Long examId, Pageable pageable);
-
     @Query("""
             SELECT q FROM Question q WHERE q.externalId = :externalId
             """)
@@ -37,7 +32,7 @@ public interface QuestionRepository extends JpaRepository<Question,Long>, JpaSpe
     List<Department[]> findDepartmentsByExamTypeAndYear(ExamType examType, Integer year);
 
     @Query("""
-            SELECT q.blockNumber
+            SELECT DISTINCT q.blockNumber
             FROM Question q
             JOIN q.exam e
             WHERE e.examType = :examType

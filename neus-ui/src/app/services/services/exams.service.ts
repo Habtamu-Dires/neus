@@ -18,6 +18,8 @@ import { DeleteExam$Params } from '../fn/exams/delete-exam';
 import { ExamDetailDto } from '../models/exam-detail-dto';
 import { ExamDto } from '../models/exam-dto';
 import { ExamNameDto } from '../models/exam-name-dto';
+import { filterExams } from '../fn/exams/filter-exams';
+import { FilterExams$Params } from '../fn/exams/filter-exams';
 import { getExamById } from '../fn/exams/get-exam-by-id';
 import { GetExamById$Params } from '../fn/exams/get-exam-by-id';
 import { getExamDetail } from '../fn/exams/get-exam-detail';
@@ -250,6 +252,31 @@ export class ExamsService extends BaseService {
   getExamNamesByExamTypeAndYear(params: GetExamNamesByExamTypeAndYear$Params, context?: HttpContext): Observable<Array<ExamNameDto>> {
     return this.getExamNamesByExamTypeAndYear$Response(params, context).pipe(
       map((r: StrictHttpResponse<Array<ExamNameDto>>): Array<ExamNameDto> => r.body)
+    );
+  }
+
+  /** Path part for operation `filterExams()` */
+  static readonly FilterExamsPath = '/exams/filter';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `filterExams()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  filterExams$Response(params?: FilterExams$Params, context?: HttpContext): Observable<StrictHttpResponse<PageResponseExamDto>> {
+    return filterExams(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `filterExams$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  filterExams(params?: FilterExams$Params, context?: HttpContext): Observable<PageResponseExamDto> {
+    return this.filterExams$Response(params, context).pipe(
+      map((r: StrictHttpResponse<PageResponseExamDto>): PageResponseExamDto => r.body)
     );
   }
 

@@ -11,10 +11,15 @@ import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../../../../components/confirm-dialog/confirm-dialog.component';
 import { ExamResultDialogComponent } from '../../components/exam-result-dialog/exam-result-dialog.component';
 import { ResumeExamDialogComponent } from '../../components/resume-exam-dialog/resume-exam-dialog.component';
+import { ImagePreviewComponent } from '../../../../components/image-preview/image-preview.component';
+import { VideoPreviewComponent } from '../../../../components/video-preview/video-preview.component';
+import { QuillViewComponent } from 'ngx-quill';
+import { FirefoxQuillViewPatchDirective } from '../../../../firefox-quill-view-patch.directive';
+
 
 @Component({
   selector: 'app-exam',
-  imports: [CommonModule, FormsModule, QuestionListDrawerComponent],
+  imports: [CommonModule, FormsModule, QuestionListDrawerComponent, QuillViewComponent,FirefoxQuillViewPatchDirective],
   templateUrl: './exam.component.html',
   styleUrl: './exam.component.css'
 })
@@ -37,6 +42,7 @@ export class ExamComponent {
   examStarted: boolean = false;
   isLoading:boolean = true;
   isSubmitted:boolean = false;
+  isAuthenticated:boolean = false;
   hasFullAccess:boolean = false;
   userExamData: UserExamDto | undefined;  // saved answers
   showQuestionsDrawer:boolean = false;
@@ -51,8 +57,8 @@ export class ExamComponent {
     private router:Router,
     private toastrService:ToastrService,
     private keycloakService:KeycloakService,
-     private matDialog: MatDialog,
-     private userExamService:UserExamService
+    private dialog: MatDialog,
+    private userExamService:UserExamService,
   ){}
 
   ngOnInit(): void {
@@ -70,8 +76,8 @@ export class ExamComponent {
     });
 
     // Check login status
-    const isLoggedIn = this.keycloakService.isAuthenticated;
-    if (isLoggedIn) {
+    this.isAuthenticated = this.keycloakService.isAuthenticated;
+    if (this.isAuthenticated) {
       const subscriptionType = this.keycloakService.subscriptionLevel as string;
       if(subscriptionType){
         this.subscriptionLevel = subscriptionType.replace('_subscriber','').toUpperCase();
@@ -104,6 +110,7 @@ export class ExamComponent {
         this.questionList = res.questions as QuestionDto[];
         this.examDuration = res.duration as number;
         this.title = res.title;
+        console.log("the content " + this.questionList[0].questionText);
         if(this.questionList.length === 0){
           this.resourceNotFound = true;
           this.isLoading = false;
@@ -111,11 +118,12 @@ export class ExamComponent {
           // check access status
           this.hasFullAccess = this.isEqualOrHigherTier(res.requiredSubLevel as string);
           // if logged in and has full access
-          if(this.hasFullAccess && this.mode === 'TEST' && this.keycloakService.isAuthenticated) {
+          if(this.isAuthenticated && this.hasFullAccess && this.mode === 'TEST') {
             // fetch previous user answers
             this.fetchUserAnswers();
           } else {
-            this.startExam();
+            if(this.mode === 'TEST') this.isLoading=false; // show exam-info section
+            else this.startExam();  // start exam
           }        
         }
       },
@@ -137,17 +145,19 @@ export class ExamComponent {
             && Object.entries(this.userExamData.testModeUserAnswers).length > 0
           ){
             this.isLoading = false;
-            this.examStarted = true;
+            // this.examStarted = true;
             this.showResumeExamDialog();
         } else {
-          // start exam
-          this.startExam();  
+          // show exam-info or start exam
+          if(this.mode === 'TEST') this.isLoading=false; // show exam-info section
+          else this.startExam();
         }
       },
       error:(err)=>{
         console.log("no saved prgress");
-        // start exam
-        this.startExam();
+        // show exam-info or start exam
+        if(this.mode === 'TEST') this.isLoading=false; // show exam-info section
+        else this.startExam();
       }
     });
   }
@@ -170,7 +180,7 @@ export class ExamComponent {
 
   // resume dialog
   showResumeExamDialog() {
-    const dialog = this.matDialog.open(ResumeExamDialogComponent,{
+    const dialog = this.dialog.open(ResumeExamDialogComponent,{
       width: '500px',
       data:{
         answeredCount: this.mode === 'STUDY' 
@@ -193,6 +203,8 @@ export class ExamComponent {
           this.userExamData?.testModeCorrectAnswers?.forEach((item) => { 
             this.correctAnswers.set(item.questionId as string, item.isCorrect as boolean);
           });
+          //start exam
+          this.examStarted=true;
           
           if(this.getOldScore() !== null){
             this.isSubmitted = true;
@@ -205,7 +217,10 @@ export class ExamComponent {
 
         } 
       } else {  // retake exam
-        this.startExam();
+        // this.startExam();
+        if(this.mode === 'STUDY') {
+          this.startExam();
+        } 
       }
     });
   }
@@ -239,7 +254,7 @@ export class ExamComponent {
     };
 
     // save user answers
-    if(this.hasFullAccess){
+    if(this.hasFullAccess && this.isAuthenticated){
       this.userExamService.saveUserAnswers({
         body: request,
       }).subscribe({
@@ -270,7 +285,7 @@ export class ExamComponent {
   // submit exam
   submitExam(){
     if (this.mode === 'TEST') {
-      const dialog = this.matDialog.open(ConfirmDialogComponent,{
+      const dialog = this.dialog.open(ConfirmDialogComponent,{
         width: '400px',
         data:{
           message:'you wants to submit the exam?',
@@ -288,7 +303,7 @@ export class ExamComponent {
         this.showResults(score);
         this.isSubmitted = true;
         // save user answers if user answers is greater than 3/4 of the questoin
-        if(this.hasFullAccess && this.userAnswers.size >= (this.questionList.length * 3/4)){
+        if(this.isAuthenticated && this.hasFullAccess && this.userAnswers.size >= (this.questionList.length * 3/4)){
           this.saveUserAnswers('COMPLETED');
         }
       }
@@ -301,15 +316,15 @@ export class ExamComponent {
       this.showResults(score);
       this.isSubmitted = true;
       // save user answers if user answers all questions
-      if(this.hasFullAccess && this.userAnswers.size === this.questionList.length){
-        this.saveUserAnswers('COMPLETED');
-      }
+      // if(this.isAuthenticated && this.hasFullAccess && this.userAnswers.size === this.questionList.length){
+      //   this.saveUserAnswers('COMPLETED');
+      // }
     }
   }
 
   // show results
   showResults(score: number) {
-    this.matDialog.open(ExamResultDialogComponent, {
+    this.dialog.open(ExamResultDialogComponent, {
       width: '400px',
       data: {
         score:score,
@@ -321,7 +336,7 @@ export class ExamComponent {
 
   // retake exam
   retakeExam(){
-    const dialog = this.matDialog.open(ConfirmDialogComponent,{
+    const dialog = this.dialog.open(ConfirmDialogComponent,{
       width: '400px',  
       data:{
         message:'you wants to retake the exam?',
@@ -349,7 +364,7 @@ export class ExamComponent {
 
    // save and exit 
   saveAndExit(){
-    if(this.hasFullAccess && this.userAnswers.size > 0 && this.mode === 'TEST'){
+    if(this.mode === 'TEST' && this.isAuthenticated && this.hasFullAccess && this.userAnswers.size > 0){
       this.saveUserAnswers('IN_PROGRESS');
       clearInterval(this.interval);
       this.router.navigate(['user'], {queryParams: {'from-resource-detail': true}});
@@ -364,7 +379,7 @@ export class ExamComponent {
       return;
     }
     // if exam started ask confirmation
-    const dialog = this.matDialog.open(ConfirmDialogComponent,{
+    const dialog = this.dialog.open(ConfirmDialogComponent,{
       width: '400px',
       data:{
         message:'you want exit this exam?',
@@ -375,7 +390,8 @@ export class ExamComponent {
     dialog.afterClosed().subscribe(result => {
       if(result){
         // if it has full access and answers all questions 
-        if(this.hasFullAccess
+        if( this.mode === 'TEST'
+          && this.isAuthenticated && this.hasFullAccess
           && this.userAnswers.size === this.questionList.length 
           && !this.isSubmitted
         ){
@@ -449,6 +465,54 @@ export class ExamComponent {
     const minutes = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${minutes}:${secs < 10 ? '0' + secs : secs}`;
+  }
+
+  // open image and dialog images
+  handleLinkClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (target.tagName === 'A') {
+      const href = target.getAttribute('href');
+      if (href) {
+        if (this.isImageUrl(href)) {
+          event.preventDefault();
+          this.openImageDialog(href);
+        } else if (this.isVideoUrl(href)) {
+          event.preventDefault();
+          this.openVideoDialog(href);
+        }
+      }
+    }
+  }
+  // is image url
+  isImageUrl(url: string): boolean {
+    const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.svg'];
+    const ext = url.split('.').pop()?.toLowerCase();
+    return ext ? imageExtensions.includes('.' + ext) : false;
+  }
+
+  // is video url
+  isVideoUrl(url: string): boolean {
+    const videoExtensions = ['.mp4', '.webm', '.ogg', '.mov'];
+    const ext = url.split('.').pop()?.toLowerCase();
+    return ext ? videoExtensions.includes('.' + ext) : false;
+  }
+  
+  // open image dialog
+  openImageDialog(url: string) {
+    this.dialog.open(ImagePreviewComponent, {
+      data: { url: url },
+      maxWidth: '80vw',
+      maxHeight: '80vh',
+    });
+  }
+  
+  // open video dialog
+  openVideoDialog(url: string) {
+    this.dialog.open(VideoPreviewComponent, {
+      data: { url: url },
+      maxWidth: '70vw',
+      maxHeight: '70vh',
+    });
   }
 
   

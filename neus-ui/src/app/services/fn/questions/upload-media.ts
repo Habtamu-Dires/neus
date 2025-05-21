@@ -8,16 +8,18 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
+import { TextDto } from '../../models/text-dto';
 
-export interface DeleteImage$Params {
-  url: string;
+export interface UploadMedia$Params {
+      body?: {
+'file': Blob;
+}
 }
 
-export function deleteImage(http: HttpClient, rootUrl: string, params: DeleteImage$Params, context?: HttpContext): Observable<StrictHttpResponse<{
-}>> {
-  const rb = new RequestBuilder(rootUrl, deleteImage.PATH, 'delete');
+export function uploadMedia(http: HttpClient, rootUrl: string, params?: UploadMedia$Params, context?: HttpContext): Observable<StrictHttpResponse<TextDto>> {
+  const rb = new RequestBuilder(rootUrl, uploadMedia.PATH, 'post');
   if (params) {
-    rb.query('url', params.url, {});
+    rb.body(params.body, 'multipart/form-data');
   }
 
   return http.request(
@@ -25,10 +27,9 @@ export function deleteImage(http: HttpClient, rootUrl: string, params: DeleteIma
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<{
-      }>;
+      return r as StrictHttpResponse<TextDto>;
     })
   );
 }
 
-deleteImage.PATH = '/questions/image';
+uploadMedia.PATH = '/questions/upload-media';

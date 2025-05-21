@@ -19,8 +19,10 @@ export class ResourceCollectionComponent {
   resourceList:ResourceInfoDto[] = [];
   collection:ResourceCollectionDto | undefined;
   selectedResource:ResourceInfoDto | undefined;
+  hasNoResource:boolean = false;
   currentResourceIndex:number = 0;
   showDrawer:boolean = false;
+  showSideBar:boolean = true;
 
   constructor(
     private activatedRoute:ActivatedRoute,
@@ -31,22 +33,22 @@ export class ResourceCollectionComponent {
   ngOnInit(): void {
     this.collectionId = this.activatedRoute.snapshot.params['collectionId'];
     if(this.collectionId){
-      this.fetchLectureById();
+      this.fetchCollectionById();
     }
   }
 
   // fetch lecture by id
-  fetchLectureById(){
+  fetchCollectionById(){
     this.resourcesService.getResourceCollection({
       'resource-id': this.collectionId as string
     }).subscribe({
       next:(res:ResourceCollectionDto)=>{
         this.collection = res;
         this.resourceList = res.resourceList as ResourceInfoDto[];
-        console.log("The list " + this.resourceList.length)
         if(this.resourceList.length > 0){
           this.selectedResource = this.resourceList[0];
-          console.log("hello " + this.selectedResource.resourceId);
+        } else {
+          this.hasNoResource = true;
         }
       },
       error:(err)=>{
@@ -71,5 +73,15 @@ export class ResourceCollectionComponent {
   // toggle drawer
   toggleDrawer(){
     this.showDrawer = !this.showDrawer;
+  }
+
+  // toggle side bar
+  toggleSideBar(){
+    this.showSideBar = !this.showSideBar;
+  }
+
+  // navigate to resource detail
+  close(){
+    window.history.back();
   }
 }

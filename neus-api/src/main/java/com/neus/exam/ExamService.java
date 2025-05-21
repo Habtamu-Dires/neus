@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -108,10 +109,9 @@ public class ExamService {
         Pageable pageable = PageRequest.of(page,size);
         Page<Exam> res = examRepository.findAll(pageable);
 
-        List<ExamDto> examDtoList = res.map(exam -> {
-            Resource resource = this.findResourceById(exam.getId());
-            return examDtoMapper.mapToExamDto(exam, resource);
-        }).toList();
+        List<ExamDto> examDtoList = res.map(exam ->
+            examDtoMapper.mapToExamDto(exam, exam.getResource())
+        ).toList();
 
         return PageResponse.<ExamDto>builder()
                 .content(examDtoList)
@@ -130,8 +130,7 @@ public class ExamService {
     @PreAuthorize("hasRole('ADMIN')")
     public ExamDto getExamById(String examId) {
         Exam exam = this.findByExternalId(examId);
-        Resource resource = this.findResourceById(exam.getId());
-        return examDtoMapper.mapToExamDto(exam,resource);
+        return examDtoMapper.mapToExamDto(exam,exam.getResource());
     }
 
     // get exam detail by ExamType and Year
@@ -166,12 +165,13 @@ public class ExamService {
 
             if(exam.getRandomQuestionCount() != null && exam.getRandomQuestionCount() > 0
                 && (department == null || department.isBlank())
-            ) {
+            ) {  // random sampling for USMLE
                 Pageable page = PageRequest.ofSize(exam.getRandomQuestionCount());
 
                 List<Question> sampleQuestions = questionRepository.findRandomQuestion(page,exam.getId());
-                //fetch choice stats for sepcific questions
-                List<String> questionIds = sampleQuestions.stream()
+                //fetch choice stats for specific questions
+                List<String> questionIds = sampleQuestions
+                        .parallelStream()
                         .map(q -> q.getExternalId().toString()).toList();
                 var stats = choiceStatsService.getChoiceStatsByQuestionIds(questionIds);
                 Map<String,List<QuestionChoiceStats>> choiceStatsByQuestionId = stats.stream()
@@ -189,7 +189,8 @@ public class ExamService {
             } else { // in case of no random sampling
                 List<QuestionChoiceStats> stats = choiceStatsService.getChoiceStatsByExamId(exam.getId());
                 // group by question (externalId)
-                Map<String,List<QuestionChoiceStats>> choiceStatsByQuestionId = stats.stream()
+                Map<String,List<QuestionChoiceStats>> choiceStatsByQuestionId =
+                        stats.parallelStream()
                         .collect(Collectors.groupingBy(
                                 stat -> stat.getId().getQuestionId()
                         ));
@@ -207,7 +208,7 @@ public class ExamService {
             List<Question> previewQuestions = questionService
                     .getPreviewQuestionsByExamId(exam.getId(), department, block);
 
-            //fetch choice stats for sepcific questions
+            //fetch choice stats for specific questions
             List<String> questionIds = previewQuestions.stream()
                     .map(q -> q.getExternalId().toString()).toList();
             var stats = choiceStatsService.getChoiceStatsByQuestionIds(questionIds);
@@ -228,79 +229,6 @@ public class ExamService {
         // Build & Return the response DTO
         return examDtoMapper.mapToExamDetailDto(exam, resource, questionDetailDtos);
     }
-
-//    // get exam detail
-//    public ExamDetailDto getExamDetail(String examId, Authentication authentication) {
-//        // Fetch the resource
-//        Resource resource = resourceRepository.findByExternalId(UUID.fromString(examId))
-//                .orElseThrow(() -> new ResourceNotFoundException("Resource not found"));
-//
-//        //  Verify it’s an exam
-//        if(!resource.getType().equals(ResourceType.EXAM)){
-//            throw new IllegalArgumentException("Resource is not an exam");
-//        }
-//
-//        // Get the required subscription level
-//        SubscriptionLevel requiredLevel = resource.getRequiredSubLevel();
-//
-//        // Check user’s subscription level (from JWT roles)
-//        String userRole = getUserRoleFromJwt(authentication);
-//        SubscriptionLevel userLevel = mapRoleToSubscriptionLevel(userRole);
-//
-//        //  Determine access
-//        boolean hasFullAccess = false;
-//        if(requiredLevel == SubscriptionLevel.NONE){
-//            hasFullAccess = true;
-//        } else {
-//            hasFullAccess = userLevel != null && userLevel.compareTo(requiredLevel) >= 0;
-//        }
-//
-//        //  Fetch exam
-//        Exam exam = examRepository.findByResourceId(resource.getId())
-//                .orElseThrow(() -> new ResourceNotFoundException("Exam not found"));
-//
-//        List<QuestionDetailDto> questionDetailDtos;
-//        if(hasFullAccess){
-//            // fetch choice stats
-//            List<QuestionChoiceStats> stats = choiceStatsService.getChoiceStatsByExamId(exam.getId());
-//            // group by question (externalId)
-//            Map<String,List<QuestionChoiceStats>> choiceStatsByQuestionId = stats.stream()
-//                    .collect(Collectors.groupingBy(
-//                            stat -> stat.getId().getQuestionId()
-//                    ));
-//
-//
-//            questionDetailDtos = questionRepository.findByExamId(exam.getId()).stream()
-//                    .map(question -> questionDtoMapper.mapToQuestionDetailDto(
-//                            question,
-//                            choiceStatsByQuestionId.get(question.getExternalId().toString()))
-//                    )
-//                    .toList();
-//
-//        } else {
-//            Pageable page = PageRequest.of(0, 1);
-//            List<Question> previewQuestions = questionRepository.findPreviewQuestions(exam.getId(), page);
-//            //fetch choice stats
-//            List<String> questionIds = previewQuestions.stream()
-//                    .map(q -> q.getExternalId().toString()).toList();
-//            var stats = choiceStatsService.getChoiceStatsByQuestionIds(questionIds);
-//            // group by question
-//            Map<String,List<QuestionChoiceStats>> choiceStatsByQuestionId = stats.stream()
-//                    .collect(Collectors.groupingBy(
-//                            stat -> stat.getId().getQuestionId()
-//                    ));
-//
-//            questionDetailDtos = previewQuestions.stream()
-//                    .map(question -> questionDtoMapper.mapToQuestionDetailDto(
-//                            question,
-//                            choiceStatsByQuestionId.get(question.getExternalId().toString()))
-//                    )
-//                    .toList();
-//        }
-//
-//        // Build & Return the response DTO
-//        return examDtoMapper.mapToExamDetailDto(exam, resource, questionDetailDtos);
-//    }
 
     // find resource by id
     public Resource findResourceById(Long id){
@@ -356,5 +284,42 @@ public class ExamService {
     // get exam names by exam type
     public List<ExamNameDto> getExamNamesByExamType(ExamType examType) {
         return examRepository.findExamNamesByExamType(examType);
+    }
+
+    // filter exams
+    public PageResponse<ExamDto> filterExams(
+            String title, String type, Integer year, String requiredSubLevel, int page, int size
+    ) {
+        ExamType examType = null;
+        try {
+            examType = ExamType.valueOf(type);
+        }catch (Exception _){}
+
+        SubscriptionLevel requiredLevel = null;
+        try {
+            requiredLevel = SubscriptionLevel.valueOf(requiredSubLevel);
+        }catch (Exception _){};
+
+        Specification<Exam> spec = ExamSpecification.filterExams(title,examType,year,requiredLevel);
+
+        Pageable pageable = PageRequest.of(page,size);
+
+        Page<Exam> res = examRepository.findAll(spec, pageable);
+
+        List<ExamDto> examDtoList = res.map(exam -> examDtoMapper
+                        .mapToExamDto(exam, exam.getResource()))
+                        .toList();
+
+        return PageResponse.<ExamDto>builder()
+                .content(examDtoList)
+                .totalElements(res.getTotalElements())
+                .numberOfElements(res.getNumberOfElements())
+                .totalPages(res.getTotalPages())
+                .size(res.getSize())
+                .number(res.getNumber())
+                .first(res.isFirst())
+                .last(res.isLast())
+                .empty(res.isEmpty())
+                .build();
     }
 }

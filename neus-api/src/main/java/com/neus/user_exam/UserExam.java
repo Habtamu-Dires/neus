@@ -8,6 +8,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @AllArgsConstructor
@@ -27,19 +28,19 @@ public class UserExam {
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
-    List<UserAnswer> testModeUserAnswers;
+    List<UserAnswer> testModeUserAnswers = new ArrayList<>();
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
-    List<CorrectAnswer> testModeCorrectAnswers;
+    List<CorrectAnswer> testModeCorrectAnswers = new ArrayList<>();
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
-    List<UserAnswer> studyModeUserAnswers;
+    List<UserAnswer> studyModeUserAnswers = new ArrayList<>();
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
-    List<CorrectAnswer> studyModeCorrectAnswers;
+    List<CorrectAnswer> studyModeCorrectAnswers = new ArrayList<>();
 
     private LocalDateTime lastModifiedDate;
     private Integer timeLeftInMinutes;

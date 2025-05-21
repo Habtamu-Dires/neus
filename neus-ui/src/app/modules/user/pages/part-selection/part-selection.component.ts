@@ -62,12 +62,16 @@ export class PartSelectionComponent {
     // select part
     selectPart(part: ExamNameDto) {
       if(this.mode === 'STUDY'){
-        console.log("department " + this.department)
         this.router.navigate(['user','exam',part.id, this.mode],
           {queryParams: {'department': this.department}});
       } else if(this.mode === 'TEST'){
         this.router.navigate(['user','exam',part.id, this.mode]);
       }
+    }
+
+  
+    onClose(){
+      window.history.back();
     }
 
 

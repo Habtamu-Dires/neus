@@ -1,6 +1,8 @@
 package com.neus.user;
 
 import com.neus.common.PageResponse;
+import com.neus.common.SubscriptionLevel;
+import com.neus.user.dto.UserAggregateData;
 import com.neus.user.dto.UserDto;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -54,5 +56,23 @@ public class UserController {
             @PathVariable("user-id") String userId) {
         userService.toggleEnableStatus(userId);
         return ResponseEntity.accepted().build();
+    }
+
+    // filter user
+    @GetMapping("/filter")
+    public ResponseEntity<PageResponse<UserDto>> filterUser(
+            @RequestParam(value = "email", required = false) String email,
+            @RequestParam(value ="subLevel",required = false) String subLevel,
+            @RequestParam(value = "page",defaultValue = "0", required = false) int page,
+            @RequestParam(value = "size",defaultValue = "10", required = false) int size
+    ){
+        var res = userService.filterUser(email,subLevel,page, size);
+        return ResponseEntity.ok(res);
+    }
+
+    // get user aggregate data
+    @GetMapping("/aggregate")
+    public ResponseEntity<UserAggregateData> getUserAggregateData(){
+        return ResponseEntity.ok(userService.getUserAggregateData());
     }
 }

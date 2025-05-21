@@ -2,7 +2,7 @@
     <section class="w-full md:w-4/5 flex flex-col gap-4 md:flex-row">
         <div class="flex gap-4 items-center">
             <!--toggle side bar-->
-            <svg *ngIf="adminUxService.showDrawer()" (click)="toggleShowDrawer()" 
+            <svg *ngIf="showDrawer" (click)="toggleShowDrawer()" 
                 class="cursor-pointer"
                 xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 14 14"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="M13.5 2H.5m13 5H.5m13 5H.5"/>
             </svg>
@@ -16,8 +16,52 @@
                 </button>
             }
         </div>
+        <!--filter by resouce type -->
+        @if (componentName.toLocaleLowerCase() === 'resource') {
+            <div class="relative w-36 flex justify-center items-center">
+                <select #resourceTypeInput class="p-2 w-full" (change)="onResTypeSelected(resourceTypeInput.value)">
+                    <option value="">filter by type</option>
+                    @for (type of resourceTypeList; track $index) {
+                        <option [value]="type">{{type}}</option>
+                    }
+                </select>
+            </div>
+        }
+        <!--filter by exam type -->
+        @if (componentName.toLocaleLowerCase() === 'exam') {
+            <div class="relative w-36 flex justify-center items-center">
+                <select #examTypeInput class="p-2 w-full" (change)="onExamTypeSelected(examTypeInput.value)">
+                    <option value="">filter by type</option>
+                    @for (exam of examTypeList; track $index) {
+                        <option [value]="exam">{{exam}}</option>
+                    }
+                </select>
+            </div>
+        }
+        <!--filter subscription level -->
+        @if (['exam','resource','user'].includes(componentName.toLocaleLowerCase())) {
+            <div class="relative w-36 flex justify-center items-center">
+                <select #subLevelInput class="p-2 w-full" (change)="onSubLevelSelected(subLevelInput.value)">
+                    <option value="">filter by level</option>
+                    @for (level of subLevelList; track $index) {
+                        <option [value]="level">{{level}}</option>
+                    }
+                </select>
+            </div>
+        }
+        <!--filter by year -->
+        @if (['exam',].includes(componentName.toLocaleLowerCase())) {
+            <div class="relative w-36 flex justify-center items-center">
+                <select #yearInput class="p-2 w-full" (change)="onYearSelected(+yearInput.value)">
+                    <option [value]="null">filter by year</option>
+                    @for (year of yearList; track $index) {
+                        <option [value]="year">{{year}}</option>
+                    }
+                </select>
+            </div>
+        }
         <!--for payment page-->
-        @if (componentName.toLocaleLowerCase() === 'payment') {
+        @if (componentName.toLocaleLowerCase() === 'payments') {
             <section class="w-full md:w-1/2 flex flex-col md:flex-row justify-center gap-2 items-center">
                 <!--date-->
                 <div class="flex items-center gap-2">
@@ -48,7 +92,7 @@
         <div class="z-20">
             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5l-1.5 1.5l-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16A6.5 6.5 0 0 1 3 9.5A6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14S14 12 14 9.5S12 5 9.5 5"/></svg> 
         </div>
-    </section>
-    
+    </section> 
 </main>
+
 

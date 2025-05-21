@@ -24,7 +24,7 @@ export class YearSelectionComponent implements OnInit{
     private activatedRoute:ActivatedRoute,
     private examsService:ExamsService,
     private router:Router,
-    private toastrService:ToastrService
+    private toastrService:ToastrService,
   ){}
 
   ngOnInit(): void {
@@ -36,6 +36,7 @@ export class YearSelectionComponent implements OnInit{
         this.fetchExamList(this.examType);
       }
     });
+    
   }
 
 
@@ -64,7 +65,6 @@ export class YearSelectionComponent implements OnInit{
       'exam-type':examType
     }).subscribe({
       next:(res)=>{
-        console.log("exam name list " + res)
         this.examList = res;
         this.isLoading = false;
          if(res.length === 0){
@@ -81,20 +81,22 @@ export class YearSelectionComponent implements OnInit{
   // on year selected
   selectYear(year: any) {
     this.selectedYear = year;
-    this.router.navigate(['user','mode',this.examType, this.selectedYear])
+    this.router.navigate(['user','mode',this.examType],
+      {queryParams: {'year': this.selectedYear}}
+    )
   }
 
   // selectExam()
   selectExam(exam:ExamNameDto){
-    console.log("year " + exam.year);
-    this.router.navigate(['user','mode',this.examType, exam.year],
-      {queryParams: {'examId': exam.id}}
+    // navigate to mode selextion
+    this.router.navigate(['user','mode',this.examType],
+      {queryParams: {'examId': exam.id, 'year':exam.year, 'title':exam.title}}
     )
   }
 
   // close
   onClose(){
-    window.history.back();
+    this.router.navigate(['user'], {queryParams: {'from-resource-detail': true}});
   }
 
 

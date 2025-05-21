@@ -13,15 +13,20 @@ import { StrictHttpResponse } from '../strict-http-response';
 
 import { deleteUser } from '../fn/users/delete-user';
 import { DeleteUser$Params } from '../fn/users/delete-user';
+import { filterUser } from '../fn/users/filter-user';
+import { FilterUser$Params } from '../fn/users/filter-user';
 import { getAllUsers } from '../fn/users/get-all-users';
 import { GetAllUsers$Params } from '../fn/users/get-all-users';
 import { getPageOfUsers } from '../fn/users/get-page-of-users';
 import { GetPageOfUsers$Params } from '../fn/users/get-page-of-users';
+import { getUserAggregateData } from '../fn/users/get-user-aggregate-data';
+import { GetUserAggregateData$Params } from '../fn/users/get-user-aggregate-data';
 import { PageResponseUserDto } from '../models/page-response-user-dto';
 import { saveUser } from '../fn/users/save-user';
 import { SaveUser$Params } from '../fn/users/save-user';
 import { toggleUserStatus } from '../fn/users/toggle-user-status';
 import { ToggleUserStatus$Params } from '../fn/users/toggle-user-status';
+import { UserAggregateData } from '../models/user-aggregate-data';
 import { UserDto } from '../models/user-dto';
 
 @Injectable({ providedIn: 'root' })
@@ -160,6 +165,56 @@ export class UsersService extends BaseService {
   getPageOfUsers(params?: GetPageOfUsers$Params, context?: HttpContext): Observable<PageResponseUserDto> {
     return this.getPageOfUsers$Response(params, context).pipe(
       map((r: StrictHttpResponse<PageResponseUserDto>): PageResponseUserDto => r.body)
+    );
+  }
+
+  /** Path part for operation `filterUser()` */
+  static readonly FilterUserPath = '/users/filter';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `filterUser()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  filterUser$Response(params?: FilterUser$Params, context?: HttpContext): Observable<StrictHttpResponse<PageResponseUserDto>> {
+    return filterUser(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `filterUser$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  filterUser(params?: FilterUser$Params, context?: HttpContext): Observable<PageResponseUserDto> {
+    return this.filterUser$Response(params, context).pipe(
+      map((r: StrictHttpResponse<PageResponseUserDto>): PageResponseUserDto => r.body)
+    );
+  }
+
+  /** Path part for operation `getUserAggregateData()` */
+  static readonly GetUserAggregateDataPath = '/users/aggregate';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getUserAggregateData()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getUserAggregateData$Response(params?: GetUserAggregateData$Params, context?: HttpContext): Observable<StrictHttpResponse<UserAggregateData>> {
+    return getUserAggregateData(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getUserAggregateData$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getUserAggregateData(params?: GetUserAggregateData$Params, context?: HttpContext): Observable<UserAggregateData> {
+    return this.getUserAggregateData$Response(params, context).pipe(
+      map((r: StrictHttpResponse<UserAggregateData>): UserAggregateData => r.body)
     );
   }
 

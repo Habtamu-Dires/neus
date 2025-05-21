@@ -8,5 +8,5 @@ export interface ResourceCollectionDto {
   requiredSubLevel?: 'NONE' | 'BASIC' | 'ADVANCED' | 'PREMIUM';
   resourceList?: Array<ResourceInfoDto>;
   title?: string;
-  type?: 'EXAM' | 'READING_MATERIAL' | 'VIDEO' | 'BOOK' | 'LECTURE_VIDEOS' | 'LECTURE_NOTES' | 'ERMP' | 'USMLE_STEP_1' | 'USMLE_STEP_2' | 'LECTURE';
+  type?: 'EXAM' | 'READING_MATERIAL' | 'VIDEO' | 'BOOK' | 'READING_MATERIALS' | 'LECTURE_VIDEOS' | 'LECTURE_NOTES' | 'ERMP' | 'USMLE_STEP_1' | 'USMLE_STEP_2' | 'LECTURES' | 'BOOKS';
 }

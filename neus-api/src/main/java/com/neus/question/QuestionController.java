@@ -7,7 +7,6 @@ import com.neus.question.dto.QuestionDto;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cglib.core.Block;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -58,16 +57,16 @@ public class QuestionController {
         questionService.deleteQuestion(questionId);
     }
 
-    //upload images
-    @PostMapping(value = "/upload-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<TextDto> uploadImage(@RequestPart MultipartFile file){
-        return ResponseEntity.ok(questionService.uploadImage(file));
+    //upload file
+    @PostMapping(value = "/upload-media", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<TextDto> uploadMedia(@RequestPart MultipartFile file){
+        return ResponseEntity.ok(questionService.uploadMedia(file));
     }
 
-    // remove image
-    @DeleteMapping("/image")
-    public ResponseEntity<?> deleteImage(@RequestParam("url") String url){
-        questionService.deleteImage(url);
+    // remove file
+    @DeleteMapping("/meida")
+    public ResponseEntity<?> deleteMedia(@RequestParam("url") String url){
+        questionService.deleteMedia(url);
         return ResponseEntity.accepted().build();
     }
 

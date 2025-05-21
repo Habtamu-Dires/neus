@@ -1,0 +1,12 @@
+/* In component.scss or global styles (if ViewEncapsulation blocks this) */
+:host ::ng-deep ngx-charts-number-card .number-card_chart {
+  flex: 1 0 30%; /* Default for larger screens */
+  max-width: 30%;
+}
+
+@media screen and (max-width: 600px) {
+  ::ng-deep .ngx-charts-card-series{
+    flex: 1 0 100% !important;
+    max-width: 100% !important;
+  }
+}

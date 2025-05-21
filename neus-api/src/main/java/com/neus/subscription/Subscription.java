@@ -1,6 +1,7 @@
 package com.neus.subscription;
 
 import com.neus.common.SubscriptionLevel;
+import com.neus.payment.Payment;
 import com.neus.user.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -31,7 +32,7 @@ public class Subscription {
     @JoinColumn(name = "user_id", updatable = true)
     private User user;
 
-//    @OneToOne
-//    @JoinColumn(name = "payment_id")
-//    private Payment payment;
+    @OneToOne
+    @JoinColumn(name = "payment_id")
+    private Payment payment;
 }

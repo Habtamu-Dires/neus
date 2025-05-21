@@ -615,12 +615,12 @@
                 }
             }
         },
-        "/questions/upload-image": {
+        "/questions/upload-media": {
             "post": {
                 "tags": [
                     "questions"
                 ],
-                "operationId": "uploadImage",
+                "operationId": "uploadMedia",
                 "requestBody": {
                     "content": {
                         "multipart/form-data": {
@@ -711,6 +711,84 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/PageResponseUserDto"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/filter": {
+            "get": {
+                "tags": [
+                    "users"
+                ],
+                "operationId": "filterUser",
+                "parameters": [
+                    {
+                        "name": "email",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "subLevel",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "default": 0
+                        }
+                    },
+                    {
+                        "name": "size",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "default": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PageResponseUserDto"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/aggregate": {
+            "get": {
+                "tags": [
+                    "users"
+                ],
+                "operationId": "getUserAggregateData",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserAggregateData"
                                 }
                             }
                         }
@@ -922,6 +1000,88 @@
                                     "items": {
                                         "$ref": "#/components/schemas/ResourceInfoDto"
                                     }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/resources/filter": {
+            "get": {
+                "tags": [
+                    "resources"
+                ],
+                "operationId": "filterResources",
+                "parameters": [
+                    {
+                        "name": "title",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "requiredSubLevel",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "parent-id",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "has-child-resources",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "default": 0
+                        }
+                    },
+                    {
+                        "name": "size",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "default": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PageResponseResourceDto"
                                 }
                             }
                         }
@@ -1485,6 +1645,81 @@
                 }
             }
         },
+        "/exams/filter": {
+            "get": {
+                "tags": [
+                    "exams"
+                ],
+                "operationId": "filterExams",
+                "parameters": [
+                    {
+                        "name": "title",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "year",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "requiredSubLevel",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "default": 0
+                        }
+                    },
+                    {
+                        "name": "size",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "default": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PageResponseExamDto"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/exams/detail/{exam-id}": {
             "get": {
                 "tags": [
@@ -1556,12 +1791,12 @@
                 }
             }
         },
-        "/questions/image": {
+        "/questions/meida": {
             "delete": {
                 "tags": [
                     "questions"
                 ],
-                "operationId": "deleteImage",
+                "operationId": "deleteMedia",
                 "parameters": [
                     {
                         "name": "url",
@@ -1695,12 +1930,14 @@
                             "READING_MATERIAL",
                             "VIDEO",
                             "BOOK",
+                            "READING_MATERIALS",
                             "LECTURE_VIDEOS",
                             "LECTURE_NOTES",
                             "ERMP",
                             "USMLE_STEP_1",
                             "USMLE_STEP_2",
-                            "LECTURE"
+                            "LECTURES",
+                            "BOOKS"
                         ]
                     },
                     "title": {
@@ -1782,7 +2019,7 @@
                         "type": "string",
                         "minLength": 1
                     },
-                    "imgUrls": {
+                    "mediaUrls": {
                         "type": "array",
                         "items": {
                             "type": "string"
@@ -1831,6 +2068,9 @@
                             "BLOCK_09",
                             "BLOCK_10"
                         ]
+                    },
+                    "category": {
+                        "type": "string"
                     }
                 },
                 "required": [
@@ -1998,6 +2238,27 @@
                     }
                 }
             },
+            "UserAggregateData": {
+                "type": "object",
+                "properties": {
+                    "registered_users": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "basic_subscribers": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "advanced_subscribers": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "premium_subscribers": {
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                }
+            },
             "UserExamDto": {
                 "type": "object",
                 "properties": {
@@ -2100,12 +2361,14 @@
                             "READING_MATERIAL",
                             "VIDEO",
                             "BOOK",
+                            "READING_MATERIALS",
                             "LECTURE_VIDEOS",
                             "LECTURE_NOTES",
                             "ERMP",
                             "USMLE_STEP_1",
                             "USMLE_STEP_2",
-                            "LECTURE"
+                            "LECTURES",
+                            "BOOKS"
                         ]
                     },
                     "requiredSubLevel": {
@@ -2188,12 +2451,14 @@
                             "READING_MATERIAL",
                             "VIDEO",
                             "BOOK",
+                            "READING_MATERIALS",
                             "LECTURE_VIDEOS",
                             "LECTURE_NOTES",
                             "ERMP",
                             "USMLE_STEP_1",
                             "USMLE_STEP_2",
-                            "LECTURE"
+                            "LECTURES",
+                            "BOOKS"
                         ]
                     },
                     "title": {
@@ -2229,12 +2494,14 @@
                             "READING_MATERIAL",
                             "VIDEO",
                             "BOOK",
+                            "READING_MATERIALS",
                             "LECTURE_VIDEOS",
                             "LECTURE_NOTES",
                             "ERMP",
                             "USMLE_STEP_1",
                             "USMLE_STEP_2",
-                            "LECTURE"
+                            "LECTURES",
+                            "BOOKS"
                         ]
                     },
                     "requiredSubLevel": {
@@ -2270,12 +2537,14 @@
                             "READING_MATERIAL",
                             "VIDEO",
                             "BOOK",
+                            "READING_MATERIALS",
                             "LECTURE_VIDEOS",
                             "LECTURE_NOTES",
                             "ERMP",
                             "USMLE_STEP_1",
                             "USMLE_STEP_2",
-                            "LECTURE"
+                            "LECTURES",
+                            "BOOKS"
                         ]
                     },
                     "title": {
@@ -2341,7 +2610,7 @@
                     "explanation": {
                         "type": "string"
                     },
-                    "imgUrls": {
+                    "mediaUrls": {
                         "type": "array",
                         "items": {
                             "type": "string"
@@ -2390,6 +2659,9 @@
                             "BLOCK_09",
                             "BLOCK_10"
                         ]
+                    },
+                    "category": {
+                        "type": "string"
                     }
                 }
             },
@@ -2583,7 +2855,7 @@
                     "explanation": {
                         "type": "string"
                     },
-                    "imgUrls": {
+                    "mediaUrls": {
                         "type": "array",
                         "items": {
                             "type": "string"
@@ -2632,6 +2904,9 @@
                             "BLOCK_09",
                             "BLOCK_10"
                         ]
+                    },
+                    "category": {
+                        "type": "string"
                     }
                 }
             }
