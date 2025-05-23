@@ -1,16 +1,28 @@
-<main class="flex gap-2 w-full h-screen mx-2">
-    <!--toggle side bar-->
-    <div class="px-1 py-3">
-        <svg *ngIf="adminUxService.showDrawer()" (click)="toggleShowDrawer()" 
+<main class="flex md:gap-2 w-full h-screen md:mx-2">
+    <!--toggle side bar in big screen-->
+    <div class="px-1 py-3 hidden md:block">
+        <svg *ngIf="showSideBar" (click)="toggleSideBar()" 
             class="cursor-pointer"
             xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 14 14"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="M13.5 2H.5m13 5H.5m13 5H.5"/>
         </svg>
     </div>
   
-    <div class="flex flex-col md:flex-row gap-2 w-full h-screen">
-      <!-- Sidebar (Drawer on Mobile) -->
-      <aside class="md:w-[10%] w-full md:h-full flex flex-row justify-between md:justify-normal md:flex-col bg-gray-100 p-4 rounded-lg">
-        <p class="font-semibold text-gray-800 mb-4">{{title}}</p>
+    <div class="relative flex flex-col md:flex-row gap-2 w-full h-full">
+      
+      <aside class="overflow-y-auto md:w-[10%] w-full md:h-screen flex flex-row justify-between items-center md:justify-normal md:flex-col bg-gray-100  rounded-lg">
+        <!--toggle side bar in mobile view only-->
+        <div class="px-1 py-3 block md:hidden">
+            <div>
+                <svg class="cursor-pointer"  
+                    (click)="toggleSideBar()"          
+                    xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"><g fill="currentColor"><path d="M11.707 5.293a1 1 0 0 1 0 1.414L6.414 12l5.293 5.293a1 1 0 0 1-1.414 1.414l-6-6a1 1 0 0 1 0-1.414l6-6a1 1 0 0 1 1.414 0z"/><path d="M19.707 5.293a1 1 0 0 1 0 1.414L14.414 12l5.293 5.293a1 1 0 0 1-1.414 1.414l-6-6a1 1 0 0 1 0-1.414l6-6a1 1 0 0 1 1.414 0z"/></g>
+                </svg>   
+            </div> 
+        </div>
+
+        <p class="sticky top-0 font-semibold text-gray-800 p-2 mb-4 bg-gray-100">{{title}} </p>
+        
+        <!-- Sidebar -->
         <div class="space-y-2 hidden md:block">
           <div
             *ngFor="let question of questionList; let i = index"
@@ -22,14 +34,36 @@
             Question {{ question.questionNumber }}
           </div>
         </div>
-        <svg  
-            class="cursor-pointer block md:hidden"
-            xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 14 14"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="M13.5 2H.5m13 5H.5m13 5H.5"/>
-        </svg>
+        <!--question number list toggler-->
+        <section class="cursor-pointer block md:hidden z-50">
+          <!--open drawer-->
+          <div>
+            <svg *ngIf="!showQuestionsDrawer" class="cursor-pointer mx-2 my-2"
+              (click)="toggleQuestionsDrawer()"
+              xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"><path fill="#000000" d="M3.75 5.25a.75.75 0 0 0 0 1.5h16.5a.75.75 0 0 0 0-1.5zm0 6a.75.75 0 0 0 0 1.5h16.5a.75.75 0 0 0 0-1.5zm0 6a.75.75 0 0 0 0 1.5h16.5a.75.75 0 0 0 0-1.5z"/>
+            </svg>
+          </div>
+          <!--close drawer-->
+          <div>
+            <svg *ngIf="showQuestionsDrawer" class="cursor-pointer mx-2 my-2" [ngClass]="{'text-white': showQuestionsDrawer}"
+              (click)="toggleQuestionsDrawer()"
+              xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"><path fill="#1a4fa3" d="m6.4 18.308l-.708-.708l5.6-5.6l-5.6-5.6l.708-.708l5.6 5.6l5.6-5.6l.708.708l-5.6 5.6l5.6 5.6l-.708.708l-5.6-5.6z"/>
+            </svg>
+          </div>
+          <!--question list drawer-->
+          <div *ngIf="showQuestionsDrawer" class="z-50">
+            <app-admin-question-list-drawer
+                [questionList]="questionList"
+                [currentQuestionIndex]="currentQuestionIndex"
+                (onQuestionSelect)="selectQuestion($event)"
+            >
+            </app-admin-question-list-drawer>
+          </div>
+        </section>
       </aside>
   
       <!-- Main Content -->
-      <main class="h-full md:w-[90%] w-full bg-gray-100 p-4 rounded-lg overflow-hidden">
+      <main class="h-full md:w-[90%] w-full bg-gray-100 md:p-4 rounded-lg overflow-hidden">
          
         <div class="flex justify-between items-center mb-3 mx-3">
           <h2 class="font-semibold text-gray-800">
@@ -54,7 +88,7 @@
         <!-- Question Display -->
         <div #questionContainer
           *ngIf="questionList.length > 0"
-          class="h-full bg-white p-4 rounded-md border border-gray-200 overflow-y-scroll overflow-x-hidden"
+          class="h-full bg-white p-4 rounded-md border border-gray-200 overflow-y-auto overflow-x-hidden"
         > 
           <!--err msg-->
           <div *ngIf="errMsgs" class="text-center space-y-1">
@@ -230,11 +264,12 @@
           <div *ngIf="['USMLE_STEP_1','USMLE_STEP_2'].includes(this.examType)"  
             class="py-4 flex gap-4 items-center justify-start">
             <label class="form-label">Block Number</label>
-            <div class="relative w-1/4 col-span-12 md:col-span-10">
+            <div #blockListElement class="relative w-1/4 col-span-12 md:col-span-10">
               <input [(ngModel)]="currentQuestion.blockNumber" class="form-input w-full cursor-pointer" type="text"
                 placeholder="Exam Type" (click)="showBlockList = true"
                 (focus)="showBlockList = true" />
-              <div *ngIf="showBlockList" class="absolute z-10 w-full mt-1">
+              <div *ngIf="showBlockList" #blockListElement
+                class="absolute z-10 w-full mt-1 max-h-40 overflow-auto">
                 <div *ngFor="let block of blockNumberList; let idx=index"
                   class="w-full bg-white shadow hover:bg-gray-200 p-2 cursor-pointer"
                   [ngClass]="{
@@ -277,7 +312,7 @@
           <!--image list and save button-->
           <div class="flex justify-between p-4">
             <!--images list-->
-            <section class="flex flex-col py-2 w-full md:w-5/6 md:flex-row items-center justify gap-2  overflow-x-scroll">
+            <section class="flex flex-col py-2 w-full md:w-5/6 md:flex-row items-center justify gap-2  overflow-x-auto">
               @for (url of currentQuestion.mediaUrls; track $index) {
                 <div class="flex flex-col min-w-24 h-18 items-center justify-center">
                   <img (click)="viewMedia(url)" src={{url}} class="min-w-24 h-14"/>

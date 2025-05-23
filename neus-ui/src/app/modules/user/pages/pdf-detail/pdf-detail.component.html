@@ -1,6 +1,7 @@
 @if (pdfSrc && !isLoading) {
     <app-pdf-reader-extended
         [pdfSrc]="pdfSrc"
+        [title]="title"
         (onClose)="onClose()"
     >
     </app-pdf-reader-extended>

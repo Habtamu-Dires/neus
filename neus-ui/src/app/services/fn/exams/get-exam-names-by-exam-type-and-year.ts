@@ -11,7 +11,7 @@ import { RequestBuilder } from '../../request-builder';
 import { ExamNameDto } from '../../models/exam-name-dto';
 
 export interface GetExamNamesByExamTypeAndYear$Params {
-  'exam-type': 'TEST' | 'ERMP' | 'USMLE_STEP_1' | 'USMLE_STEP_2';
+  'exam-type': 'TEST' | 'ERMP' | 'USMLE_STEP_1' | 'USMLE_STEP_2' | 'NGAT' | 'LICENSURE';
   year: number;
 }
 

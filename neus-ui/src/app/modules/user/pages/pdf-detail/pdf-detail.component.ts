@@ -16,6 +16,7 @@ export class PdfDetailComponent implements OnInit{
   resourceDetail:ResourceDetailDto = {}
   pdfSrc:string | undefined;
   isLoading:boolean = true;
+  title:string | undefined;
 
   constructor(
     private activatedRoute:ActivatedRoute,
@@ -40,6 +41,7 @@ export class PdfDetailComponent implements OnInit{
       next:(res:ResourceDetailDto)=>{
         this.resourceDetail = res;
         this.pdfSrc = this.resourceDetail.contentPath;
+        this.title = this.resourceDetail.title;
         this.isLoading = false;
       },
       error:(err) =>{

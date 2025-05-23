@@ -10,12 +10,12 @@ import { RequestBuilder } from '../../request-builder';
 
 
 export interface GetBlocksByExamTypeAndYearAndDepartment$Params {
-  'exam-type': 'TEST' | 'ERMP' | 'USMLE_STEP_1' | 'USMLE_STEP_2';
+  'exam-type': 'TEST' | 'ERMP' | 'USMLE_STEP_1' | 'USMLE_STEP_2' | 'NGAT' | 'LICENSURE';
   year: number;
   department: string;
 }
 
-export function getBlocksByExamTypeAndYearAndDepartment(http: HttpClient, rootUrl: string, params: GetBlocksByExamTypeAndYearAndDepartment$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<'BLOCK_01' | 'BLOCK_02' | 'BLOCK_03' | 'BLOCK_04' | 'BLOCK_05' | 'BLOCK_06' | 'BLOCK_07' | 'BLOCK_08' | 'BLOCK_09' | 'BLOCK_10'>>> {
+export function getBlocksByExamTypeAndYearAndDepartment(http: HttpClient, rootUrl: string, params: GetBlocksByExamTypeAndYearAndDepartment$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<'BLOCK_01' | 'BLOCK_02' | 'BLOCK_03' | 'BLOCK_04' | 'BLOCK_05' | 'BLOCK_06' | 'BLOCK_07' | 'BLOCK_08' | 'BLOCK_09' | 'BLOCK_10' | 'BLOCK_11' | 'BLOCK_12' | 'BLOCK_13' | 'BLOCK_14' | 'BLOCK_15' | 'BLOCK_16' | 'BLOCK_17' | 'BLOCK_18' | 'BLOCK_19' | 'BLOCK_20' | 'BLOCK_21'>>> {
   const rb = new RequestBuilder(rootUrl, getBlocksByExamTypeAndYearAndDepartment.PATH, 'get');
   if (params) {
     rb.path('exam-type', params['exam-type'], {});
@@ -28,7 +28,7 @@ export function getBlocksByExamTypeAndYearAndDepartment(http: HttpClient, rootUr
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<Array<'BLOCK_01' | 'BLOCK_02' | 'BLOCK_03' | 'BLOCK_04' | 'BLOCK_05' | 'BLOCK_06' | 'BLOCK_07' | 'BLOCK_08' | 'BLOCK_09' | 'BLOCK_10'>>;
+      return r as StrictHttpResponse<Array<'BLOCK_01' | 'BLOCK_02' | 'BLOCK_03' | 'BLOCK_04' | 'BLOCK_05' | 'BLOCK_06' | 'BLOCK_07' | 'BLOCK_08' | 'BLOCK_09' | 'BLOCK_10' | 'BLOCK_11' | 'BLOCK_12' | 'BLOCK_13' | 'BLOCK_14' | 'BLOCK_15' | 'BLOCK_16' | 'BLOCK_17' | 'BLOCK_18' | 'BLOCK_19' | 'BLOCK_20' | 'BLOCK_21'>>;
     })
   );
 }

@@ -11,7 +11,7 @@ import { RequestBuilder } from '../../request-builder';
 import { NumberDto } from '../../models/number-dto';
 
 export interface GetYearsByExamType$Params {
-  'exam-type': 'TEST' | 'ERMP' | 'USMLE_STEP_1' | 'USMLE_STEP_2';
+  'exam-type': 'TEST' | 'ERMP' | 'USMLE_STEP_1' | 'USMLE_STEP_2' | 'NGAT' | 'LICENSURE';
 }
 
 export function getYearsByExamType(http: HttpClient, rootUrl: string, params: GetYearsByExamType$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<NumberDto>>> {

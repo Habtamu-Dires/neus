@@ -11,7 +11,7 @@ import { RequestBuilder } from '../../request-builder';
 import { ExamNameDto } from '../../models/exam-name-dto';
 
 export interface GetExamNamesByExamType$Params {
-  'exam-type': 'TEST' | 'ERMP' | 'USMLE_STEP_1' | 'USMLE_STEP_2';
+  'exam-type': 'TEST' | 'ERMP' | 'USMLE_STEP_1' | 'USMLE_STEP_2' | 'NGAT' | 'LICENSURE';
 }
 
 export function getExamNamesByExamType(http: HttpClient, rootUrl: string, params: GetExamNamesByExamType$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<ExamNameDto>>> {

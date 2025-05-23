@@ -2,14 +2,14 @@ import { Component } from '@angular/core';
 import { ResourceCollectionDto, ResourceDetailDto, ResourceInfoDto } from '../../../../services/models';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ResourcesService } from '../../../../services/services';
-import { LecturesDrawerComponent } from "../../components/lectures-drawer/lectures-drawer.component";
 import { VideoDetailComponent } from "../video-detail/video-detail.component";
 import { PdfDetailComponent } from "../pdf-detail/pdf-detail.component";
 import { CommonModule } from '@angular/common';
+import { ResourceListDrawerComponent } from "../../components/resource-list-drawer/resource-list-drawer.component";
 
 @Component({
   selector: 'app-resource-collection',
-  imports: [CommonModule, LecturesDrawerComponent, VideoDetailComponent, PdfDetailComponent],
+  imports: [CommonModule, VideoDetailComponent, PdfDetailComponent, ResourceListDrawerComponent],
   templateUrl: './resource-collection.component.html',
   styleUrl: './resource-collection.component.css'
 })

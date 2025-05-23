@@ -11,6 +11,8 @@ public enum ResourceType {
     ERMP,
     USMLE_STEP_1,
     USMLE_STEP_2,
+    NGAT,
+    LICENSURE,
     LECTURES,
     BOOKS
 }

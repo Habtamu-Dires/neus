@@ -1,7 +1,7 @@
 services:
     backend:
       container_name: neus-api
-      image: neus-api:v8
+      image: neus-api/v1
       ports:
         - "8088:8088"
       environment:
@@ -10,11 +10,12 @@ services:
         SPRING_DATASOURCE_URL: jdbc:postgresql://host.docker.internal:5432/neus_db
         SPRING_DATASOURCE_USERNAME: hab
         SPRING_DATASOURCE_PASSWORD: password
-#        OAUTH2_JWT_ISSUER_URI: http://host.docker.internal:9090/realms/alem-ekub
-#        OAUTH2_JWK_SET_URI: http://host.docker.internal:9090/realms/alem-ekub/protocol/openid-connect/certs
-#        KEYCLOAK_AUTH_SERVER_URL: http://keycloak:8080
-#        KEYCLOAK_CLIENT_ID: api-service
-#        KEYCLOAK_CLIENT_SECRET: mztotjdj2zSvizLBaJw1MWSztEKKRVh7
+        OAUTH2_JWT_ISSUER_URI: http://host.docker.internal:9090/realms/neus
+        OAUTH2_JWK_SET_URI: http://host.docker.internal:9090/realms/neus/protocol/openid-connect/certs
+        KEYCLOAK_AUTH_SERVER_URL: http://localhost:9090
+        KEYCLOAK_REALM: neus
+        KEYCLOAK_CLIENT_ID: backend-client
+        KEYCLOAK_CLIENT_SECRET: Q1XqwUfnGe8LT0nqwUuDq7A80f28aEbs
 #        S3_SPACES_ACCESS_KEY: dadf
 #        S3_SPACES_SECRET_KEY: ZbO1V4o
 #        S3_SPACES_ENDPOINT: https://eqib.com
@@ -27,19 +28,19 @@ services:
       networks:
         - neus-network
 
-#    front-end:
-#      container_name: neus-ui
-#      image:
-#      ports:
-#        - "4200:80"
-#      environment:
-#        API_URL: http://localhost:8088/api
-#        KEYCLOAK_URL: http://host.docker.internal:9090
-#        REALM: neus
-#        CLIENT_ID: neus-app
-#        REDIRECT_URL: http://localhost:4200
-#      networks:
-#        - neus-network
+    front-end:
+      container_name: neus-ui
+      image: neus-ui/v1
+      ports:
+        - "4200:80"
+      environment:
+        API_URL: http://localhost:8088/api
+        KEYCLOAK_URL: http://host.docker.internal:9090
+        REALM: neus
+        CLIENT_ID: frontend-client
+        REDIRECT_URL: http://localhost:4200
+      networks:
+        - neus-network
 
 volumes:
   neus_volume:

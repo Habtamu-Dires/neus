@@ -10,11 +10,11 @@ import { RequestBuilder } from '../../request-builder';
 
 
 export interface GetDepartmentsByExamType$Params {
-  'exam-type': 'TEST' | 'ERMP' | 'USMLE_STEP_1' | 'USMLE_STEP_2';
+  'exam-type': 'TEST' | 'ERMP' | 'USMLE_STEP_1' | 'USMLE_STEP_2' | 'NGAT' | 'LICENSURE';
   year: number;
 }
 
-export function getDepartmentsByExamType(http: HttpClient, rootUrl: string, params: GetDepartmentsByExamType$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<Array<'Anatomy' | 'Internal_Medicine' | 'Pediatrics' | 'OBGYN' | 'Surgery' | 'Medical_Ethics' | 'Dermatology' | 'Ophthalmology' | 'Psychiatry' | 'ENT' | 'Pathology' | 'Medical_Radiology' | 'Anesthesiology' | 'Behavioral_Science' | 'Biochemistry' | 'Biostatics' | 'Embryology' | 'Genetics' | 'Histology' | 'Immunology' | 'Microbiology' | 'Pathophysiology' | 'Pharmacology' | 'Physiology'>>>> {
+export function getDepartmentsByExamType(http: HttpClient, rootUrl: string, params: GetDepartmentsByExamType$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<Array<'Anatomy' | 'Internal_Medicine' | 'Pediatrics' | 'OBGYN' | 'Surgery' | 'Medical_Ethics' | 'Dermatology' | 'Ophthalmology' | 'Psychiatry' | 'ENT' | 'Pathology' | 'Medical_Radiology' | 'Anesthesiology' | 'Behavioral_Science' | 'Biochemistry' | 'Biostatics' | 'Embryology' | 'Genetics' | 'Histology' | 'Immunology' | 'Microbiology' | 'Pathophysiology' | 'Pharmacology' | 'Physiology' | 'Others'>>>> {
   const rb = new RequestBuilder(rootUrl, getDepartmentsByExamType.PATH, 'get');
   if (params) {
     rb.path('exam-type', params['exam-type'], {});
@@ -26,7 +26,7 @@ export function getDepartmentsByExamType(http: HttpClient, rootUrl: string, para
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<Array<Array<'Anatomy' | 'Internal_Medicine' | 'Pediatrics' | 'OBGYN' | 'Surgery' | 'Medical_Ethics' | 'Dermatology' | 'Ophthalmology' | 'Psychiatry' | 'ENT' | 'Pathology' | 'Medical_Radiology' | 'Anesthesiology' | 'Behavioral_Science' | 'Biochemistry' | 'Biostatics' | 'Embryology' | 'Genetics' | 'Histology' | 'Immunology' | 'Microbiology' | 'Pathophysiology' | 'Pharmacology' | 'Physiology'>>>;
+      return r as StrictHttpResponse<Array<Array<'Anatomy' | 'Internal_Medicine' | 'Pediatrics' | 'OBGYN' | 'Surgery' | 'Medical_Ethics' | 'Dermatology' | 'Ophthalmology' | 'Psychiatry' | 'ENT' | 'Pathology' | 'Medical_Radiology' | 'Anesthesiology' | 'Behavioral_Science' | 'Biochemistry' | 'Biostatics' | 'Embryology' | 'Genetics' | 'Histology' | 'Immunology' | 'Microbiology' | 'Pathophysiology' | 'Pharmacology' | 'Physiology' | 'Others'>>>;
     })
   );
 }

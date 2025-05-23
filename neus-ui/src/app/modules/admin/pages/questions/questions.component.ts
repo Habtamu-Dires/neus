@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, effect, HostListener } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EditDialogComponent } from '../../components/edit-dialog/edit-dialog.component';
@@ -16,12 +16,13 @@ import { VideoPreviewComponent } from '../../../../components/video-preview/vide
 import { environment } from '../../../../../environments/environment.development';
 import { HttpClient } from '@angular/common/http';
 import { QuillViewComponent } from 'ngx-quill';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { DomSanitizer } from '@angular/platform-browser';
 import { FirefoxQuillViewPatchDirective } from '../../../../firefox-quill-view-patch.directive';
+import { AdminQuestionListDrawerComponent } from "../../components/admin-question-list-drawer/admin-question-list-drawer.component";
 
 @Component({
   selector: 'app-questions',
-  imports: [CommonModule, FormsModule,QuillViewComponent,FirefoxQuillViewPatchDirective],
+  imports: [CommonModule, FormsModule, QuillViewComponent, FirefoxQuillViewPatchDirective, AdminQuestionListDrawerComponent],
   templateUrl: './questions.component.html',
   styleUrl: './questions.component.css'
 })
@@ -40,8 +41,8 @@ export class QuestionsComponent {
   filteredDepartmentList:string[] = [];
   isUploading:boolean = false;
   selectedFile:any;
-  sanitizedContent: SafeHtml | undefined;
-
+  showQuestionsDrawer:boolean = false;
+  showSideBar:boolean = false;  
 
   constructor(
     private qustionsService:QuestionsService,
@@ -54,7 +55,11 @@ export class QuestionsComponent {
     private dialog: MatDialog,
     private http:HttpClient,
      public sanitizer: DomSanitizer
-  ) {}
+  ) {
+    effect(() => {
+      this.showSideBar = this.adminUxService.showDrawer();
+    });
+  }
 
   ngOnInit(): void {
     this.activatedRoute.queryParams.subscribe((params) => {
@@ -71,6 +76,7 @@ export class QuestionsComponent {
   }
 
   @ViewChild('questionContainer') questionContainer!: ElementRef;
+  @ViewChild('blockListElement') blockListElement!: ElementRef;
 
 
   // fetch questoin by exam id
@@ -140,6 +146,9 @@ export class QuestionsComponent {
     this.currentQuestionIndex = index;
     this.showExplanation = false;
     this.scrollToTop();
+    if(this.showQuestionsDrawer){
+      this.toggleQuestionsDrawer();
+    }
   }
 
   // toggle correct
@@ -372,7 +381,7 @@ export class QuestionsComponent {
 
 
   // toogle showdrawer
-  toggleShowDrawer(){
+  toggleSideBar(){
     this.adminUxService.toggleShowDrawerStatus();
   }
 
@@ -501,5 +510,19 @@ export class QuestionsComponent {
       maxWidth: '70vw',
       maxHeight: '70vh',
     });
+  }
+
+  // toggle question lists on mobile view
+  toggleQuestionsDrawer() {
+    this.showQuestionsDrawer = !this.showQuestionsDrawer;
+  } 
+
+   // on file type selected
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (this.showBlockList && this.blockListElement && !this.blockListElement.nativeElement.contains(target)) {
+      this.showBlockList = false;
+    }    
   }
 }

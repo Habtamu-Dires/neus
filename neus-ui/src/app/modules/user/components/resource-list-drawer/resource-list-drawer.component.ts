@@ -2,17 +2,16 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { ResourceDetailDto } from '../../../../services/models';
 
 @Component({
-  selector: 'app-lectures-drawer',
+  selector: 'app-resource-list-drawer',
   imports: [],
-  templateUrl: './lectures-drawer.component.html',
-  styleUrl: './lectures-drawer.component.css'
+  templateUrl: './resource-list-drawer.component.html',
+  styleUrl: './resource-list-drawer.component.css'
 })
-export class LecturesDrawerComponent {
-
+export class ResourceListDrawerComponent {
+  
   @Input() resourceList: ResourceDetailDto[] = [];
   @Input() currentResourceIndex: number = 0;
   @Output() onResourceSelect = new EventEmitter<number>();
-
 
   // select resource
   selectResource(index: number) {

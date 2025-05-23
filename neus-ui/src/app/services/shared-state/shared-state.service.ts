@@ -20,7 +20,9 @@ export class SharedStateService {
     'TEST',
     'ERMP',
     'USMLE_STEP_1',
-    'USMLE_STEP_2'
+    'USMLE_STEP_2',
+    'NGAT',
+    'LICENSURE',
   ]
 
   // resouce list
@@ -35,6 +37,8 @@ export class SharedStateService {
     'ERMP',
     'USMLE_STEP_1',
     'USMLE_STEP_2',
+    'NGAT',
+    'LICENSURE',
     'LECTURES',
     'BOOKS'
   ]
@@ -65,6 +69,7 @@ export class SharedStateService {
     'Pathophysiology',
     'Pharmacology',
     'Physiology',
+    'Others',
   ];
 
   // blockList
@@ -78,6 +83,16 @@ export class SharedStateService {
     'BLOCK_07',
     'BLOCK_08',
     'BLOCK_09',
-    'BLOCK_10',
+    'BLOCK_11',
+    'BLOCK_12',
+    'BLOCK_13',
+    'BLOCK_14',
+    'BLOCK_15',
+    'BLOCK_16',
+    'BLOCK_17',
+    'BLOCK_18',
+    'BLOCK_19',
+    'BLOCK_20', 
+    'BLOCK_21',
   ]
 }

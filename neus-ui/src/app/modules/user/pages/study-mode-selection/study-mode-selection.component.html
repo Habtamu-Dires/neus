@@ -1,6 +1,6 @@
-<div class="relative h-screen w-full flex items-center justify-center bg-gradient-to-b from-primary to-blue-200 px-4">
+<div class="relative h-screen w-full flex items-center justify-center bg-gradient-to-b from-primary to-blue-200 px-4 overflow-hidden">
   <!--close / back -->
-  <button class="absolute top-10 right-10 cursor-pointer" (click)="onClose()">
+  <button class="absolute top-4 right-4 md:top-10 md:right-10 cursor-pointer" (click)="onClose()">
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
       <path fill="currentColor" d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12z"/>
     </svg>
@@ -12,13 +12,14 @@
   <div *ngIf="!isLoading && !resourceNotFound"
     class="w-full max-w-5xl text-center">
     <!-- Department List -->
-    <div *ngIf="showDepartmentList">
-      <h2 class="text-3xl md:text-4xl font-bold mb-8 text-gray-800">Select a Department</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div *ngIf="showDepartmentList"
+      class="flex flex-col gap-5 my-6 h-fit max-h-screen overflow-y-hidden">
+      <h2 class="sticky top-10 z-20 text-2xl md:text-4xl font-bold mb-8 text-gray-800">Select a Department</h2>
+      <div class="h-10/12 overflow-y-auto mb-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
         <div
           *ngFor="let dept of departmentList"
           (click)="selectDepartment(dept)"
-          class="bg-white p-6 rounded-2xl shadow-lg text-lg font-medium text-gray-700 cursor-pointer hover:bg-indigo-100 hover:scale-105 transition-all duration-200"
+          class="bg-white p-4 md:p-6 rounded-2xl shadow-lg text-lg font-medium text-gray-700 cursor-pointer hover:bg-indigo-100 hover:scale-105 transition-all duration-200"
         >
           {{ dept }}
         </div>
@@ -26,13 +27,14 @@
     </div>
 
     <!-- Block List -->
-    <div *ngIf="showBlockList">
-      <h2 class="text-3xl md:text-4xl font-bold mb-8 text-gray-800">Select a Block</h2>
-      <div class="flex flex-col items-center space-y-6">
+    <div *ngIf="showBlockList" 
+      class="flex flex-col gap-5 my-5 h-fit max-h-screen overflow-hidden">
+      <h2 class="sticky top-10 z-20 text-3xl md:text-4xl font-bold mb-8 text-gray-800">Select a Block</h2>
+      <div class="h-10/12 flex flex-col items-center space-y-4 md:space-y-5 overflow-y-auto mb-5">
         <div
           *ngFor="let block of blockList"
           (click)="selectBlock(block)"
-          class="w-64 bg-white p-5 rounded-2xl shadow-lg text-xl font-semibold text-gray-800 cursor-pointer hover:bg-indigo-100 hover:scale-105 transition-all duration-200"
+          class="w-64 bg-white p-5 rounded-2xl shadow-lg text-xl font-medium text-gray-700 cursor-pointer hover:bg-indigo-100 hover:scale-105 transition-all duration-200"
         >
           {{ block }}
         </div>

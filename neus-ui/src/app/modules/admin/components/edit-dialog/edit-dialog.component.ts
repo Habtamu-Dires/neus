@@ -7,12 +7,11 @@ import { TextDto } from '../../../../services/models';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment.development';
-import BlotFormatter2 from '@enzedonline/quill-blot-formatter2';
-import Quill from 'quill';
 import { ToastrService } from 'ngx-toastr';
 import { FirefoxQuillViewPatchDirective } from '../../../../firefox-quill-view-patch.directive';
-
-Quill.register('modules/blotFormatter2', BlotFormatter2);
+// import BlotFormatter2 from '@enzedonline/quill-blot-formatter2';
+// import Quill from 'quill';
+// Quill.register('modules/blotFormatter2', BlotFormatter2);
 
 @Component({
   selector: 'app-edit-dialog',

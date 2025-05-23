@@ -1,0 +1,15 @@
+<main class="absolute top-12 right-0 flex flex-col w-screen"> 
+    <section class="bg-white h-full max-h-screen overflow-y-auto flex flex-col p-4 gap-3 ms-5 me-2 rounded-lg shadow-2xl">
+        <p class="sticky top-0 bg-gray-100 text-lg font-semibold text-gray-800 mb-4 p-2">Questions</p>
+        @for (question of questionList; track $index; let i = $index) {
+            <div (click)="selectQuestion(i)"
+                class="p-2 rounded-md cursor-pointer hover:text-blue-400"
+                [class.bg-blue-100]="i === currentQuestionIndex"
+                [class.text-primary]="i === currentQuestionIndex"
+            >
+                Question {{ question.questionNumber }}
+            </div>
+        }
+    </section>
+</main>
+

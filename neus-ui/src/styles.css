@@ -107,18 +107,8 @@ body {
   .ql-align-justify {
     @apply text-justify;
   }
-  /* -- ql image to tailwind--*/
-  /* .ql-image-align-center {
-    @apply flex justify-center items-center;
-  }
-  .ql-image-align-left {
-    @apply flex justify-start items-center;
-  }
-  .ql-image-align-right {
-    @apply flex justify-end items-center;
-  } */
 
-  .ql-container .ql-image-align-center {
+  /* .ql-container .ql-image-align-center {
     @apply flex justify-center items-center;
   }
 
@@ -128,7 +118,7 @@ body {
 
   .ql-container .ql-image-align-right {
     @apply flex justify-end items-center;
-  }
+  } */
 
   /* * -- quill table --- */
   /* div.ql-container .ql-table {
@@ -162,7 +152,7 @@ body {
       flex: 1;
   }
 
-  /* image wrapper common
+  image wrapper common
   .ql-editor [class^="ql-image-align-"] {
     display: flex;
     flex-wrap: wrap;
@@ -173,7 +163,7 @@ body {
   .ql-editor [class^="ql-image-align-"]>img {
     width: 100%;
     height: auto;
-  } */
+  }
   /* left */
   .ql-editor .ql-image-align-left,
   .ql-editor .ql-iframe-align-left {
@@ -243,6 +233,17 @@ body {
   
   li {
     @apply pl-4; /* Add some padding for spacing */
+  }
+
+  /* -- ql image to tailwind--*/
+  .ql-image-align-center {
+    @apply flex justify-center items-center;
+  }
+  .ql-image-align-left {
+    @apply flex justify-start items-center;
+  }
+  .ql-image-align-right {
+    @apply flex justify-end items-center;
   }
 
 }

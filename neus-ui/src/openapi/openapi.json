@@ -1,28 +1,13 @@
 {
     "openapi": "3.1.0",
     "info": {
-        "title": "OpenApi Specification ",
-        "description": "OpenApi Documentation for Alem Equb",
-        "termsOfService": "term of service",
-        "contact": {
-            "name": "Habtamu",
-            "email": "habtamuadugna.d@gmail.com"
-        },
-        "license": {
-            "name": "Licence name ",
-            "url": "http://url licence"
-        },
-        "version": "1.0"
+        "title": "OpenAPI definition",
+        "version": "v0"
     },
     "servers": [
         {
             "url": "http://localhost:8088/api",
-            "description": "Local ENV"
-        }
-    ],
-    "security": [
-        {
-            "keycloak": []
+            "description": "Generated server url"
         }
     ],
     "paths": {
@@ -1232,7 +1217,9 @@
                                 "TEST",
                                 "ERMP",
                                 "USMLE_STEP_1",
-                                "USMLE_STEP_2"
+                                "USMLE_STEP_2",
+                                "NGAT",
+                                "LICENSURE"
                             ]
                         }
                     },
@@ -1281,7 +1268,8 @@
                                                 "Microbiology",
                                                 "Pathophysiology",
                                                 "Pharmacology",
-                                                "Physiology"
+                                                "Physiology",
+                                                "Others"
                                             ]
                                         }
                                     }
@@ -1309,7 +1297,9 @@
                                 "TEST",
                                 "ERMP",
                                 "USMLE_STEP_1",
-                                "USMLE_STEP_2"
+                                "USMLE_STEP_2",
+                                "NGAT",
+                                "LICENSURE"
                             ]
                         }
                     },
@@ -1350,7 +1340,18 @@
                                             "BLOCK_07",
                                             "BLOCK_08",
                                             "BLOCK_09",
-                                            "BLOCK_10"
+                                            "BLOCK_10",
+                                            "BLOCK_11",
+                                            "BLOCK_12",
+                                            "BLOCK_13",
+                                            "BLOCK_14",
+                                            "BLOCK_15",
+                                            "BLOCK_16",
+                                            "BLOCK_17",
+                                            "BLOCK_18",
+                                            "BLOCK_19",
+                                            "BLOCK_20",
+                                            "BLOCK_21"
                                         ]
                                     }
                                 }
@@ -1536,7 +1537,9 @@
                                 "TEST",
                                 "ERMP",
                                 "USMLE_STEP_1",
-                                "USMLE_STEP_2"
+                                "USMLE_STEP_2",
+                                "NGAT",
+                                "LICENSURE"
                             ]
                         }
                     }
@@ -1575,7 +1578,9 @@
                                 "TEST",
                                 "ERMP",
                                 "USMLE_STEP_1",
-                                "USMLE_STEP_2"
+                                "USMLE_STEP_2",
+                                "NGAT",
+                                "LICENSURE"
                             ]
                         }
                     }
@@ -1614,7 +1619,9 @@
                                 "TEST",
                                 "ERMP",
                                 "USMLE_STEP_1",
-                                "USMLE_STEP_2"
+                                "USMLE_STEP_2",
+                                "NGAT",
+                                "LICENSURE"
                             ]
                         }
                     },
@@ -1936,6 +1943,8 @@
                             "ERMP",
                             "USMLE_STEP_1",
                             "USMLE_STEP_2",
+                            "NGAT",
+                            "LICENSURE",
                             "LECTURES",
                             "BOOKS"
                         ]
@@ -2051,7 +2060,8 @@
                             "Microbiology",
                             "Pathophysiology",
                             "Pharmacology",
-                            "Physiology"
+                            "Physiology",
+                            "Others"
                         ]
                     },
                     "blockNumber": {
@@ -2066,7 +2076,18 @@
                             "BLOCK_07",
                             "BLOCK_08",
                             "BLOCK_09",
-                            "BLOCK_10"
+                            "BLOCK_10",
+                            "BLOCK_11",
+                            "BLOCK_12",
+                            "BLOCK_13",
+                            "BLOCK_14",
+                            "BLOCK_15",
+                            "BLOCK_16",
+                            "BLOCK_17",
+                            "BLOCK_18",
+                            "BLOCK_19",
+                            "BLOCK_20",
+                            "BLOCK_21"
                         ]
                     },
                     "category": {
@@ -2110,7 +2131,9 @@
                             "TEST",
                             "ERMP",
                             "USMLE_STEP_1",
-                            "USMLE_STEP_2"
+                            "USMLE_STEP_2",
+                            "NGAT",
+                            "LICENSURE"
                         ]
                     },
                     "year": {
@@ -2367,6 +2390,8 @@
                             "ERMP",
                             "USMLE_STEP_1",
                             "USMLE_STEP_2",
+                            "NGAT",
+                            "LICENSURE",
                             "LECTURES",
                             "BOOKS"
                         ]
@@ -2457,6 +2482,8 @@
                             "ERMP",
                             "USMLE_STEP_1",
                             "USMLE_STEP_2",
+                            "NGAT",
+                            "LICENSURE",
                             "LECTURES",
                             "BOOKS"
                         ]
@@ -2500,6 +2527,8 @@
                             "ERMP",
                             "USMLE_STEP_1",
                             "USMLE_STEP_2",
+                            "NGAT",
+                            "LICENSURE",
                             "LECTURES",
                             "BOOKS"
                         ]
@@ -2543,6 +2572,8 @@
                             "ERMP",
                             "USMLE_STEP_1",
                             "USMLE_STEP_2",
+                            "NGAT",
+                            "LICENSURE",
                             "LECTURES",
                             "BOOKS"
                         ]
@@ -2642,7 +2673,8 @@
                             "Microbiology",
                             "Pathophysiology",
                             "Pharmacology",
-                            "Physiology"
+                            "Physiology",
+                            "Others"
                         ]
                     },
                     "blockNumber": {
@@ -2657,7 +2689,18 @@
                             "BLOCK_07",
                             "BLOCK_08",
                             "BLOCK_09",
-                            "BLOCK_10"
+                            "BLOCK_10",
+                            "BLOCK_11",
+                            "BLOCK_12",
+                            "BLOCK_13",
+                            "BLOCK_14",
+                            "BLOCK_15",
+                            "BLOCK_16",
+                            "BLOCK_17",
+                            "BLOCK_18",
+                            "BLOCK_19",
+                            "BLOCK_20",
+                            "BLOCK_21"
                         ]
                     },
                     "category": {
@@ -2683,7 +2726,9 @@
                             "TEST",
                             "ERMP",
                             "USMLE_STEP_1",
-                            "USMLE_STEP_2"
+                            "USMLE_STEP_2",
+                            "NGAT",
+                            "LICENSURE"
                         ]
                     },
                     "year": {
@@ -2887,7 +2932,8 @@
                             "Microbiology",
                             "Pathophysiology",
                             "Pharmacology",
-                            "Physiology"
+                            "Physiology",
+                            "Others"
                         ]
                     },
                     "blockNumber": {
@@ -2902,26 +2948,22 @@
                             "BLOCK_07",
                             "BLOCK_08",
                             "BLOCK_09",
-                            "BLOCK_10"
+                            "BLOCK_10",
+                            "BLOCK_11",
+                            "BLOCK_12",
+                            "BLOCK_13",
+                            "BLOCK_14",
+                            "BLOCK_15",
+                            "BLOCK_16",
+                            "BLOCK_17",
+                            "BLOCK_18",
+                            "BLOCK_19",
+                            "BLOCK_20",
+                            "BLOCK_21"
                         ]
                     },
                     "category": {
                         "type": "string"
-                    }
-                }
-            }
-        },
-        "securitySchemes": {
-            "keycloak": {
-                "type": "oauth2",
-                "in": "header",
-                "scheme": "bearer",
-                "bearerFormat": "JWT",
-                "flows": {
-                    "password": {
-                        "authorizationUrl": "http://localhost:9090/realms/neus/protocol/openid-connect/auth",
-                        "tokenUrl": "http://localhost:9090/realms/neus/protocol/openid-connect/token",
-                        "scopes": {}
                     }
                 }
             }

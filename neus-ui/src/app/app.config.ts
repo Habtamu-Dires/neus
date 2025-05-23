@@ -8,6 +8,12 @@ import {provideToastr} from 'ngx-toastr';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
+import BlotFormatter2 from '@enzedonline/quill-blot-formatter2';
+import Quill from 'quill';
+
+Quill.register('modules/blotFormatter2', BlotFormatter2);
+
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),

@@ -4,10 +4,10 @@
 
 import { Choice } from '../models/choice';
 export interface QuestionDto {
-  blockNumber?: 'BLOCK_01' | 'BLOCK_02' | 'BLOCK_03' | 'BLOCK_04' | 'BLOCK_05' | 'BLOCK_06' | 'BLOCK_07' | 'BLOCK_08' | 'BLOCK_09' | 'BLOCK_10';
+  blockNumber?: 'BLOCK_01' | 'BLOCK_02' | 'BLOCK_03' | 'BLOCK_04' | 'BLOCK_05' | 'BLOCK_06' | 'BLOCK_07' | 'BLOCK_08' | 'BLOCK_09' | 'BLOCK_10' | 'BLOCK_11' | 'BLOCK_12' | 'BLOCK_13' | 'BLOCK_14' | 'BLOCK_15' | 'BLOCK_16' | 'BLOCK_17' | 'BLOCK_18' | 'BLOCK_19' | 'BLOCK_20' | 'BLOCK_21';
   category?: string;
   choices?: Array<Choice>;
-  department?: 'Anatomy' | 'Internal_Medicine' | 'Pediatrics' | 'OBGYN' | 'Surgery' | 'Medical_Ethics' | 'Dermatology' | 'Ophthalmology' | 'Psychiatry' | 'ENT' | 'Pathology' | 'Medical_Radiology' | 'Anesthesiology' | 'Behavioral_Science' | 'Biochemistry' | 'Biostatics' | 'Embryology' | 'Genetics' | 'Histology' | 'Immunology' | 'Microbiology' | 'Pathophysiology' | 'Pharmacology' | 'Physiology';
+  department?: 'Anatomy' | 'Internal_Medicine' | 'Pediatrics' | 'OBGYN' | 'Surgery' | 'Medical_Ethics' | 'Dermatology' | 'Ophthalmology' | 'Psychiatry' | 'ENT' | 'Pathology' | 'Medical_Radiology' | 'Anesthesiology' | 'Behavioral_Science' | 'Biochemistry' | 'Biostatics' | 'Embryology' | 'Genetics' | 'Histology' | 'Immunology' | 'Microbiology' | 'Pathophysiology' | 'Pharmacology' | 'Physiology' | 'Others';
   examId?: string;
   explanation?: string;
   id?: string;

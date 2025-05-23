@@ -46,36 +46,43 @@
   </section>
   
   <!-- Sidebar -->
-  <aside *ngIf="examStarted" class="w-full p-2 md:w-[10%] md:h-full flex md:flex-col items-center justify-between md:justify-normal md:items-start rounded-lg">
-    <!--question number list-->
+  <aside *ngIf="examStarted" 
+    class="overflow-y-auto w-full md:p-2 md:w-[10%] md:h-screen flex md:flex-col items-center justify-between md:justify-normal md:items-start rounded-lg">
+    <!--question number list only on big screens-->
     <div class="hidden md:block p-1 w-full">
-      <p class="text-lg font-semibold text-gray-800 mb-4">{{title}}</p>
+      <p class="text-lg text-gray-800 mb-4 whitespace-nowrap md:whitespace-normal overflow-auto">
+        {{title}}
+      </p>
       <div
         *ngFor="let question of questionList; let i = index"
         (click)="selectQuestion(i)"
         class="p-2 mb-1 w-full rounded-md cursor-pointer hover:text-blue-500"
-        [class.text-primary]="i === currentQuestionIndex"
+        [class.text-blue-700]="i === currentQuestionIndex"
         [class.underline]="userAnswers.get(question.id ?? '')"
-        [class.bg-green-100]="correctAnswers.get(question.id ?? '') === true && (mode === 'STUDY' || mode === 'TEST' && isSubmitted)"
-        [class.bg-red-100]="correctAnswers.get(question.id ?? '') === false && (mode === 'STUDY' ||  mode === 'TEST' && isSubmitted)"
+        [class.bg-green-400]="correctAnswers.get(question.id ?? '') === true && (mode === 'STUDY' || mode === 'TEST' && isSubmitted)"
+        [class.bg-red-400]="correctAnswers.get(question.id ?? '') === false && (mode === 'STUDY' ||  mode === 'TEST' && isSubmitted)"
       >
         Question {{ question.questionNumber }}
       </div>
     </div>
-    <!--question number list toggler-->
-    <section class="cursor-pointer block md:hidden">
+    <!--question number list toggler on mobile view-->
+    <section class="flex justify-between mt-2 items-center cursor-pointer md:hidden">
       <!--open drawer-->
-      <svg *ngIf="!showQuestionsDrawer" class="cursor-pointer mx-2 my-2"
+      <div>
+        <svg *ngIf="!showQuestionsDrawer" class="cursor-pointer mx-2"
           (click)="toggleQuestionsDrawer()"
-          xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="#000000" d="M3.75 5.25a.75.75 0 0 0 0 1.5h16.5a.75.75 0 0 0 0-1.5zm0 6a.75.75 0 0 0 0 1.5h16.5a.75.75 0 0 0 0-1.5zm0 6a.75.75 0 0 0 0 1.5h16.5a.75.75 0 0 0 0-1.5z"/>
-      </svg>
-      <!--close drawer-->
-      <svg *ngIf="showQuestionsDrawer" class="cursor-pointer mx-2 my-2" [ngClass]="{'text-white': showQuestionsDrawer}"
-          (click)="toggleQuestionsDrawer()"
-          xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="#1a4fa3" d="m6.4 18.308l-.708-.708l5.6-5.6l-5.6-5.6l.708-.708l5.6 5.6l5.6-5.6l.708.708l-5.6 5.6l5.6 5.6l-.708.708l-5.6-5.6z"/>
-      </svg>
+          xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"><path fill="#000000" d="M3.75 5.25a.75.75 0 0 0 0 1.5h16.5a.75.75 0 0 0 0-1.5zm0 6a.75.75 0 0 0 0 1.5h16.5a.75.75 0 0 0 0-1.5zm0 6a.75.75 0 0 0 0 1.5h16.5a.75.75 0 0 0 0-1.5z"/>
+        </svg>
+      </div>
+        <!--close drawer-->
+      <div>
+        <svg *ngIf="showQuestionsDrawer" class="cursor-pointer mx-2" [ngClass]="{'text-white': showQuestionsDrawer}"
+            (click)="toggleQuestionsDrawer()"
+            xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"><path fill="#1a4fa3" d="m6.4 18.308l-.708-.708l5.6-5.6l-5.6-5.6l.708-.708l5.6 5.6l5.6-5.6l.708.708l-5.6 5.6l5.6 5.6l-.708.708l-5.6-5.6z"/>
+        </svg>
+      </div>
       <!--drawer-->
-      <div *ngIf="showQuestionsDrawer" class="w-full">
+      <div *ngIf="showQuestionsDrawer" class="z-50" >
          <app-question-list-drawer
             [questionList]="questionList"
             [currentQuestionIndex]="currentQuestionIndex"
@@ -86,13 +93,15 @@
          >
          </app-question-list-drawer>
       </div>
+      <!--title to be shown on mobile view only-->
+      <p class="text-sm text-gray-800">{{title}}</p>
     </section>
   </aside>
 
   <!-- Main Content -->
   <main *ngIf="examStarted" class="h-full w-full md:w-[90%] md:p-2 rounded-lg overflow-hidden">
     <div class="flex justify-between items-center p-2">
-      <h2 class="flex gap-1 text-sm md:text-xl font-semibold text-gray-800">
+      <h2 class="flex gap-1 text-sm md:text-lg text-gray-800">
         <span class="hidden md:block">Question</span> {{ questionList.length !== 0 ? currentQuestionIndex + 1 : 0 }} of {{ questionList.length }}
       </h2>
       <!--time counter-->
@@ -146,22 +155,24 @@
     </div>
     <!--question display section-->
     <section #questionContainer *ngIf="questionList.length > 0"
-       class="h-full bg-gray-100 text-gray-900  p-4 rounded-md border border-gray-200 overflow-y-scroll overflow-x-hidden">
+       class="h-full bg-gray-100 text-gray-900 p-2 md:p-4 rounded-md border border-gray-200 overflow-y-scroll overflow-x-hidden">
       <!--qustion text -->
-      <div class="flex items-start mb-4 gap-1">
+      <div class="flex flex-col md:flex-row items-start mb-4 md:gap-1">
         <span>{{ currentQuestion.questionNumber }}.</span>
-        <!-- <div class="break-words whitespace-normal overflow-hidden px-3 w-full max-w-90%" 
+        <!-- <div class="break-words whitespace-normal border-2 border-gray-200 overflow-hidden px-3 w-full max-w-90%" 
           [innerHTML]="currentQuestion.questionText"
           (click)="handleLinkClick($event)"
         ></div> -->
-        <div [appFirefoxQuillViewPatch]="currentQuestion.questionText" class="w-full">
+        <div [appFirefoxQuillViewPatch]="currentQuestion.questionText" 
+            class="w-full max-w-[90%]">
           <quill-view 
             [content]="currentQuestion.questionText"
             format="html"
             theme="snow"
             [sanitize]="true"
             (click)="handleLinkClick($event)"
-          >
+            class="w-full"
+            >
           </quill-view>
         </div>
       </div>

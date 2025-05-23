@@ -6,6 +6,8 @@ import { ExamsService } from '../../../../services/services';
 import { ToastrService } from 'ngx-toastr';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
+import { SharedStateService } from '../../../../services/shared-state/shared-state.service';
+import { examTypeValues } from '../../../../services/models/create-exam-dto';
 
 @Component({
   selector: 'app-manage-exam',
@@ -24,7 +26,7 @@ export class ManageExamComponent implements OnInit{
   errMsgs:Array<string> = [];
   showSubscriptionLevelList:boolean = false;
   subscriptionLevelList:Array<string> = ['NONE','BASIC','ADVANCED','PREMIUM'];
-  exampTeypeList:Array<string> = ["TEST","ERMP", "USMLE_STEP_1","USMLE_STEP_2"]
+  exampTeypeList:Array<string> = [];
   showExamTypeList:boolean = false;
 
   @ViewChild('subListElement') subListElement!:ElementRef;
@@ -36,7 +38,7 @@ export class ManageExamComponent implements OnInit{
     private activatedRoute:ActivatedRoute,
     private toastrService:ToastrService,
     private router:Router,
-    private matDialog:MatDialog
+    private sharedStateService:SharedStateService
   ){}
 
   ngOnInit(): void {
@@ -44,6 +46,8 @@ export class ManageExamComponent implements OnInit{
     if(examId){
       this.fetchExamById(examId);
     }
+    // fill
+    this.exampTeypeList = this.sharedStateService.examTypeList;
   }
 
   // create exam 
@@ -76,7 +80,7 @@ export class ManageExamComponent implements OnInit{
           id:res.id,
           title: res.title,
           year: res.year as number,
-          examType: res.examType as "ERMP" | "USMLE_STEP_1" | "USMLE_STEP_2",
+          examType: res.examType as examTypeValues,
           requiredSubLevel: res.requiredSubLevel as "BASIC" |  "ADVANCED" | "PREMIUM",
           description: res.description,
           duration: res.duration as number,

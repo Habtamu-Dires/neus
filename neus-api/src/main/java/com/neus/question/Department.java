@@ -24,5 +24,6 @@ public enum Department {
     Microbiology,
     Pathophysiology,
     Pharmacology,
-    Physiology
+    Physiology,
+    Others
 }

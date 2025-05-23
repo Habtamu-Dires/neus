@@ -147,11 +147,12 @@
     <div *ngIf="['USMLE_STEP_1','USMLE_STEP_2'].includes(this.examType)"  
       class="py-4 flex gap-4 items-center justify-start">
       <label class="form-label">Block Number</label>
-      <div class="relative w-1/4 col-span-12 md:col-span-10">
+      <div #blockListElement class="relative w-1/4 col-span-12 md:col-span-10">
         <input [(ngModel)]="createQuestionDto.blockNumber" class="form-input w-full cursor-pointer" type="text"
           placeholder="Exam Type" (click)="showBlockList = true"
           (focus)="showBlockList = true" />
-        <div *ngIf="showBlockList" class="absolute z-10 w-full mt-1">
+        <div *ngIf="showBlockList"
+          class="absolute z-10 w-full mt-1 max-h-40 overflow-auto">
           <div *ngFor="let block of blockNumberList; let idx=index"
             class="w-full bg-white shadow hover:bg-gray-200 p-2 cursor-pointer"
             [ngClass]="{

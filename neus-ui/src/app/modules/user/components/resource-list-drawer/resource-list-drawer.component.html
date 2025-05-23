@@ -1,6 +1,6 @@
-<main class="absolute  right-0 flex flex-col w-screen">
-    <section class="flex flex-col p-4 gap-3 bg-white  ms-5 me-2 rounded-lg shadow-2xl">
-        <p class="font-semibold text-gray-800 md:mb-4">Lectures</p>
+<main class="absolute right-0 flex flex-col w-screen">
+    <section class="flex h-full max-h-screen overflow-y-auto flex-col p-4 gap-3 bg-white  ms-5 me-2 rounded-lg shadow-2xl">
+        <p class="sticky top-0 text-gray-800 md:mb-4 bg-white">Items</p>
         @for (resource of resourceList; track $index; let i = $index) {
             <div (click)="selectResource(i)"
                 class="p-2 rounded-md cursor-pointer hover:text-secondary whitespace-nowrap overflow-x-auto"

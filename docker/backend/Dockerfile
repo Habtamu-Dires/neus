@@ -1,5 +1,5 @@
 # Stage 1: Build the native executable
-FROM container-registry.oracle.com/graalvm/native-image:23.0.2 AS builder
+FROM container-registry.oracle.com/graalvm/native-image:24.0.1 AS builder
 
 WORKDIR /app
 COPY . .

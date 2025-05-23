@@ -5,7 +5,7 @@ import { ExamDetailDto, QuestionDetailDto, QuestionDto, UpdateUserExamDto, UserD
 import { ToastrService } from 'ngx-toastr';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { QuestionListDrawerComponent } from "../../components/question-list-drawer/question-list-drawer.component";
+import { QuestionListDrawerComponent } from '../../components/question-list-drawer/question-list-drawer.component';
 import { KeycloakService } from '../../../../services/keycloak/keycloak.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../../../../components/confirm-dialog/confirm-dialog.component';

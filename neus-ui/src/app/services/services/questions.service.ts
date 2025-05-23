@@ -153,7 +153,7 @@ export class QuestionsService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getDepartmentsByExamType$Response(params: GetDepartmentsByExamType$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<Array<'Anatomy' | 'Internal_Medicine' | 'Pediatrics' | 'OBGYN' | 'Surgery' | 'Medical_Ethics' | 'Dermatology' | 'Ophthalmology' | 'Psychiatry' | 'ENT' | 'Pathology' | 'Medical_Radiology' | 'Anesthesiology' | 'Behavioral_Science' | 'Biochemistry' | 'Biostatics' | 'Embryology' | 'Genetics' | 'Histology' | 'Immunology' | 'Microbiology' | 'Pathophysiology' | 'Pharmacology' | 'Physiology'>>>> {
+  getDepartmentsByExamType$Response(params: GetDepartmentsByExamType$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<Array<'Anatomy' | 'Internal_Medicine' | 'Pediatrics' | 'OBGYN' | 'Surgery' | 'Medical_Ethics' | 'Dermatology' | 'Ophthalmology' | 'Psychiatry' | 'ENT' | 'Pathology' | 'Medical_Radiology' | 'Anesthesiology' | 'Behavioral_Science' | 'Biochemistry' | 'Biostatics' | 'Embryology' | 'Genetics' | 'Histology' | 'Immunology' | 'Microbiology' | 'Pathophysiology' | 'Pharmacology' | 'Physiology' | 'Others'>>>> {
     return getDepartmentsByExamType(this.http, this.rootUrl, params, context);
   }
 
@@ -163,9 +163,9 @@ export class QuestionsService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getDepartmentsByExamType(params: GetDepartmentsByExamType$Params, context?: HttpContext): Observable<Array<Array<'Anatomy' | 'Internal_Medicine' | 'Pediatrics' | 'OBGYN' | 'Surgery' | 'Medical_Ethics' | 'Dermatology' | 'Ophthalmology' | 'Psychiatry' | 'ENT' | 'Pathology' | 'Medical_Radiology' | 'Anesthesiology' | 'Behavioral_Science' | 'Biochemistry' | 'Biostatics' | 'Embryology' | 'Genetics' | 'Histology' | 'Immunology' | 'Microbiology' | 'Pathophysiology' | 'Pharmacology' | 'Physiology'>>> {
+  getDepartmentsByExamType(params: GetDepartmentsByExamType$Params, context?: HttpContext): Observable<Array<Array<'Anatomy' | 'Internal_Medicine' | 'Pediatrics' | 'OBGYN' | 'Surgery' | 'Medical_Ethics' | 'Dermatology' | 'Ophthalmology' | 'Psychiatry' | 'ENT' | 'Pathology' | 'Medical_Radiology' | 'Anesthesiology' | 'Behavioral_Science' | 'Biochemistry' | 'Biostatics' | 'Embryology' | 'Genetics' | 'Histology' | 'Immunology' | 'Microbiology' | 'Pathophysiology' | 'Pharmacology' | 'Physiology' | 'Others'>>> {
     return this.getDepartmentsByExamType$Response(params, context).pipe(
-      map((r: StrictHttpResponse<Array<Array<'Anatomy' | 'Internal_Medicine' | 'Pediatrics' | 'OBGYN' | 'Surgery' | 'Medical_Ethics' | 'Dermatology' | 'Ophthalmology' | 'Psychiatry' | 'ENT' | 'Pathology' | 'Medical_Radiology' | 'Anesthesiology' | 'Behavioral_Science' | 'Biochemistry' | 'Biostatics' | 'Embryology' | 'Genetics' | 'Histology' | 'Immunology' | 'Microbiology' | 'Pathophysiology' | 'Pharmacology' | 'Physiology'>>>): Array<Array<'Anatomy' | 'Internal_Medicine' | 'Pediatrics' | 'OBGYN' | 'Surgery' | 'Medical_Ethics' | 'Dermatology' | 'Ophthalmology' | 'Psychiatry' | 'ENT' | 'Pathology' | 'Medical_Radiology' | 'Anesthesiology' | 'Behavioral_Science' | 'Biochemistry' | 'Biostatics' | 'Embryology' | 'Genetics' | 'Histology' | 'Immunology' | 'Microbiology' | 'Pathophysiology' | 'Pharmacology' | 'Physiology'>> => r.body)
+      map((r: StrictHttpResponse<Array<Array<'Anatomy' | 'Internal_Medicine' | 'Pediatrics' | 'OBGYN' | 'Surgery' | 'Medical_Ethics' | 'Dermatology' | 'Ophthalmology' | 'Psychiatry' | 'ENT' | 'Pathology' | 'Medical_Radiology' | 'Anesthesiology' | 'Behavioral_Science' | 'Biochemistry' | 'Biostatics' | 'Embryology' | 'Genetics' | 'Histology' | 'Immunology' | 'Microbiology' | 'Pathophysiology' | 'Pharmacology' | 'Physiology' | 'Others'>>>): Array<Array<'Anatomy' | 'Internal_Medicine' | 'Pediatrics' | 'OBGYN' | 'Surgery' | 'Medical_Ethics' | 'Dermatology' | 'Ophthalmology' | 'Psychiatry' | 'ENT' | 'Pathology' | 'Medical_Radiology' | 'Anesthesiology' | 'Behavioral_Science' | 'Biochemistry' | 'Biostatics' | 'Embryology' | 'Genetics' | 'Histology' | 'Immunology' | 'Microbiology' | 'Pathophysiology' | 'Pharmacology' | 'Physiology' | 'Others'>> => r.body)
     );
   }
 
@@ -178,7 +178,7 @@ export class QuestionsService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getBlocksByExamTypeAndYearAndDepartment$Response(params: GetBlocksByExamTypeAndYearAndDepartment$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<'BLOCK_01' | 'BLOCK_02' | 'BLOCK_03' | 'BLOCK_04' | 'BLOCK_05' | 'BLOCK_06' | 'BLOCK_07' | 'BLOCK_08' | 'BLOCK_09' | 'BLOCK_10'>>> {
+  getBlocksByExamTypeAndYearAndDepartment$Response(params: GetBlocksByExamTypeAndYearAndDepartment$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<'BLOCK_01' | 'BLOCK_02' | 'BLOCK_03' | 'BLOCK_04' | 'BLOCK_05' | 'BLOCK_06' | 'BLOCK_07' | 'BLOCK_08' | 'BLOCK_09' | 'BLOCK_10' | 'BLOCK_11' | 'BLOCK_12' | 'BLOCK_13' | 'BLOCK_14' | 'BLOCK_15' | 'BLOCK_16' | 'BLOCK_17' | 'BLOCK_18' | 'BLOCK_19' | 'BLOCK_20' | 'BLOCK_21'>>> {
     return getBlocksByExamTypeAndYearAndDepartment(this.http, this.rootUrl, params, context);
   }
 
@@ -188,9 +188,9 @@ export class QuestionsService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getBlocksByExamTypeAndYearAndDepartment(params: GetBlocksByExamTypeAndYearAndDepartment$Params, context?: HttpContext): Observable<Array<'BLOCK_01' | 'BLOCK_02' | 'BLOCK_03' | 'BLOCK_04' | 'BLOCK_05' | 'BLOCK_06' | 'BLOCK_07' | 'BLOCK_08' | 'BLOCK_09' | 'BLOCK_10'>> {
+  getBlocksByExamTypeAndYearAndDepartment(params: GetBlocksByExamTypeAndYearAndDepartment$Params, context?: HttpContext): Observable<Array<'BLOCK_01' | 'BLOCK_02' | 'BLOCK_03' | 'BLOCK_04' | 'BLOCK_05' | 'BLOCK_06' | 'BLOCK_07' | 'BLOCK_08' | 'BLOCK_09' | 'BLOCK_10' | 'BLOCK_11' | 'BLOCK_12' | 'BLOCK_13' | 'BLOCK_14' | 'BLOCK_15' | 'BLOCK_16' | 'BLOCK_17' | 'BLOCK_18' | 'BLOCK_19' | 'BLOCK_20' | 'BLOCK_21'>> {
     return this.getBlocksByExamTypeAndYearAndDepartment$Response(params, context).pipe(
-      map((r: StrictHttpResponse<Array<'BLOCK_01' | 'BLOCK_02' | 'BLOCK_03' | 'BLOCK_04' | 'BLOCK_05' | 'BLOCK_06' | 'BLOCK_07' | 'BLOCK_08' | 'BLOCK_09' | 'BLOCK_10'>>): Array<'BLOCK_01' | 'BLOCK_02' | 'BLOCK_03' | 'BLOCK_04' | 'BLOCK_05' | 'BLOCK_06' | 'BLOCK_07' | 'BLOCK_08' | 'BLOCK_09' | 'BLOCK_10'> => r.body)
+      map((r: StrictHttpResponse<Array<'BLOCK_01' | 'BLOCK_02' | 'BLOCK_03' | 'BLOCK_04' | 'BLOCK_05' | 'BLOCK_06' | 'BLOCK_07' | 'BLOCK_08' | 'BLOCK_09' | 'BLOCK_10' | 'BLOCK_11' | 'BLOCK_12' | 'BLOCK_13' | 'BLOCK_14' | 'BLOCK_15' | 'BLOCK_16' | 'BLOCK_17' | 'BLOCK_18' | 'BLOCK_19' | 'BLOCK_20' | 'BLOCK_21'>>): Array<'BLOCK_01' | 'BLOCK_02' | 'BLOCK_03' | 'BLOCK_04' | 'BLOCK_05' | 'BLOCK_06' | 'BLOCK_07' | 'BLOCK_08' | 'BLOCK_09' | 'BLOCK_10' | 'BLOCK_11' | 'BLOCK_12' | 'BLOCK_13' | 'BLOCK_14' | 'BLOCK_15' | 'BLOCK_16' | 'BLOCK_17' | 'BLOCK_18' | 'BLOCK_19' | 'BLOCK_20' | 'BLOCK_21'> => r.body)
     );
   }
 

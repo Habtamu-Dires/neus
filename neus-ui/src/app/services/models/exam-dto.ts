@@ -5,7 +5,7 @@
 export interface ExamDto {
   description?: string;
   duration?: number;
-  examType?: 'TEST' | 'ERMP' | 'USMLE_STEP_1' | 'USMLE_STEP_2';
+  examType?: 'TEST' | 'ERMP' | 'USMLE_STEP_1' | 'USMLE_STEP_2' | 'NGAT' | 'LICENSURE';
   id?: string;
   numberOfQuestions?: number;
   randomQuestionCount?: number;

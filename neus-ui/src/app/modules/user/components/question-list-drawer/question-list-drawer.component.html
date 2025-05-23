@@ -1,6 +1,6 @@
-<main class="absolute  right-0 flex flex-col w-screen">
-    <section class="flex flex-col p-4 gap-3 bg-white  ms-5 me-2 rounded-lg shadow-2xl">
-        <p class="text-lg font-semibold text-gray-800 mb-4">Questions</p>
+<main class="absolute top-10 left-0 flex flex-col w-screen">
+    <section class="h-full max-h-screen overflow-y-auto flex flex-col p-4 gap-3 bg-white  ms-5 me-2 rounded-lg shadow-2xl">
+        <p class="sticky top-0 text-lg font-semibold text-gray-800 mb-4 bg-white">Questions</p>
         @for (question of questionList; track $index; let i = $index) {
             <div (click)="selectQuestion(i)"
                 class="p-2 rounded-md cursor-pointer hover:text-blue-400"

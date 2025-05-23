@@ -29,10 +29,6 @@
           *ngFor="let year of yearList"
           (click)="selectYear(year.value)"
           class="bg-white hover:bg-indigo-100 text-2xl text-center font-semibold py-4 md:py-6 rounded-2xl shadow-md cursor-pointer transform hover:scale-105 transition duration-200 ease-in-out select-none"
-          [class.bg-primary]="selectedYear === year"
-          [class.text-white]="selectedYear === year"
-          [class.bg-white]="selectedYear !== year"
-          [class.text-gray-700]="selectedYear !== year"
         >
           {{ year.value }}
         </div>
@@ -44,12 +40,10 @@
           *ngFor="let exam of examList"
           (click)="selectExam(exam)"
           class="bg-white hover:bg-indigo-100 text-2xl text-center font-semibold py-4 md:py-6 rounded-2xl shadow-md cursor-pointer transform hover:scale-105 transition duration-200 ease-in-out select-none"
-          
         >
           {{ exam.title }}
         </div>
       </div>
-
     </div>
   </div>
   <!-- Resource Not Found -->

@@ -1,6 +1,6 @@
 <main class="w-full h-screen flex flex-col md:flex-row relative">
     <!--side bar-->
-    <section  *ngIf="!showDrawer" class="w-full md:w-1/6 shadow-lg font-mono h-screen">
+    <section  *ngIf="!showDrawer" class="w-full md:w-1/6 shadow-lg font-mono h-full">
         <div class="w-full flex flex-col h-full justify-between shadow-xl">
             <div class="flex flex-col gap-2">
                 <div class="flex justify-between p-4">
@@ -70,6 +70,7 @@
         [ngClass]="{
         'w-[100%]': showDrawer,
         'w-full md:w-5/6': !showDrawer,
+        'hidden md:block': !showDrawer
         }">
         <!--pages-->
         <div class="w-full">

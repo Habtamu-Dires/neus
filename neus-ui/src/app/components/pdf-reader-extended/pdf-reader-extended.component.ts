@@ -12,6 +12,7 @@ import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 })
 export class PdfReaderExtendedComponent {
   @Input() pdfSrc:string | undefined;
+  @Input() title:string | undefined;
   @Output() onClose = new EventEmitter<{}>();
   
 

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { CreateQuestionDto, TextDto } from '../../../../services/models';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -44,6 +44,8 @@ export class CreateQuestionComponent implements OnInit{
   filteredDepartmentList:string[] = [];
   isUploading:boolean = false;
   selectedFile:any;
+
+  @ViewChild('blockListElement') blockListElement!:ElementRef;
 
   constructor(
     private questionsService:QuestionsService,
@@ -324,6 +326,9 @@ export class CreateQuestionComponent implements OnInit{
             this.createQuestionDto.mediaUrls?.push(mediaUrl);
             this.toastrService.success('Image uploaded Sucessfully');
 
+            // clear the input 
+            this.selectedFile = null;
+
           }
         },
         error: (err) => {
@@ -379,6 +384,15 @@ export class CreateQuestionComponent implements OnInit{
       maxWidth: '70vw',
       maxHeight: '70vh',
     });
+  }
+
+  // on file type selected
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (this.showBlockList && this.blockListElement && !this.blockListElement.nativeElement.contains(target)) {
+      this.showBlockList = false;
+    }    
   }
 
 }
